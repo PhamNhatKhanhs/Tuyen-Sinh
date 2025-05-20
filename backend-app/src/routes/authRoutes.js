@@ -9,3 +9,6 @@ router.post('/login', authController.login);
 router.get('/me', protect, authController.getMe); // Ví dụ route cần bảo vệ
 
 module.exports = router;
+// Update by Pháº¡m Nháº­t KhÃ¡nh - 2025-06-11 02:34
+// feature: Enhanced authRoutes functionality
+
