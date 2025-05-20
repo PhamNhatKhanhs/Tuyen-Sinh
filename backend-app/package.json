@@ -24,3 +24,15 @@
     "nodemon": "^2.0.22"
   }
 }
+{
+  "name": "tuyen-sinh-backend",
+  "version": "1.0.0",
+  "description": "University Admission System - Pháº¡m Nháº­t KhÃ¡nh",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "author": "Pháº¡m Nháº­t KhÃ¡nh",
+  "dependencies": {}
+}
