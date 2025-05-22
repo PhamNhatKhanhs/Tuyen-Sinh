@@ -1,9 +1,7 @@
-// src/components/layout/AppHeader.tsx
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  Layout, Menu, Button, Avatar, Dropdown, Badge, List, Typography, Spin, Empty, message
+  Layout, Menu, Button, Avatar, Dropdown, Badge, List, Typography, Spin, Empty, message, Drawer
 } from 'antd';
 import type { MenuProps } from 'antd';
 import {
@@ -11,7 +9,7 @@ import {
   FormOutlined, SolutionOutlined, SettingOutlined, BuildOutlined,
   FileSearchOutlined, ReadOutlined, UnorderedListOutlined, AppstoreAddOutlined,
   LinkOutlined, BarChartOutlined, TeamOutlined, BellOutlined,
-  MailOutlined, MenuOutlined
+  MailOutlined, MenuOutlined, CloseOutlined, DownOutlined
 } from '@ant-design/icons';
 import { Briefcase } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -40,6 +38,7 @@ const AppHeader: React.FC = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loadingNotifications, setLoadingNotifications] = useState(false);
   const [notificationDropdownVisible, setNotificationDropdownVisible] = useState(false);
+  const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
 
   const fetchNotifications = useCallback(async (showLoading = true) => {
     if (!isAuthenticated) return;
@@ -72,62 +71,94 @@ const AppHeader: React.FC = () => {
   const handleLogout = () => {
     dispatch(logout());
     navigate('/login');
+    setMobileMenuVisible(false);
+  };
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    setMobileMenuVisible(false);
   };
 
   const userDropdownItems: MenuProps['items'] = [
     {
       key: 'profile',
       label: (
-        <Button type="text" block onClick={() => navigate(user?.role === 'admin' ? '/admin/dashboard' : '/candidate/dashboard')}>
-          Trang của tôi
-        </Button>
+        <div className="dropdown-item">
+          <UserOutlined />
+          <span>Trang của tôi</span>
+        </div>
       ),
-      icon: <UserOutlined />,
+      onClick: () => navigate(user?.role === 'admin' ? '/admin/dashboard' : '/candidate/dashboard')
     },
     {
       key: 'settings',
-      label: <Button type="text" block onClick={() => message.info('Chức năng cài đặt chưa có!')}>Cài đặt</Button>,
-      icon: <SettingOutlined />,
+      label: (
+        <div className="dropdown-item">
+          <SettingOutlined />
+          <span>Cài đặt</span>
+        </div>
+      ),
+      onClick: () => message.info('Chức năng cài đặt chưa có!')
     },
     { type: 'divider' },
     {
       key: 'logout',
-      label: <Button type="text" danger block onClick={handleLogout}>Đăng xuất</Button>,
-      icon: <LogoutOutlined />,
+      label: (
+        <div className="dropdown-item danger">
+          <LogoutOutlined />
+          <span>Đăng xuất</span>
+        </div>
+      ),
+      onClick: handleLogout
     },
   ];
 
   const getMenuItems = (): MenuProps['items'] => {
     const items: MenuProps['items'] = [
-      { key: 'home', icon: <HomeOutlined />, label: 'Trang Chủ', onClick: () => navigate('/') },
-      { key: 'universities', icon: <ReadOutlined />, label: 'Các Trường ĐH', onClick: () => navigate('/universities') },
+      { 
+        key: 'home', 
+        icon: <HomeOutlined />, 
+        label: 'Trang Chủ', 
+        onClick: () => handleNavigation('/') 
+      },
+      { 
+        key: 'universities', 
+        icon: <ReadOutlined />, 
+        label: 'Các Trường ĐH', 
+        onClick: () => handleNavigation('/universities') 
+      },
     ];
 
     if (isAuthenticated && user) {
       if (user.role === 'admin') {
         items.push(
-          { key: 'admin-dashboard', icon: <DashboardOutlined />, label: 'Bảng Điều Khiển', onClick: () => navigate('/admin/dashboard') },
+          { 
+            key: 'admin-dashboard', 
+            icon: <DashboardOutlined />, 
+            label: 'Bảng Điều Khiển', 
+            onClick: () => handleNavigation('/admin/dashboard') 
+          },
           {
             key: 'admin-management',
             icon: <SettingOutlined />,
             label: 'Quản Lý Hệ Thống',
             children: [
-              { key: 'admin-universities-mng', icon: <BuildOutlined />, label: 'QL Trường ĐH', onClick: () => navigate('/admin/universities') },
-              { key: 'admin-majors-mng', icon: <SolutionOutlined />, label: 'QL Ngành Học', onClick: () => navigate('/admin/majors') },
-              { key: 'admin-admission-methods-mng', icon: <UnorderedListOutlined />, label: 'QL Phương Thức XT', onClick: () => navigate('/admin/admission-methods') },
-              { key: 'admin-subject-groups-mng', icon: <AppstoreAddOutlined />, label: 'QL Tổ Hợp Môn', onClick: () => navigate('/admin/subject-groups') },
-              { key: 'admin-admission-links-mng', icon: <LinkOutlined />, label: 'QL Liên Kết Tuyển Sinh', onClick: () => navigate('/admin/admission-links') },
+              { key: 'admin-universities-mng', icon: <BuildOutlined />, label: 'QL Trường ĐH', onClick: () => handleNavigation('/admin/universities') },
+              { key: 'admin-majors-mng', icon: <SolutionOutlined />, label: 'QL Ngành Học', onClick: () => handleNavigation('/admin/majors') },
+              { key: 'admin-admission-methods-mng', icon: <UnorderedListOutlined />, label: 'QL Phương Thức XT', onClick: () => handleNavigation('/admin/admission-methods') },
+              { key: 'admin-subject-groups-mng', icon: <AppstoreAddOutlined />, label: 'QL Tổ Hợp Môn', onClick: () => handleNavigation('/admin/subject-groups') },
+              { key: 'admin-admission-links-mng', icon: <LinkOutlined />, label: 'QL Liên Kết Tuyển Sinh', onClick: () => handleNavigation('/admin/admission-links') },
             ]
           },
-          { key: 'admin-applications', icon: <FileSearchOutlined />, label: 'QL Hồ Sơ Tuyển Sinh', onClick: () => navigate('/admin/applications') },
-          { key: 'admin-stats', icon: <BarChartOutlined />, label: 'Thống Kê', onClick: () => navigate('/admin/stats') },
-          { key: 'admin-users-mng', icon: <TeamOutlined />, label: 'QL Người Dùng', onClick: () => navigate('/admin/users') },
+          { key: 'admin-applications', icon: <FileSearchOutlined />, label: 'QL Hồ Sơ Tuyển Sinh', onClick: () => handleNavigation('/admin/applications') },
+          { key: 'admin-stats', icon: <BarChartOutlined />, label: 'Thống Kê', onClick: () => handleNavigation('/admin/stats') },
+          { key: 'admin-users-mng', icon: <TeamOutlined />, label: 'QL Người Dùng', onClick: () => handleNavigation('/admin/users') },
         );
       } else if (user.role === 'candidate') {
         items.push(
-          { key: 'candidate-dashboard', icon: <DashboardOutlined />, label: 'Bảng Điều Khiển', onClick: () => navigate('/candidate/dashboard') },
-          { key: 'candidate-submit', icon: <FormOutlined />, label: 'Nộp Hồ Sơ', onClick: () => navigate('/candidate/submit-application') },
-          { key: 'candidate-view', icon: <SolutionOutlined />, label: 'Hồ Sơ Của Tôi', onClick: () => navigate('/candidate/my-applications') },
+          { key: 'candidate-dashboard', icon: <DashboardOutlined />, label: 'Bảng Điều Khiển', onClick: () => handleNavigation('/candidate/dashboard') },
+          { key: 'candidate-submit', icon: <FormOutlined />, label: 'Nộp Hồ Sơ', onClick: () => handleNavigation('/candidate/submit-application') },
+          { key: 'candidate-view', icon: <SolutionOutlined />, label: 'Hồ Sơ Của Tôi', onClick: () => handleNavigation('/candidate/my-applications') },
         );
       }
     }
@@ -165,16 +196,28 @@ const AppHeader: React.FC = () => {
   const notificationMenuOverlay = (
     <div className="notification-dropdown">
       <div className="notification-header">
-        <Typography.Title level={5}>Thông Báo</Typography.Title>
+        <Typography.Title level={5} className="notification-title">
+          Thông Báo
+          {unreadCount > 0 && <Badge count={unreadCount} size="small" />}
+        </Typography.Title>
         {unreadCount > 0 && (
-          <Button type="link" size="small" onClick={handleMarkAllAsRead}>Đánh dấu đã đọc</Button>
+          <Button type="link" size="small" onClick={handleMarkAllAsRead} className="mark-all-btn">
+            Đánh dấu đã đọc
+          </Button>
         )}
       </div>
       <div className="notification-body">
         {loadingNotifications && notifications.length === 0 ? (
-          <Spin className="my-6" />
+          <div className="notification-loading">
+            <Spin size="small" />
+            <Text type="secondary">Đang tải...</Text>
+          </div>
         ) : notifications.length === 0 ? (
-          <Empty description="Không có thông báo." image={Empty.PRESENTED_IMAGE_SIMPLE} className="my-10" />
+          <Empty 
+            description="Không có thông báo mới" 
+            image={Empty.PRESENTED_IMAGE_SIMPLE} 
+            className="notification-empty" 
+          />
         ) : (
           <List
             itemLayout="horizontal"
@@ -182,77 +225,236 @@ const AppHeader: React.FC = () => {
             renderItem={item => (
               <List.Item
                 onClick={() => handleNotificationClick(item)}
-                className={`notification-item ${!item.isRead ? 'unread' : ''}`}
+                className={`notification-item ${!item.isRead ? 'unread' : 'read'}`}
               >
                 <List.Item.Meta
-                  avatar={<div className={`notification-avatar ${!item.isRead ? 'unread' : ''}`}><MailOutlined /></div>}
-                  title={<Text strong={!item.isRead}>{item.title}</Text>}
+                  avatar={
+                    <div className={`notification-avatar ${!item.isRead ? 'unread' : ''}`}>
+                      <MailOutlined />
+                    </div>
+                  }
+                  title={<Text strong={!item.isRead} className="notification-title">{item.title}</Text>}
                   description={
-                    <>
-                      <Paragraph ellipsis={{ rows: 2 }} className="notification-message">{item.message}</Paragraph>
-                      <Text type="secondary" className="text-xs">{dayjs(item.createdAt).fromNow()}</Text>
-                    </>
+                    <div className="notification-content">
+                      <Paragraph ellipsis={{ rows: 2 }} className="notification-message">
+                        {item.message}
+                      </Paragraph>
+                      <Text type="secondary" className="notification-time">
+                        {dayjs(item.createdAt).fromNow()}
+                      </Text>
+                    </div>
                   }
                 />
-                {!item.isRead && <Badge status="processing" />}
+                {!item.isRead && <div className="unread-indicator" />}
               </List.Item>
             )}
           />
         )}
       </div>
       <div className="notification-footer">
-        <Button type="link" size="small" onClick={() => { navigate('/notifications'); setNotificationDropdownVisible(false); }}>
+        <Button 
+          type="link" 
+          size="small" 
+          onClick={() => { 
+            navigate('/notifications'); 
+            setNotificationDropdownVisible(false); 
+          }}
+          className="view-all-btn"
+        >
           Xem tất cả thông báo
         </Button>
       </div>
     </div>
   );
 
+  const renderMobileMenuItem = (item: any, isChild = false) => (
+    <div key={item.key} className={`mobile-menu-item ${isChild ? 'child' : ''}`}>
+      {item.children ? (
+        <div className="mobile-submenu">
+          <div className="mobile-submenu-title">
+            {item.icon}
+            <span>{item.label}</span>
+            <DownOutlined className="submenu-arrow" />
+          </div>
+          <div className="mobile-submenu-content">
+            {item.children.map((child: any) => renderMobileMenuItem(child, true))}
+          </div>
+        </div>
+      ) : (
+        <div className="mobile-menu-link" onClick={item.onClick}>
+          {item.icon}
+          <span>{item.label}</span>
+        </div>
+      )}
+    </div>
+  );
+
   return (
-    <Header className="app-header">
-      <div className="container">
-        <Link to="/" className="logo">
-          <Briefcase className="logo-icon" />
-          <span className="logo-text">Tuyển Sinh ĐH</span>
-        </Link>
+    <>
+      <Header className="app-header">
+        <div className="header-container">
+          <Link to="/" className="header-logo">
+            <div className="logo-icon-wrapper">
+              <Briefcase className="logo-icon" />
+            </div>
+            <div className="logo-text-wrapper">
+              <span className="logo-text-main">Tuyển Sinh ĐH</span>
+              <span className="logo-text-sub">Hệ thống thông tin</span>
+            </div>
+          </Link>
 
-        <Menu className="desktop-menu" mode="horizontal" items={getMenuItems()} selectable={false} />
+          <Menu 
+            className="desktop-menu" 
+            mode="horizontal" 
+            items={getMenuItems()} 
+            selectable={false}
+            theme="light"
+          />
 
-        <div className="header-actions">
-          {isAuthenticated && user && (
-            <Dropdown 
-              popupRender={() => notificationMenuOverlay}
-              trigger={['click']}
-              open={notificationDropdownVisible}
-              onOpenChange={setNotificationDropdownVisible}
-              placement="bottomRight"
-            >
-              <Badge count={unreadCount}>
-                <Button type="text" shape="circle" icon={<BellOutlined />} className="icon-button" />
-              </Badge>
-            </Dropdown>
-          )}
+          <div className="header-actions">
+            {isAuthenticated && user && (
+              <Dropdown 
+                popupRender={() => notificationMenuOverlay}
+                trigger={['click']}
+                open={notificationDropdownVisible}
+                onOpenChange={setNotificationDropdownVisible}
+                placement="bottomRight"
+                overlayClassName="notification-dropdown-overlay"
+              >
+                <div className="notification-trigger">
+                  <Badge count={unreadCount} size="small">
+                    <Button 
+                      type="text" 
+                      shape="circle" 
+                      icon={<BellOutlined />} 
+                      className="notification-button"
+                    />
+                  </Badge>
+                </div>
+              </Dropdown>
+            )}
 
-          {isAuthenticated && user ? (
-            <Dropdown menu={{ items: userDropdownItems }} placement="bottomRight">
-              <div className="user-dropdown">
-                <Avatar icon={<UserOutlined />} className="avatar" />
-                <span className="username">{user.fullName || user.email}</span>
+            {isAuthenticated && user ? (
+              <Dropdown 
+                menu={{ items: userDropdownItems }} 
+                placement="bottomRight"
+                overlayClassName="user-dropdown-overlay"
+              >
+                <div className="user-info">
+                  <Avatar 
+                    icon={<UserOutlined />} 
+                    className="user-avatar"
+                    size="default"
+                  />
+                  <div className="user-details">
+                    <span className="user-name">{user.fullName || user.email}</span>
+                    <span className="user-role">{user.role === 'admin' ? 'Quản trị viên' : 'Thí sinh'}</span>
+                  </div>
+                  <DownOutlined className="user-dropdown-arrow" />
+                </div>
+              </Dropdown>
+            ) : (
+              <div className="auth-buttons">
+                <Button 
+                  onClick={() => navigate('/login')} 
+                  className="login-button"
+                  icon={<LoginOutlined />}
+                >
+                  Đăng Nhập
+                </Button>
+                <Button 
+                  onClick={() => navigate('/register')} 
+                  type="primary"
+                  className="register-button"
+                >
+                  Đăng Ký
+                </Button>
               </div>
-            </Dropdown>
-          ) : (
-            <div className="auth-buttons">
-              <Button onClick={() => navigate('/login')} className="btn-secondary">Đăng Nhập</Button>
-              <Button onClick={() => navigate('/register')} className="btn-primary">Đăng Ký</Button>
+            )}
+
+            <Button 
+              type="text" 
+              shape="circle" 
+              icon={<MenuOutlined />} 
+              onClick={() => setMobileMenuVisible(true)}
+              className="mobile-menu-trigger"
+            />
+          </div>
+        </div>
+      </Header>
+
+      {/* Mobile Menu Drawer */}
+      <Drawer
+        title={
+          <div className="mobile-menu-header">
+            <div className="mobile-logo">
+              <Briefcase className="mobile-logo-icon" />
+              <span>Tuyển Sinh ĐH</span>
+            </div>
+          </div>
+        }
+        placement="right"
+        onClose={() => setMobileMenuVisible(false)}
+        open={mobileMenuVisible}
+        className="mobile-menu-drawer"
+        width={300}
+        closeIcon={<CloseOutlined />}
+      >
+        <div className="mobile-menu-content">
+          {/* User Info in Mobile */}
+          {isAuthenticated && user && (
+            <div className="mobile-user-info">
+              <Avatar icon={<UserOutlined />} size="large" />
+              <div className="mobile-user-details">
+                <Text strong>{user.fullName || user.email}</Text>
+                <Text type="secondary">{user.role === 'admin' ? 'Quản trị viên' : 'Thí sinh'}</Text>
+              </div>
             </div>
           )}
 
-          <div className="mobile-menu-button">
-            <Button type="text" shape="circle" icon={<MenuOutlined />} onClick={() => message.info("Mở mobile menu (chưa làm)")} />
+          {/* Navigation Menu */}
+          <div className="mobile-navigation">
+            {getMenuItems()?.map(item => renderMobileMenuItem(item))}
           </div>
+
+          {/* Auth Buttons in Mobile */}
+          {!isAuthenticated && (
+            <div className="mobile-auth-buttons">
+              <Button 
+                block 
+                onClick={() => handleNavigation('/login')}
+                icon={<LoginOutlined />}
+                className="mobile-login-btn"
+              >
+                Đăng Nhập
+              </Button>
+              <Button 
+                block 
+                type="primary" 
+                onClick={() => handleNavigation('/register')}
+                className="mobile-register-btn"
+              >
+                Đăng Ký
+              </Button>
+            </div>
+          )}
+
+          {/* Logout Button in Mobile */}
+          {isAuthenticated && (
+            <div className="mobile-logout">
+              <Button 
+                block 
+                danger 
+                onClick={handleLogout}
+                icon={<LogoutOutlined />}
+              >
+                Đăng Xuất
+              </Button>
+            </div>
+          )}
         </div>
-      </div>
-    </Header>
+      </Drawer>
+    </>
   );
 };
 
