@@ -75,7 +75,12 @@ const AppHeader: React.FC = () => {
   };
 
   const handleNavigation = (path: string) => {
-    navigate(path);
+    // Sử dụng replace: true để giữ nguyên trạng thái khi điều hướng đến trang chủ
+    if (path === '/') {
+      navigate(path, { replace: true });
+    } else {
+      navigate(path);
+    }
     setMobileMenuVisible(false);
   };
 
@@ -88,7 +93,7 @@ const AppHeader: React.FC = () => {
           <span>Trang của tôi</span>
         </div>
       ),
-      onClick: () => navigate(user?.role === 'admin' ? '/admin/dashboard' : '/candidate/dashboard')
+      onClick: () => navigate(user?.role === 'admin' ? '/admin/dashboard' : '/candidate/profile')
     },
     {
       key: 'settings',
@@ -313,25 +318,22 @@ const AppHeader: React.FC = () => {
 
           <div className="header-actions">
             {isAuthenticated && user && (
-              <Dropdown 
-                popupRender={() => notificationMenuOverlay}
-                trigger={['click']}
-                open={notificationDropdownVisible}
-                onOpenChange={setNotificationDropdownVisible}
-                placement="bottomRight"
-                overlayClassName="notification-dropdown-overlay"
-              >
-                <div className="notification-trigger">
-                  <Badge count={unreadCount} size="small">
-                    <Button 
-                      type="text" 
-                      shape="circle" 
-                      icon={<BellOutlined />} 
-                      className="notification-button"
-                    />
-                  </Badge>
-                </div>
-              </Dropdown>
+              <div className="notification-container">
+                <Badge count={unreadCount} size="small">
+                  <Button 
+                    type="text" 
+                    shape="circle" 
+                    icon={<BellOutlined />} 
+                    className="notification-button"
+                    onClick={() => setNotificationDropdownVisible(!notificationDropdownVisible)}
+                  />
+                </Badge>
+                {notificationDropdownVisible && (
+                  <div className="notification-dropdown-wrapper">
+                    {notificationMenuOverlay}
+                  </div>
+                )}
+              </div>
             )}
 
             {isAuthenticated && user ? (

@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react'; // Bỏ useState nếu không dùng error cục bộ
-import { Form, Input, Button, Typography, Alert, Spin } from 'antd';
+import React, { useEffect } from 'react';
+import { Form, Input, Button, Typography, Alert } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { loginStart, loginSuccess, loginFailure, selectAuthLoading, selectAuthError, User as AuthUserType } from '../store/authSlice'; // Đổi tên User để tránh xung đột
+import { loginStart, loginSuccess, loginFailure, selectAuthLoading, selectAuthError, User as AuthUserType } from '../store/authSlice';
 import authService from '../services/authService'; 
 
 const { Title } = Typography;
@@ -20,17 +20,19 @@ const LoginPage: React.FC = () => {
   const [form] = Form.useForm();
   const from = location.state?.from?.pathname || "/"; 
 
+  // Lấy thông tin user trực tiếp từ useAppSelector
+  const user = useAppSelector(state => state.auth.user) as AuthUserType | null;
+  
   // Chuyển hướng nếu đã đăng nhập
   useEffect(() => {
     if (isAuthenticated) {
-      const user = store.getState().auth.user as AuthUserType | null; // Lấy user từ store
       if (user?.role === 'admin') {
         navigate('/admin/dashboard', { replace: true });
       } else {
          navigate(from === '/login' || from === '/register' ? '/candidate/dashboard' : from, { replace: true });
       }
     }
-  }, [isAuthenticated, navigate, from]);
+  }, [isAuthenticated, navigate, from, user]);
 
 
   const onFinish = async (values: any) => {

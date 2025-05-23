@@ -7,6 +7,11 @@ export interface RegisterData {
   password: string;
   fullName?: string;
   role?: 'candidate' | 'admin';
+  phoneNumber?: string;
+  dob?: string; // Date of birth in YYYY-MM-DD format
+  idNumber?: string; // ID card/passport number
+  gender?: 'male' | 'female' | 'other';
+  address?: string;
 }
 
 // Kiểu dữ liệu cho response từ API (khớp với Backend)
@@ -70,3 +75,4 @@ const authService = {
   }
 };
 export default authService;
+

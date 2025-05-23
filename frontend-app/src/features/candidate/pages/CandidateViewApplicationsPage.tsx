@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Typography, Table, Tag, Space, Button, Tooltip, Spin, Alert, Modal, Descriptions, List, message, Empty } from 'antd'; // Thêm Empty
+import { Typography, Table, Tag, Space, Button, Tooltip, Spin, Alert, Modal, Descriptions, List, message, Empty, Card } from 'antd'; // Thêm Card
 import { EyeOutlined, ReloadOutlined, FilePdfOutlined, FileImageOutlined, FileTextOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import type { TableProps } from 'antd';
 import applicationService, { ApplicationListItemFE, ApplicationDetailBE } from '../services/applicationService';
@@ -42,16 +42,24 @@ const CandidateViewApplicationsPage: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
+      console.log('Fetching applications...');
       const response = await applicationService.getMyApplications();
+      console.log('API response:', response);
+      
       if (response.success && response.data) {
         setApplications(response.data);
+        console.log('Applications loaded successfully:', response.data);
       } else {
-        setError(response.message || 'Không thể tải danh sách hồ sơ.');
-        message.error(response.message || 'Không thể tải danh sách hồ sơ.');
+        const errorMsg = response.message || 'Không thể tải danh sách hồ sơ.';
+        console.error('Error loading applications:', errorMsg);
+        setError(errorMsg);
+        message.error(errorMsg);
       }
     } catch (err: any) {
-      setError(err.message || 'Đã xảy ra lỗi khi tải dữ liệu.');
-      message.error(err.message || 'Đã xảy ra lỗi khi tải dữ liệu.');
+      const errorMsg = err.message || 'Đã xảy ra lỗi khi tải dữ liệu.';
+      console.error('Exception when loading applications:', err);
+      setError(errorMsg);
+      message.error(errorMsg);
     } finally {
       setLoading(false);
     }

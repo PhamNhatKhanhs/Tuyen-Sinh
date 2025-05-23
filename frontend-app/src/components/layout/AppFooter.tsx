@@ -169,7 +169,7 @@ const AppFooter = () => {
             </Col>
             <Col xs={24} md={12} className="footer-credits">
               <Text className="credits-text">
-                Phát triển bởi <span className="highlight">Nhóm Sinh Viên Pro Coders</span>
+                Phát triển bởi <span className="highlight">Nhóm Sinh Viên UDU</span>
               </Text>
             </Col>
           </Row>

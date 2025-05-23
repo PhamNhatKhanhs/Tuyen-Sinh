@@ -1,25 +1,25 @@
 import React from 'react';
-import { Typography, Button, Row, Col, Card, Avatar, Statistic, Space, Badge } from 'antd';
+import { Typography, Button, Row, Col, Avatar, Space, Badge } from 'antd';
 import './HomePage.css';
 import './BorderStyles.css';
 import './HeroSection.css';
 import './ElegantStyles.css';
 import { useNavigate } from 'react-router-dom';
 import { 
-    ArrowRightOutlined, FormOutlined, DashboardOutlined, ReadOutlined, 
-    CheckCircleOutlined, TeamOutlined, MessageOutlined, StarFilled, LikeOutlined,
+    ArrowRightOutlined, FormOutlined, 
     BookOutlined, 
-    SafetyCertificateOutlined, RiseOutlined,
-    BankOutlined, SolutionOutlined, LoginOutlined, SnippetsOutlined,
-    InfoCircleOutlined, QuestionCircleOutlined, CalendarOutlined, GlobalOutlined,
-    MailOutlined, PhoneOutlined, EnvironmentOutlined
+    BankOutlined, SolutionOutlined, 
+    CalendarOutlined, 
+    EnvironmentOutlined,
+    GlobalOutlined,
+    StarFilled
 } from '@ant-design/icons';
 import { useAppSelector } from '../store/hooks';
 import { selectIsAuthenticated, selectUser, User } from '../features/auth/store/authSlice';
 import { 
-    Briefcase, BookOpen, Users, ShieldCheck, Zap, Award, TrendingUp, MessageSquare, 
-    Users2, Target, BarChart2, Newspaper, MessageCircleQuestion, GraduationCap, 
-    BookOpenCheck, ChevronRight, Sparkles, Crown, Flame, Star 
+    BookOpen, ShieldCheck, Zap, Award, TrendingUp, 
+    Target, BarChart2, Newspaper, MessageCircleQuestion, 
+    ChevronRight, Sparkles, Star, Users, Crown, Briefcase, GraduationCap
 } from 'lucide-react';
 import Banner from '../components/banner/Banner'; 
 
@@ -35,32 +35,49 @@ interface BenefitCardProps {
 }
 const BenefitCard: React.FC<BenefitCardProps> = ({ icon, title, description, colorClass, accentColor = 'from-pink-500 to-rose-500' }) => (
   <div className="group relative overflow-hidden rounded-xl h-full">
-    <div className={`absolute inset-0 bg-gradient-to-br ${accentColor} opacity-5 group-hover:opacity-10 transition-opacity duration-700`}></div>
-    <div style={{ border: '1px solid #f3e8ff', borderRadius: '12px', padding: '1.5rem', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)' }} className="relative bg-white p-6 transition-all duration-500 transform hover:-translate-y-2 hover:scale-102 h-full flex flex-col">
-      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
+    {/* Enhanced background gradient with better opacity transitions */}
+    <div className={`absolute inset-0 bg-gradient-to-br ${accentColor} opacity-5 group-hover:opacity-15 transition-all duration-700`}></div>
+    
+    {/* Main card with glass morphism effect */}
+    <div className="relative bg-white/90 backdrop-blur-sm p-8 rounded-xl h-full flex flex-col border border-white/80 shadow-xl transition-all duration-500 group-hover:shadow-2xl">
+      {/* Sparkle effects on hover with improved positioning */}
+      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-700 transform rotate-0 group-hover:rotate-45">
         <Sparkles className="text-pink-400 w-6 h-6 animate-pulse" />
       </div>
-      <div className="absolute bottom-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 delay-300"> {/* Cần Tailwind plugin cho delay nếu không có sẵn */}
+      <div className="absolute bottom-4 left-4 opacity-0 group-hover:opacity-100 transition-all duration-700 delay-300"> 
         <Sparkles className="text-purple-400 w-4 h-4 animate-bounce" />
       </div>
-      <div className="absolute -inset-1 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-3xl opacity-0 group-hover:opacity-20 blur-xl transition-all duration-1000"></div>
-      <div className="relative z-10 mx-auto mb-6">
-        <div className={`w-24 h-24 rounded-2xl flex items-center justify-center text-white shadow-2xl ${colorClass || 'bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500'} group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 relative overflow-hidden`}>
+      
+      {/* Enhanced glow effect on hover */}
+      <div className="absolute -inset-1 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-3xl opacity-0 group-hover:opacity-30 blur-xl transition-all duration-700"></div>
+      
+      {/* Icon container with improved visual effects */}
+      <div className="relative z-10 mx-auto mb-8">
+        <div className={`w-28 h-28 rounded-2xl flex items-center justify-center text-white shadow-2xl ${colorClass || 'bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500'} group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 relative overflow-hidden`}>
+          {/* Inner glow effect */}
           <div className="absolute inset-0 bg-white/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <div className="text-4xl relative z-10">{icon}</div>
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+          
+          {/* Icon with enhanced size */}
+          <div className="text-5xl relative z-10 transform transition-transform duration-500 group-hover:scale-110">{icon}</div>
+          
+          {/* Shine effect animation */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
         </div>
       </div>
+      
+      {/* Content with improved typography and spacing */}
       <div className="relative z-10 text-center flex-grow">
-        <Title level={4} className="!text-xl !font-bold !mb-4 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-pink-500 group-hover:to-purple-500 group-hover:bg-clip-text transition-all duration-500">
+        <Title level={4} className="!text-2xl !font-bold !mb-4 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-pink-500 group-hover:to-purple-500 group-hover:bg-clip-text transition-all duration-500">
           {title}
         </Title>
         <Paragraph className="text-gray-600 text-base leading-relaxed group-hover:text-gray-700">
           {description}
         </Paragraph>
       </div>
-      <div className="absolute -top-6 -right-6 w-20 h-20 bg-gradient-to-br from-pink-200/30 to-purple-200/30 rounded-full group-hover:scale-150 group-hover:rotate-180 transition-all duration-1000"></div>
-      <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-br from-blue-200/30 to-indigo-200/30 rounded-full group-hover:scale-125 group-hover:-rotate-90 transition-all duration-1000 delay-200"></div> {/* Cần Tailwind plugin cho delay */}
+      
+      {/* Enhanced decorative elements with better positioning and animations */}
+      <div className="absolute -top-8 -right-8 w-24 h-24 bg-gradient-to-br from-pink-200/40 to-purple-200/40 rounded-full group-hover:scale-[2] group-hover:rotate-180 transition-all duration-1000"></div>
+      <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-gradient-to-br from-blue-200/40 to-indigo-200/40 rounded-full group-hover:scale-[1.75] group-hover:-rotate-90 transition-all duration-1000 delay-200"></div>
     </div>
   </div>
 );
@@ -278,7 +295,7 @@ const HomePage: React.FC = () => {
     { title: 'Trường Đại Học', value: "200+", icon: <BankOutlined />, iconColor: 'text-blue-600', bgGradient: 'from-blue-400 to-cyan-400' },
     { title: 'Ngành Tuyển Sinh', value: "1,500+", icon: <SolutionOutlined />, iconColor: 'text-green-600', bgGradient: 'from-green-400 to-emerald-400' },
     { title: 'Hồ Sơ Đã Nộp', value: "50K+", icon: <FormOutlined />, iconColor: 'text-purple-600', bgGradient: 'from-purple-400 to-violet-400' },
-    { title: 'Thí Sinh Tin Dùng', value: "100K+", icon: <Users2 />, iconColor: 'text-orange-600', bgGradient: 'from-orange-400 to-red-400' },
+    { title: 'Thí Sinh Tin Dùng', value: "100K+", icon: <Users />, iconColor: 'text-orange-600', bgGradient: 'from-orange-400 to-red-400' },
   ];
 
   const whyChooseUsItems = [
@@ -318,22 +335,12 @@ const HomePage: React.FC = () => {
       
       {/* Modern Header with Pastel Gradient and Dot Pattern */}
       <section className="modern-header-background">
-        {/* Floating decorative elements */}
-        <div className="floating-element"></div>
-        <div className="floating-element"></div>
-        <div className="floating-element"></div>
+        {/* Header content */}
         
         <div className="header-content">
           <Row align="middle" className="w-full max-w-7xl mx-auto">
             <Col xs={24} lg={12} className="text-center lg:text-left">
-              <div className="mb-6 w-full max-w-full">
-                <Badge count={<Flame size={14} className="mr-1" />} className="custom-hero-badge w-full">
-                  <div className="inline-flex items-center px-6 py-3 rounded-full text-sm font-bold bg-white text-indigo-600 shadow-lg hover:shadow-indigo-100/50 transition-all duration-500 transform hover:scale-105 border border-indigo-100 w-auto max-w-full">
-                    <Flame size={18} className="mr-2 text-indigo-500 flex-shrink-0" />
-                    <span style={{ whiteSpace: 'normal', wordWrap: 'break-word', display: 'inline-block', maxWidth: '100%', overflow: 'visible', textOverflow: 'ellipsis' }}>Hệ thống tuyển sinh thông minh {new Date().getFullYear() + 1}</span>
-                  </div>
-                </Badge>
-              </div>
+
               
               <Title level={1} className="header-title !text-5xl lg:!text-6xl !font-black !mb-6 !leading-tight">
                 Nộp Hồ Sơ Đại Học{' '}
@@ -351,7 +358,7 @@ const HomePage: React.FC = () => {
                   type="primary" 
                   size="large"
                   className="!h-auto !px-8 !py-3 !text-base !font-medium bg-gradient-to-r from-indigo-500 to-purple-500 border-none shadow-lg hover:shadow-xl transition-all duration-300"
-                  onClick={() => navigate('/truong-dai-hoc')}
+                  onClick={() => navigate('/university')}
                 >
                   <span className="flex items-center">
                     <BankOutlined className="mr-2" />
@@ -379,12 +386,7 @@ const HomePage: React.FC = () => {
                     alt="Sinh viên đại học" 
                     className="rounded-lg"
                   />
-                  <div className="absolute -bottom-4 -right-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
-                    <div className="flex items-center">
-                      <Crown className="mr-2" />
-                      Top 10 Trường Đại Học
-                    </div>
-                  </div>
+
                 </div>
                 <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-r from-indigo-200/40 to-purple-200/40 rounded-full blur-2xl z-0"></div>
               </div>
@@ -621,37 +623,74 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Benefits Section - Clean Design */}
-      <section className="py-20 lg:py-28 relative overflow-hidden" style={{ border: '2px solid #e9d5ff', borderRadius: '16px', margin: '3rem 2rem', backgroundColor: 'white', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)' }}>
-        {/* Background Elements */}
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 z-0"></div>
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 opacity-70"></div>
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 opacity-70"></div>
+      {/* Benefits Section - Enhanced Modern Design */}
+      <section className="py-20 lg:py-28 relative overflow-hidden" style={{ margin: '5rem 2rem', backgroundColor: 'transparent' }}>
+        {/* Background Elements - Animated Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/80 via-purple-50/80 to-pink-50/80 z-0 animate-gradientShift" style={{ backgroundSize: '200% 200%' }}></div>
         
-        {/* Decorative Elements */}
-        <div className="absolute -top-20 -right-20 w-80 h-80 bg-gradient-to-br from-purple-200/20 to-pink-200/20 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-20 w-96 h-96 bg-gradient-to-br from-blue-200/20 to-indigo-200/20 rounded-full blur-3xl"></div>
+        {/* Decorative Elements - Enhanced with Animation */}
+        <div className="absolute -top-20 -right-20 w-96 h-96 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full blur-3xl animate-float" style={{ animationDuration: '15s' }}></div>
+        <div className="absolute -bottom-40 -left-20 w-112 h-112 bg-gradient-to-br from-blue-200/30 to-indigo-200/30 rounded-full blur-3xl animate-floatSlow" style={{ animationDuration: '20s', animationDelay: '2s' }}></div>
+        <div className="absolute top-1/3 left-1/4 w-24 h-24 bg-gradient-to-br from-pink-200/40 to-purple-200/40 rounded-full blur-xl animate-pulse" style={{ animationDuration: '4s' }}></div>
+        <div className="absolute bottom-1/3 right-1/4 w-16 h-16 bg-gradient-to-br from-indigo-200/40 to-blue-200/40 rounded-full blur-lg animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }}></div>
         
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-3xl mx-auto text-center mb-16">
-            <Badge count={<Crown size={16} className="text-yellow-500" />} className="mb-6">
-              <span className="text-sm font-semibold text-indigo-600 uppercase tracking-wider px-4 py-2 bg-indigo-50 rounded-full">Đặc quyền dành cho bạn</span>
-            </Badge>
-            <Title level={2} className="!text-4xl md:!text-5xl !font-extrabold !text-gray-800 !mb-6 !leading-tight">
-              Lợi Ích <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">Vượt Trội</span>
-            </Title>
-            <Paragraph className="text-lg text-gray-600 max-w-2xl mx-auto">
+            {/* Enhanced Badge with Animation */}
+            <div className="inline-block relative mb-8 animate-fadeInUp" style={{ animationDuration: '0.8s' }}>
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 opacity-20 blur-md rounded-full"></div>
+              <Badge 
+                count={
+                  <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full shadow-lg animate-pulse" style={{ animationDuration: '3s' }}>
+                    <Crown size={16} className="text-white" />
+                  </div>
+                } 
+                className="custom-hero-badge"
+                offset={[0, 0]}
+              >
+                <span className="text-sm font-semibold text-indigo-700 uppercase tracking-wider px-6 py-3 bg-white rounded-full border border-indigo-100 shadow-sm flex items-center gap-2">
+                  <span className="inline-block w-2 h-2 bg-indigo-500 rounded-full"></span>
+                  Đặc quyền dành cho bạn
+                  <span className="inline-block w-2 h-2 bg-indigo-500 rounded-full"></span>
+                </span>
+              </Badge>
+            </div>
+            
+            {/* Enhanced Title with Animation */}
+            <div className="animate-fadeInUp" style={{ animationDuration: '1s', animationDelay: '0.2s' }}>
+              <Title level={2} className="!text-5xl md:!text-6xl !font-extrabold !text-gray-800 !mb-6 !leading-tight relative inline-block">
+                <span className="relative z-10">Lợi Ích</span>{' '}
+                <span className="relative">
+                  <span className="absolute -inset-1 bg-gradient-to-r from-purple-400/20 to-pink-400/20 blur-lg rounded-lg"></span>
+                  <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 animate-shimmer" style={{ backgroundSize: '200% 100%', animationDuration: '3s' }}>Vượt Trội</span>
+                </span>
+              </Title>
+            </div>
+            
+            {/* Enhanced Description with Animation */}
+            <Paragraph className="text-xl text-gray-600 max-w-2xl mx-auto animate-fadeInUp" style={{ animationDuration: '1.2s', animationDelay: '0.4s' }}>
               Chúng tôi không chỉ giúp bạn nộp hồ sơ, mà còn mang đến những giá trị cộng thêm độc đáo và hữu ích cho hành trình học tập của bạn.
             </Paragraph>
           </div>
           
-          <Row gutter={[32, 32]} className="items-stretch">
-            {benefitsData.map((item, index) => (
-              <Col xs={24} sm={12} lg={6} key={index}>
-                <BenefitCard {...item} />
-              </Col>
-            ))}
-          </Row>
+          {/* Enhanced Benefits Card Layout */}
+          <div className="relative">
+            {/* Connecting line between cards */}
+            <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-purple-200 to-transparent hidden lg:block"></div>
+            
+            <Row gutter={[32, 32]} className="items-stretch">
+              {benefitsData.map((item, index) => (
+                <Col xs={24} sm={12} lg={6} key={index} className="animate-fadeInUp" style={{ animationDuration: '1.5s', animationDelay: `${0.2 + index * 0.2}s` }}>
+                  <div className="group relative h-full transform transition-all duration-500 hover:translate-y-[-8px]">
+                    {/* Card highlight effect on hover */}
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl opacity-0 group-hover:opacity-100 blur transition duration-1000 group-hover:duration-200"></div>
+                    
+                    <BenefitCard {...item} />
+                  </div>
+                </Col>
+              ))}
+            </Row>
+          </div>
           
           {/* Banner giữa trang - Trường đại học nổi bật */}
           <div className="mt-20 mb-10">

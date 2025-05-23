@@ -141,7 +141,7 @@ const Banner: React.FC<BannerProps> = ({ items }) => {
                     </Button>
                     <Button 
                       size="large"
-                      href="/danh-sach-truong"
+                      href="/universities"
                       className="banner-button banner-button-secondary"
                     >
                       Xem tất cả trường

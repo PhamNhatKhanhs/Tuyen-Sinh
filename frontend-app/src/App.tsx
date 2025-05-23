@@ -1,4 +1,5 @@
 import React, { Suspense, lazy, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
@@ -18,6 +19,7 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const CandidateDashboardPage = lazy(() => import('./features/candidate/pages/CandidateDashboardPage'));
 const CandidateSubmitApplicationPage = lazy(() => import('./features/candidate/pages/CandidateSubmitApplicationPage'));
 const CandidateViewApplicationsPage = lazy(() => import('./features/candidate/pages/CandidateViewApplicationsPage'));
+const CandidateProfilePage = lazy(() => import('./features/candidate/pages/CandidateProfilePage'));
 
 // Admin Pages
 const AdminDashboardPage = lazy(() => import('./features/admin/pages/AdminDashboardPage'));
@@ -83,6 +85,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['candidate']}>
                 <CandidateViewApplicationsPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/candidate/profile" 
+            element={
+              <ProtectedRoute allowedRoles={['candidate']}>
+                <CandidateProfilePage />
               </ProtectedRoute>
             } 
           />
