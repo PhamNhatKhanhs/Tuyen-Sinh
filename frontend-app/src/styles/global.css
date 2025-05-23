@@ -1,23 +1,25 @@
-/* Import Google Fonts: Poppins (ví dụ: 300, 400, 500, 600, 700, 800) và Open Sans (ví dụ: 400, 600, 700) */
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+/* Import Be Vietnam Pro font (Regular and Bold) */
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 html {
-  font-family: 'Open Sans', system-ui, sans-serif; /* Font mặc định cho body */
+  font-family: 'Be Vietnam Pro', system-ui, sans-serif; /* Font mặc định cho body - Be Vietnam Pro Regular */
   font-feature-settings: 'liga' 1, 'calt' 1; 
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
+  font-weight: 400;
 }
 body { @apply text-neutral-700 bg-neutral-100; }
 
 
-/* Áp dụng Poppins cho các tiêu đề và các thành phần UI quan trọng */
+/* Áp dụng Be Vietnam Pro Bold cho các tiêu đề và các thành phần UI quan trọng */
 h1, h2, h3, h4, h5, h6, .font-heading {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-weight: 700;
 }
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 
@@ -104,10 +106,11 @@ h1, h2, h3, h4, h5, h6, .font-heading {
     font-family: 'Poppins', sans-serif !important;
 }
 .info-card-ptit .ant-typography { /* Đảm bảo Typography trong card dùng font body */
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: 'Be Vietnam Pro', sans-serif !important;
 }
-.info-card-ptit .ant-typography strong, .info-card-ptit .ant-typography h4 { /* Tiêu đề trong card dùng Poppins */
-    font-family: 'Poppins', sans-serif !important;
+.info-card-ptit .ant-typography strong, .info-card-ptit .ant-typography h4 { /* Tiêu đề trong card dùng Be Vietnam Pro Bold */
+    font-family: 'Be Vietnam Pro', sans-serif !important;
+    font-weight: 700;
 }
 
 
@@ -116,22 +119,23 @@ h1, h2, h3, h4, h5, h6, .font-heading {
    @apply shadow-header; 
 }
 .ant-card-head-title, .ant-modal-title .ant-typography {
-    font-family: 'Poppins', sans-serif !important; /* Tiêu đề Card, Modal dùng Poppins */
+    font-family: 'Be Vietnam Pro', sans-serif !important; /* Tiêu đề Card, Modal dùng Be Vietnam Pro */
     font-weight: 600 !important;
 }
 .ant-table-thead > tr > th {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Be Vietnam Pro', sans-serif;
     @apply font-semibold text-neutral-600; 
 }
 .ant-btn, .ant-select-selection-item, .ant-select-item-option-content, .ant-menu-title-content, .ant-dropdown-menu-title-content {
-    font-family: 'Poppins', sans-serif; /* Các nút, select, menu item dùng Poppins */
+    font-family: 'Be Vietnam Pro', sans-serif; /* Các nút, select, menu item dùng Be Vietnam Pro */
     @apply font-medium; 
 }
 .ant-typography, .ant-form-item-label > label, .ant-table-tbody, .ant-descriptions-item-label, .ant-descriptions-item-content, .ant-list-item-meta-description, .ant-message-notice-content {
-    font-family: 'Open Sans', sans-serif; /* Nội dung thường dùng Open Sans */
+    font-family: 'Be Vietnam Pro', sans-serif; /* Nội dung thường dùng Open Sans */
 }
 .ant-typography strong, .ant-typography b, .ant-typography h1, .ant-typography h2, .ant-typography h3, .ant-typography h4, .ant-typography h5, .ant-typography h6 {
-    font-family: 'Poppins', sans-serif !important; /* Các thẻ strong, h trong Typography dùng Poppins */
+    font-family: 'Be Vietnam Pro', sans-serif !important; /* Các thẻ strong, h trong Typography dùng Be Vietnam Pro Bold */
+    font-weight: 700;
 }
 .framed-feature-card {
   @apply bg-white rounded-xl shadow-lg p-6 md:p-8 h-full flex flex-col items-center text-center transition-all duration-300 ease-in-out;
