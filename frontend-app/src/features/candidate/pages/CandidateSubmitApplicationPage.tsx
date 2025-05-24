@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react'; // useCallback được thêm vào
+import React, { useState, useEffect, useCallback } from 'react';
 import {
-  Typography, Form, Input, Button, Select, DatePicker, Upload, Alert, Steps, Card, Row, Col, Spin, message, InputNumber, Modal // Bỏ Checkbox nếu không dùng
+  Typography, Form, Input, Button, Select, DatePicker, Upload, Alert, Steps, Card, Row, Col, Spin, message, InputNumber, Modal
 } from 'antd';
 import {
   InboxOutlined, UserOutlined, IdcardOutlined, BookOutlined, EnvironmentOutlined, PhoneOutlined, MailOutlined,
@@ -21,7 +21,7 @@ import { MajorFE } from '../../major/types';
 import { AdmissionMethodFE } from '../../admissionMethod/types';
 import { SubjectGroupFE } from '../../subjectGroup/types';
 import { UploadedFileResponse } from '../../upload/types';
-import { useAppDispatch } from '../../../store/hooks'; // Giữ lại nếu bạn có dispatch action
+import { useAppDispatch } from '../../../store/hooks';
 
 
 const { Title: AntTitle, Paragraph: AntParagraph, Text: AntText } = Typography;
@@ -49,9 +49,8 @@ interface FullApplicationData {
   personalInfo: PersonalInfo; 
   academicInfo: AcademicInfo; 
   applicationChoice: ApplicationChoice; 
-  // examScores đã nằm trong academicInfo
   documentIds?: string[];
-  currentDocumentType?: string; // Trường tạm để chọn loại giấy tờ khi upload
+  currentDocumentType?: string; 
 }
 const priorityAreas = [
     { value: 'KV1', label: 'Khu vực 1 (KV1)' }, { value: 'KV2', label: 'Khu vực 2 (KV2)' },
@@ -63,7 +62,7 @@ const priorityObjects = [
 ];
 const currentAcademicYear = new Date().getFullYear();
 const highSchoolGraduationYears = Array.from({ length: 10 }, (_, i) => currentAcademicYear - i).map(String);
-const admissionYears = Array.from({ length: 3 }, (_, i) => currentAcademicYear + i -1 ).map(year => ({ label: year.toString(), value: year })); // Năm hiện tại, trước, sau
+const admissionYears = Array.from({ length: 3 }, (_, i) => currentAcademicYear + i -1 ).map(year => ({ label: year.toString(), value: year }));
 
 
 const getBase64 = (file: RcFile): Promise<string> =>
@@ -77,7 +76,7 @@ const getBase64 = (file: RcFile): Promise<string> =>
 const CandidateSubmitApplicationPage: React.FC = () => {
     const [currentStep, setCurrentStep] = useState(0);
     const [form] = Form.useForm<FullApplicationData>();
-    const dispatch = useAppDispatch(); // Giữ lại nếu bạn có dispatch action
+    const dispatch = useAppDispatch();
 
     const [universities, setUniversities] = useState<UniversityFE[]>([]);
     const [majors, setMajors] = useState<MajorFE[]>([]);
@@ -90,7 +89,6 @@ const CandidateSubmitApplicationPage: React.FC = () => {
     const [loadingAdmissionInfo, setLoadingAdmissionInfo] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Sử dụng Form.useWatch để theo dõi thay đổi một cách "reactive" hơn
     const watchedUniversityId = Form.useWatch(['applicationChoice', 'universityId'], form);
     const watchedMajorId = Form.useWatch(['applicationChoice', 'majorId'], form);
     const watchedAdmissionMethodId = Form.useWatch(['applicationChoice', 'admissionMethodId'], form);
@@ -119,7 +117,6 @@ const CandidateSubmitApplicationPage: React.FC = () => {
         fetchUniversities();
     }, []);
 
-    // Effect khi Trường Đại học thay đổi
     useEffect(() => {
         setMajors([]); 
         setAdmissionMethods([]); 
@@ -127,12 +124,12 @@ const CandidateSubmitApplicationPage: React.FC = () => {
         setCurrentSubjectsForScores([]);
         form.setFieldsValue({
             applicationChoice: { 
-                ...form.getFieldValue(['applicationChoice']), // Giữ lại year nếu đã chọn
+                ...(form.getFieldValue(['applicationChoice']) || { year: currentAcademicYear }), // Giữ lại year, nếu chưa có thì đặt mặc định
                 majorId: undefined, 
                 admissionMethodId: undefined, 
                 subjectGroupId: undefined, 
             },
-            academicInfo: { ...form.getFieldValue(['academicInfo']), examScores: {} }
+            academicInfo: { ...(form.getFieldValue(['academicInfo']) || {}), examScores: {} }
         });
         if (watchedUniversityId) {
             const fetchMajors = async () => {
@@ -146,12 +143,11 @@ const CandidateSubmitApplicationPage: React.FC = () => {
         }
     }, [watchedUniversityId, form]);
 
-    // Effect khi Ngành học hoặc Năm thay đổi
     useEffect(() => {
         setAdmissionMethods([]); setSubjectGroups([]); setCurrentSubjectsForScores([]);
         form.setFieldsValue({
             applicationChoice: { ...form.getFieldValue(['applicationChoice']), admissionMethodId: undefined, subjectGroupId: undefined },
-            academicInfo: { ...form.getFieldValue(['academicInfo']), examScores: {} }
+            academicInfo: { ...(form.getFieldValue(['academicInfo']) || {}), examScores: {} }
         });
         const currentSelectedYear = watchedYear || form.getFieldValue(['applicationChoice', 'year']) || currentAcademicYear;
         if (watchedMajorId && currentSelectedYear) {
@@ -163,9 +159,11 @@ const CandidateSubmitApplicationPage: React.FC = () => {
                     const uniqueMethods: AdmissionMethodFE[] = [];
                     const methodMap = new Map<string, AdmissionMethodFE>();
                     links.forEach(link => {
-                        if (link.admissionMethod && !methodMap.has(link.admissionMethod.id)) {
-                            methodMap.set(link.admissionMethod.id, link.admissionMethod);
-                            uniqueMethods.push(link.admissionMethod);
+                        if (link.admissionMethod && link.admissionMethod.id && link.admissionMethod.id !== 'N/A_METHOD' && link.admissionMethod.id !== 'N/A_UNKNOWN_METHOD') {
+                            if (!methodMap.has(link.admissionMethod.id)) {
+                                methodMap.set(link.admissionMethod.id, link.admissionMethod);
+                                uniqueMethods.push(link.admissionMethod);
+                            }
                         }
                     });
                     setAdmissionMethods(uniqueMethods);
@@ -178,12 +176,11 @@ const CandidateSubmitApplicationPage: React.FC = () => {
         }
     }, [watchedMajorId, watchedYear, form]);
 
-    // Effect khi Phương thức xét tuyển hoặc Năm thay đổi
     useEffect(() => {
         setSubjectGroups([]); setCurrentSubjectsForScores([]);
          form.setFieldsValue({
             applicationChoice: { ...form.getFieldValue(['applicationChoice']), subjectGroupId: undefined },
-            academicInfo: { ...form.getFieldValue(['academicInfo']), examScores: {} }
+            academicInfo: { ...(form.getFieldValue(['academicInfo']) || {}), examScores: {} }
         });
         const currentSelectedYear = watchedYear || form.getFieldValue(['applicationChoice', 'year']) || currentAcademicYear;
         if (watchedMajorId && watchedAdmissionMethodId && currentSelectedYear) {
@@ -198,9 +195,11 @@ const CandidateSubmitApplicationPage: React.FC = () => {
                     const uniqueGroups: SubjectGroupFE[] = [];
                     const groupMap = new Map<string, SubjectGroupFE>();
                      response.data.forEach(link => {
-                        if (link.subjectGroup && !groupMap.has(link.subjectGroup.id)) {
-                            groupMap.set(link.subjectGroup.id, link.subjectGroup);
-                            uniqueGroups.push(link.subjectGroup);
+                        if (link.subjectGroup && link.subjectGroup.id && link.subjectGroup.id !== 'N/A_GROUP_OR_NONE' && link.subjectGroup.id !== 'N/A_UNKNOWN_GROUP') {
+                            if (!groupMap.has(link.subjectGroup.id)) {
+                                groupMap.set(link.subjectGroup.id, link.subjectGroup);
+                                uniqueGroups.push(link.subjectGroup);
+                            }
                         }
                     });
                     setSubjectGroups(uniqueGroups);
@@ -213,17 +212,17 @@ const CandidateSubmitApplicationPage: React.FC = () => {
         }
     }, [watchedAdmissionMethodId, watchedMajorId, watchedYear, form]); 
     
-    // Effect khi Tổ hợp xét tuyển thay đổi
     useEffect(() => { 
+        const currentAcademicInfo = form.getFieldValue(['academicInfo']) || {};
         if (watchedSubjectGroupId) {
             const group = subjectGroups.find(g => g.id === watchedSubjectGroupId);
             setCurrentSubjectsForScores(group?.subjects || []);
             const initialScores: { [subjectName: string]: number | undefined } = {};
             (group?.subjects || []).forEach(sub => initialScores[sub] = undefined);
-            form.setFieldsValue({ academicInfo: { ...form.getFieldValue(['academicInfo']), examScores: initialScores }});
+            form.setFieldsValue({ academicInfo: { ...currentAcademicInfo, examScores: initialScores }});
         } else {
             setCurrentSubjectsForScores([]);
-            form.setFieldsValue({ academicInfo: { ...form.getFieldValue(['academicInfo']), examScores: {} }});
+            form.setFieldsValue({ academicInfo: { ...currentAcademicInfo, examScores: {} }});
         }
     }, [watchedSubjectGroupId, subjectGroups, form]);
 
@@ -258,30 +257,41 @@ const CandidateSubmitApplicationPage: React.FC = () => {
         return isJpgOrPngOrPdf && isLt5M;
     };
     const onFinish = async (values: FullApplicationData) => {
+        console.log('Form values on submit:', values);
         setIsSubmitting(true);
         try {
+            const academicInfoForSubmit = values.academicInfo || { examScores: {} };
             const applicationDataToSubmit = {
                 personalInfo: values.personalInfo,
-                academicInfo: values.academicInfo,
+                academicInfo: academicInfoForSubmit,
                 applicationChoice: values.applicationChoice,
-                examScores: values.academicInfo.examScores,
+                examScores: academicInfoForSubmit.examScores || {},
                 documentIds: uploadedDocumentInfos.map(doc => doc.documentId),
             };
+            
+            console.log('Data to submit to BE:', applicationDataToSubmit);
             const response = await applicationService.submitApplication(applicationDataToSubmit);
+
             if (response.success && response.data) {
                 message.success('Nộp hồ sơ thành công! Mã hồ sơ: ' + response.data._id);
-                setCurrentStep(0); form.resetFields(); setFileList([]); setUploadedDocumentInfos([]);
-                setUniversities([]); setMajors([]); setAdmissionMethods([]); setSubjectGroups([]); setCurrentSubjectsForScores([]);
-                const fetchUniversitiesAgain = async () => {
-                    setLoadingUniversities(true);
-                    const uniResponse = await universityService.getAll({limit: 1000}); 
-                    if (uniResponse.success && uniResponse.data) { setUniversities(uniResponse.data); } 
-                    else { message.error(uniResponse.message || "Lỗi tải danh sách trường."); }
-                    setLoadingUniversities(false);
-                };
-                fetchUniversitiesAgain();
+                setCurrentStep(0); 
+                form.resetFields({
+                    personalInfo: { nationality: 'Việt Nam' }, 
+                    academicInfo: { examScores: {}}, 
+                    applicationChoice: { year: currentAcademicYear } 
+                }); 
+                setFileList([]); 
+                setUploadedDocumentInfos([]);
+                // Không cần reset universities vì nó được fetch 1 lần
+                setMajors([]); 
+                setAdmissionMethods([]); 
+                setSubjectGroups([]); 
+                setCurrentSubjectsForScores([]);
             } else { message.error(response.message || 'Nộp hồ sơ thất bại.'); }
-        } catch (error: any) { message.error(error.message || 'Đã có lỗi xảy ra khi nộp hồ sơ.'); } 
+        } catch (error: any) { 
+            message.error(error.message || 'Đã có lỗi xảy ra khi nộp hồ sơ.'); 
+            console.error("Submit error details:", error);
+        } 
         finally { setIsSubmitting(false); }
     };
     
@@ -326,7 +336,7 @@ const CandidateSubmitApplicationPage: React.FC = () => {
             console.log('Validate Failed:', errorInfo); 
             if (errorInfo.errorFields && errorInfo.errorFields.length > 0) {
                 const firstErrorFieldArray = errorInfo.errorFields[0].name; 
-                const firstErrorFieldName = Array.isArray(firstErrorFieldArray) ? firstErrorFieldArray.join('.') : String(firstErrorFieldArray); // Ensure it's a string
+                const firstErrorFieldName = Array.isArray(firstErrorFieldArray) ? firstErrorFieldArray.join('.') : String(firstErrorFieldArray);
                 const firstErrorMessage = errorInfo.errorFields[0].errors[0];
                 message.error(`Lỗi tại trường "${firstErrorFieldName}": ${firstErrorMessage}. Vui lòng kiểm tra lại.`);
             } else { message.error('Vui lòng kiểm tra lại các thông tin đã nhập.'); }
@@ -437,7 +447,7 @@ const CandidateSubmitApplicationPage: React.FC = () => {
                 Các file phải rõ ràng, định dạng PDF, JPG, PNG và dung lượng không quá 5MB mỗi file.
             </AntParagraph>
             <Form.Item
-                name="currentDocumentType" // Giữ lại trường này để người dùng chọn loại giấy tờ
+                name="currentDocumentType" 
                 label="Loại giấy tờ hiện tại"
                 initialValue="hoc_ba"
                 rules={[{ required: true, message: 'Vui lòng chọn loại giấy tờ!'}]}
@@ -452,7 +462,6 @@ const CandidateSubmitApplicationPage: React.FC = () => {
             </Form.Item>
             <Form.Item 
                 label="Tải lên minh chứng"
-                // Không cần name="documents" ở đây nữa vì ta quản lý file qua uploadedDocumentInfos
             >
                 <Upload.Dragger
                     name="documentFile" 
@@ -509,7 +518,7 @@ const CandidateSubmitApplicationPage: React.FC = () => {
                 <div className="steps-content mb-8 min-h-[300px]">{steps[currentStep].content}</div> 
                 <div className="steps-action flex justify-between items-center"> 
                     <div> 
-                        {currentStep > 0 && ( <Button style={{ margin: '0 8px 0 0' }} onClick={() => prevStep()} size="large">Quay Lại</Button> )} 
+                        {currentStep > 0 && ( <Button style={{ margin: '0 8px 0 0' }} onClick={prevStep} size="large">Quay Lại</Button> )} 
                     </div> 
                     <div> 
                         {currentStep < steps.length - 1 && ( <Button type="primary" onClick={validateAndNextStep} size="large" className="bg-blue-600 hover:bg-blue-700">Tiếp Tục</Button> )} 

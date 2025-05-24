@@ -37,19 +37,20 @@ const LoginPage: React.FC = () => {
 
   const onFinish = async (values: any) => {
     dispatch(loginStart());
-    try {
-      const response = await authService.login(values.email, values.password);
-      // Backend trả về { success: true, token, user }
-      if (response.success && response.token && response.user) {
-        dispatch(loginSuccess({ user: response.user, token: response.token }));
-        // Việc chuyển hướng sẽ được xử lý bởi useEffect ở trên sau khi isAuthenticated thay đổi
-      } else {
-        // Trường hợp response.success là false hoặc thiếu dữ liệu
-        dispatch(loginFailure(response.message || "Đăng nhập thất bại. Dữ liệu trả về không hợp lệ."));
-      }
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || "Đăng nhập thất bại. Vui lòng thử lại.";
-      dispatch(loginFailure(errorMessage));
+    console.log('Login form submitted with:', { email: values.email });
+    
+    const response = await authService.login(values.email, values.password);
+    console.log('Login response received:', response);
+    
+    // Backend trả về { success: true, token, user }
+    if (response.success && response.token && response.user) {
+      console.log('Login successful, dispatching success action');
+      dispatch(loginSuccess({ user: response.user, token: response.token }));
+      // Việc chuyển hướng sẽ được xử lý bởi useEffect ở trên sau khi isAuthenticated thay đổi
+    } else {
+      // Trường hợp response.success là false hoặc thiếu dữ liệu
+      console.log('Login failed, dispatching failure action');
+      dispatch(loginFailure(response.message || "Đăng nhập thất bại. Vui lòng kiểm tra lại email và mật khẩu."));
     }
   };
 

@@ -27,15 +27,17 @@ interface AuthResponse {
 const authService = {
   login: async (email: string, password: string): Promise<AuthResponse> => {
     try {
+      console.log('Attempting login with:', { email });
       const response = await axiosInstance.post<AuthResponse>('/auth/login', { email, password });
+      console.log('Login response:', response.data);
       return response.data;
     } catch (error: any) {
-      // Ném lỗi để component có thể bắt và hiển thị message từ backend
-      // Hoặc xử lý lỗi cụ thể ở đây nếu cần
-      if (error.response && error.response.data) {
-        throw error.response.data; // Ném object lỗi từ backend
-      }
-      throw error; // Ném lỗi chung
+      console.error('Login error:', error);
+      // Return a structured error response instead of throwing
+      return {
+        success: false,
+        message: error.response?.data?.message || error.message || 'Đăng nhập thất bại. Vui lòng thử lại.'
+      };
     }
   },
 

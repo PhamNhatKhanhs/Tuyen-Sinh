@@ -1045,12 +1045,12 @@ const HomePage: React.FC = () => {
       {/* Footer */}
       <footer className="py-12 bg-gray-800 text-gray-400 text-center">
         <div className="container mx-auto px-6">
-          <Paragraph className="!mb-2">
+          {/* <Paragraph className="!mb-2">
             &copy; {new Date().getFullYear()} Hệ Thống Tuyển Sinh Đại Học. All rights reserved.
-          </Paragraph>
+          </Paragraph> */}
           <Paragraph className="text-sm">
-            <AntLink href="/privacy-policy" className="!text-gray-400 hover:!text-white">Chính sách bảo mật</AntLink> | 
-            <AntLink href="/terms-of-service" className="!text-gray-400 hover:!text-white ml-1">Điều khoản dịch vụ</AntLink>
+            {/* <AntLink href="/privacy-policy" className="!text-gray-400 hover:!text-white">Chính sách bảo mật</AntLink> | 
+            <AntLink href="/terms-of-service" className="!text-gray-400 hover:!text-white ml-1">Điều khoản dịch vụ</AntLink> */}
           </Paragraph>
         </div>
       </footer>
