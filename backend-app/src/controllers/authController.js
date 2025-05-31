@@ -95,3 +95,6 @@ exports.getMe = async (req, res, next) => {
         next(error);
     }
 };
+// Update by Pháº¡m Nháº­t KhÃ¡nh - 2025-06-11 02:34
+// feature: Enhanced authController functionality
+
