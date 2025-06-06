@@ -50,7 +50,7 @@ const CandidateProfilePage: React.FC = () => {
   if (!user) {
     return (
       <div className="flex justify-center items-center min-h-[500px]">
-        <Spin size="large" tip="Đang tải thông tin..." />
+        <Spin size="large" />
       </div>
     );
   }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Layout, Menu, Button, Avatar, Dropdown, Badge, List, Typography, Spin, Empty, message, Drawer
@@ -13,7 +13,7 @@ import {
 } from '@ant-design/icons';
 import { Briefcase } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { logout, selectUser, selectIsAuthenticated, User } from '../../features/auth/store/authSlice';
+import { logout, selectUser, selectIsAuthenticated } from '../../features/auth/store/authSlice';
 import notificationService from '../../features/notification/services/notificationService';
 import { NotificationFE } from '../../features/notification/types';
 import dayjs from 'dayjs';
@@ -31,8 +31,14 @@ const MAX_NOTIFICATIONS_IN_DROPDOWN = 7;
 const AppHeader: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const user = useAppSelector(selectUser) as User | null;
+  const user = useAppSelector(selectUser) as any;
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const [notifications, setNotifications] = useState<NotificationFE[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -42,15 +48,23 @@ const AppHeader: React.FC = () => {
 
   const fetchNotifications = useCallback(async (showLoading = true) => {
     if (!isAuthenticated) return;
+    
     if (showLoading) setLoadingNotifications(true);
+    
     try {
-      const response = await notificationService.getMyNotifications({ limit: MAX_NOTIFICATIONS_IN_DROPDOWN, page: 1 });
+      const response = await notificationService.getMyNotifications({ 
+        limit: MAX_NOTIFICATIONS_IN_DROPDOWN, 
+        page: 1 
+      });
+      
       if (response.success && response.data) {
         setNotifications(response.data);
         setUnreadCount(response.data.filter(n => !n.isRead).length);
+      } else {
+        console.error('Failed to fetch notifications:', response.message);
       }
     } catch (error) {
-      console.error("Lỗi tải thông báo:", error);
+      console.error('Error fetching notifications:', error);
     } finally {
       if (showLoading) setLoadingNotifications(false);
     }
@@ -58,15 +72,28 @@ const AppHeader: React.FC = () => {
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout | undefined;
-    if (isAuthenticated) {
+    
+    if (isClient && isAuthenticated) {
+      // Initial fetch
       fetchNotifications();
-      intervalId = setInterval(() => fetchNotifications(false), 60000);
+      
+      // Set up polling interval
+      intervalId = setInterval(() => {
+        fetchNotifications(false);
+      }, 60000); // Poll every minute
     } else {
+      // Clear notifications when user logs out
       setNotifications([]);
       setUnreadCount(0);
     }
-    return () => clearInterval(intervalId);
-  }, [isAuthenticated, fetchNotifications]);
+
+    // Cleanup function
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [isAuthenticated, fetchNotifications, isClient]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -118,43 +145,22 @@ const AppHeader: React.FC = () => {
     },
   ];
 
-  const getMenuItems = (): MenuProps['items'] => {
+  const getMenuItems = (isClient: boolean): MenuProps['items'] => {
     const items: MenuProps['items'] = [
-      { 
-        key: 'home', 
-        icon: <HomeOutlined />, 
-        label: 'Trang Chủ', 
-        onClick: () => handleNavigation('/') 
-      },
-      { 
-        key: 'universities', 
-        icon: <ReadOutlined />, 
-        label: 'Các Trường ĐH', 
-        onClick: () => handleNavigation('/universities') 
-      },
+      { key: 'home', icon: <HomeOutlined />, label: 'Trang Chủ', onClick: () => handleNavigation('/') },
+      { key: 'universities', icon: <ReadOutlined />, label: 'Các Trường ĐH', onClick: () => handleNavigation('/universities') },
     ];
-
-    if (isAuthenticated && user) {
+    if (isClient && isAuthenticated && user) {
       if (user.role === 'admin') {
         items.push(
-          { 
-            key: 'admin-dashboard', 
-            icon: <DashboardOutlined />, 
-            label: 'Bảng Điều Khiển', 
-            onClick: () => handleNavigation('/admin/dashboard') 
-          },
-          {
-            key: 'admin-management',
-            icon: <SettingOutlined />,
-            label: 'Quản Lý Hệ Thống',
-            children: [
+          { key: 'admin-dashboard', icon: <DashboardOutlined />, label: 'Bảng Điều Khiển', onClick: () => handleNavigation('/admin/dashboard') },
+          { key: 'admin-management', icon: <SettingOutlined />, label: 'Quản Lý Hệ Thống', children: [
               { key: 'admin-universities-mng', icon: <BuildOutlined />, label: 'QL Trường ĐH', onClick: () => handleNavigation('/admin/universities') },
               { key: 'admin-majors-mng', icon: <SolutionOutlined />, label: 'QL Ngành Học', onClick: () => handleNavigation('/admin/majors') },
               { key: 'admin-admission-methods-mng', icon: <UnorderedListOutlined />, label: 'QL Phương Thức XT', onClick: () => handleNavigation('/admin/admission-methods') },
               { key: 'admin-subject-groups-mng', icon: <AppstoreAddOutlined />, label: 'QL Tổ Hợp Môn', onClick: () => handleNavigation('/admin/subject-groups') },
               { key: 'admin-admission-links-mng', icon: <LinkOutlined />, label: 'QL Liên Kết Tuyển Sinh', onClick: () => handleNavigation('/admin/admission-links') },
-            ]
-          },
+          ]},
           { key: 'admin-applications', icon: <FileSearchOutlined />, label: 'QL Hồ Sơ Tuyển Sinh', onClick: () => handleNavigation('/admin/applications') },
           { key: 'admin-stats', icon: <BarChartOutlined />, label: 'Thống Kê', onClick: () => handleNavigation('/admin/stats') },
           { key: 'admin-users-mng', icon: <TeamOutlined />, label: 'QL Người Dùng', onClick: () => handleNavigation('/admin/users') },
@@ -167,7 +173,6 @@ const AppHeader: React.FC = () => {
         );
       }
     }
-
     return items;
   };
 
@@ -311,67 +316,61 @@ const AppHeader: React.FC = () => {
           <Menu 
             className="desktop-menu" 
             mode="horizontal" 
-            items={getMenuItems()} 
+            items={getMenuItems(isClient)} 
             selectable={false}
             theme="light"
           />
 
           <div className="header-actions">
-            {isAuthenticated && user && (
-              <div className="notification-container">
-                <Badge count={unreadCount} size="small">
-                  <Button 
-                    type="text" 
-                    shape="circle" 
-                    icon={<BellOutlined />} 
-                    className="notification-button"
-                    onClick={() => setNotificationDropdownVisible(!notificationDropdownVisible)}
-                  />
-                </Badge>
-                {notificationDropdownVisible && (
-                  <div className="notification-dropdown-wrapper">
-                    {notificationMenuOverlay}
+            {isClient ? (
+              <>
+                {isAuthenticated && user && (
+                  <div className="notification-container">
+                    <Badge count={unreadCount} size="small">
+                      <Button 
+                        type="text" 
+                        shape="circle" 
+                        icon={<BellOutlined />} 
+                        className="notification-button"
+                        onClick={() => setNotificationDropdownVisible(!notificationDropdownVisible)}
+                      />
+                    </Badge>
+                    {notificationDropdownVisible && (
+                      <div className="notification-dropdown-wrapper">
+                        {notificationMenuOverlay}
+                      </div>
+                    )}
                   </div>
                 )}
-              </div>
-            )}
 
-            {isAuthenticated && user ? (
-              <Dropdown 
-                menu={{ items: userDropdownItems }} 
-                placement="bottomRight"
-                overlayClassName="user-dropdown-overlay"
-              >
-                <div className="user-info">
-                  <Avatar 
-                    icon={<UserOutlined />} 
-                    className="user-avatar"
-                    size="default"
-                  />
-                  <div className="user-details">
-                    <span className="user-name">{user.fullName || user.email}</span>
-                    <span className="user-role">{user.role === 'admin' ? 'Quản trị viên' : 'Thí sinh'}</span>
+                {isAuthenticated && user ? (
+                  <Dropdown 
+                    menu={{ items: userDropdownItems }} 
+                    placement="bottomRight"
+                    overlayClassName="user-dropdown-overlay"
+                  >
+                    <div className="user-info">
+                      <Avatar icon={<UserOutlined />} className="user-avatar" size="default" />
+                      <div className="user-details">
+                        <span className="user-name">{user.fullName || user.email}</span>
+                        <span className="user-role">{user.role === 'admin' ? 'Quản trị viên' : 'Thí sinh'}</span>
+                      </div>
+                      <DownOutlined className="user-dropdown-arrow" />
+                    </div>
+                  </Dropdown>
+                ) : (
+                  <div className="auth-buttons">
+                    <Button onClick={() => navigate('/login')} className="login-button" icon={<LoginOutlined />}>
+                      Đăng Nhập
+                    </Button>
+                    <Button onClick={() => navigate('/register')} type="primary" className="register-button">
+                      Đăng Ký
+                    </Button>
                   </div>
-                  <DownOutlined className="user-dropdown-arrow" />
-                </div>
-              </Dropdown>
+                )}
+              </>
             ) : (
-              <div className="auth-buttons">
-                <Button 
-                  onClick={() => navigate('/login')} 
-                  className="login-button"
-                  icon={<LoginOutlined />}
-                >
-                  Đăng Nhập
-                </Button>
-                <Button 
-                  onClick={() => navigate('/register')} 
-                  type="primary"
-                  className="register-button"
-                >
-                  Đăng Ký
-                </Button>
-              </div>
+              <div style={{ width: '210px', height: '40px' }} />
             )}
 
             <Button 
@@ -416,7 +415,7 @@ const AppHeader: React.FC = () => {
 
           {/* Navigation Menu */}
           <div className="mobile-navigation">
-            {getMenuItems()?.map(item => renderMobileMenuItem(item))}
+            {getMenuItems(isClient)?.map(item => renderMobileMenuItem(item))}
           </div>
 
           {/* Auth Buttons in Mobile */}

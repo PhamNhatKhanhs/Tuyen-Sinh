@@ -2,6 +2,7 @@ const MajorAdmissionSubjectGroup = require('../models/MajorAdmissionSubjectGroup
 const Major = require('../models/Major');
 const AdmissionMethod = require('../models/AdmissionMethod');
 const SubjectGroup = require('../models/SubjectGroup');
+const mongoose = require('mongoose');
 
 // ADMIN: Tạo liên kết Ngành - Phương thức - Tổ hợp
 exports.linkMajorMethodGroup = async (req, res, next) => {
@@ -46,11 +47,27 @@ exports.getLinks = async (req, res, next) => {
             filter.isActive = true;
         }
 
-        if (majorId) filter.major = majorId;
-        if (admissionMethodId) filter.admissionMethod = admissionMethodId;
-        if (subjectGroupId) filter.subjectGroup = subjectGroupId;
+        if (majorId) {
+            if (!mongoose.Types.ObjectId.isValid(majorId)) {
+                return res.status(400).json({ success: false, message: 'majorId không hợp lệ.' });
+            }
+            filter.major = new mongoose.Types.ObjectId(majorId);
+        }
+        if (admissionMethodId) {
+            if (!mongoose.Types.ObjectId.isValid(admissionMethodId)) {
+                return res.status(400).json({ success: false, message: 'admissionMethodId không hợp lệ.' });
+            }
+            filter.admissionMethod = new mongoose.Types.ObjectId(admissionMethodId);
+        }
+        if (subjectGroupId) {
+            if (!mongoose.Types.ObjectId.isValid(subjectGroupId)) {
+                return res.status(400).json({ success: false, message: 'subjectGroupId không hợp lệ.' });
+            }
+            filter.subjectGroup = new mongoose.Types.ObjectId(subjectGroupId);
+        }
         if (year) filter.year = year;
         
+        console.log('FILTER:', filter);
         let query = MajorAdmissionSubjectGroup.find(filter)
             .populate({
                 path: 'major',
@@ -62,13 +79,16 @@ exports.getLinks = async (req, res, next) => {
 
         // Nếu có universityId, cần filter sâu hơn vì major mới có universityId
         if (universityId && !majorId) { // Chỉ filter theo university nếu majorId chưa được cung cấp
-            const majorsInUniversity = await Major.find({ university: universityId }).select('_id');
+            if (!mongoose.Types.ObjectId.isValid(universityId)) {
+                return res.status(400).json({ success: false, message: 'universityId không hợp lệ.' });
+            }
+            const majorsInUniversity = await Major.find({ university: new mongoose.Types.ObjectId(universityId) }).select('_id');
             const majorIds = majorsInUniversity.map(m => m._id);
             query = query.where('major').in(majorIds);
         }
         
         const links = await query;
-        
+        console.log('RESULT:', links.length, links.map(l => l._id));
         res.status(200).json({ success: true, count: links.length, data: links });
     } catch (error) {
         next(error);

@@ -15,7 +15,8 @@ import {
     StarFilled
 } from '@ant-design/icons';
 import { useAppSelector } from '../store/hooks';
-import { selectIsAuthenticated, selectUser, User } from '../features/auth/store/authSlice';
+import { selectIsAuthenticated, selectUser } from '../features/auth/store/authSlice';
+import type { User } from '../features/auth/types';
 import { 
     BookOpen, ShieldCheck, Zap, Award, TrendingUp, 
     Target, BarChart2, Newspaper, MessageCircleQuestion, 

@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { store } from '../store'; 
+import { store } from '../store';
+import { logout } from '../features/auth/store/authSlice';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'; 
-console.log("API Base URL:", API_BASE_URL); // Để kiểm tra
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -11,11 +11,12 @@ const axiosInstance = axios.create({
   },
 });
 
+// Request interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = store.getState().auth.token; 
+    const token = localStorage.getItem('authToken');
     if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
@@ -24,17 +25,30 @@ axiosInstance.interceptors.request.use(
   }
 );
 
+// Response interceptor
 axiosInstance.interceptors.response.use(
   (response) => response,
-  async (error) => { // Thêm async để có thể dispatch
+  async (error) => {
     const originalRequest = error.config;
-    if (error.response && error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true; // Đánh dấu đã thử lại
-      console.error('Unauthorized access - 401. Token might be expired or invalid.');
-      // Xử lý logout user nếu token hết hạn hoặc không hợp lệ
-      // store.dispatch(logout()); // Cần import action logout và cẩn thận vòng lặp vô hạn
-      // Hoặc chỉ đơn giản là reject để component tự xử lý (ví dụ: redirect về login)
+
+    // Nếu lỗi là 401 và chưa thử refresh token
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      // Nếu là lỗi token hết hạn
+      if (error.response?.data?.message?.includes('Token đã hết hạn')) {
+        // Xóa token và user
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('authUser');
+        
+        // Dispatch action logout
+        store.dispatch(logout());
+        
+        // Chuyển hướng về trang login
+        window.location.href = '/login';
+      }
     }
+
     return Promise.reject(error);
   }
 );

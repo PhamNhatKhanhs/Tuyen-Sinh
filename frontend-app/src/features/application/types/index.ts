@@ -3,7 +3,7 @@ import { MajorFE } from '../../major/types';
 import { AdmissionMethodFE } from '../../admissionMethod/types';
 import { SubjectGroupFE } from '../../subjectGroup/types';
 import { UploadedFileResponse } from '../../upload/types';
-import { User } from '../../auth/store/authSlice';
+import type { User } from '../../auth/types';
 
 export interface CandidateProfileSnapshot { // Định nghĩa rõ hơn cho snapshot
   fullName?: string;

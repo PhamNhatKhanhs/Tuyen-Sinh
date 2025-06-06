@@ -15,7 +15,7 @@ import dayjs from 'dayjs';
 import applicationAdminService from '../services/applicationAdminService';
 import { ApplicationAdminListItemFE, ApplicationDetailBE, CandidateProfileSnapshot } from '../../application/types';
 import { UploadedFileResponse } from '../../upload/types';
-import { User } from '../../auth/store/authSlice';
+import type { User } from '../../auth/types';
 
 import universityAdminService from '../services/universityAdminService';
 import majorAdminService from '../services/majorAdminService';
@@ -103,7 +103,7 @@ const AdminManageApplications: React.FC = () => {
         year: filters.year,
         dateFrom: filters.dateRange?.[0]?.startOf('day').toISOString(), // Bắt đầu ngày
         dateTo: filters.dateRange?.[1]?.endOf('day').toISOString(),
-        sortBy: 'submissionDate', sortOrder: 'desc',
+        sortBy: 'submissionDate', sortOrder: 'desc' as 'asc' | 'desc' | undefined,
       };
       const response = await applicationAdminService.getAll(params);
       if (response.success && response.data) {
@@ -275,7 +275,7 @@ const AdminManageApplications: React.FC = () => {
         Xem, duyệt và quản lý trạng thái các hồ sơ đăng ký của thí sinh.
       </Paragraph>
       
-      <Card title={<><FilterOutlined /> Bộ lọc hồ sơ</>} className="mb-6 shadow-sm rounded-lg" bordered={false} size="small">
+      <Card title={<><FilterOutlined /> Bộ lọc hồ sơ</>} className="mb-6 shadow-sm rounded-lg" variant="borderless" size="small">
         <Row gutter={[16,16]} align="bottom">
             <Col xs={24} sm={12} md={8} lg={6}>
                 <Form.Item label="Tìm kiếm thí sinh/Mã HS" className="!mb-0">
@@ -303,14 +303,14 @@ const AdminManageApplications: React.FC = () => {
             </Col>
             <Col xs={24} sm={12} md={8} lg={6}>
                 <Form.Item label="Trường ĐH" className="!mb-0">
-                <Select placeholder="Tất cả trường" style={{ width: '100%' }} allowClear value={filters.universityId} onChange={value => handleFilterSelectChange('universityId', value)} loading={loadingFilterData && universitiesForFilter.length === 0} showSearch filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}>
+                <Select placeholder="Tất cả trường" style={{ width: '100%' }} allowClear value={filters.universityId} onChange={value => handleFilterSelectChange('universityId', value)} loading={loadingFilterData && universitiesForFilter.length === 0} showSearch filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())}>
                     {universitiesForFilter.map(u => <Option key={u.id} value={u.id} label={u.name}>{u.name} ({u.code})</Option>)}
                 </Select>
                 </Form.Item>
             </Col>
             <Col xs={24} sm={12} md={8} lg={7}>
                  <Form.Item label="Ngành học" className="!mb-0">
-                <Select placeholder="Tất cả ngành" style={{ width: '100%' }} allowClear value={filters.majorId} onChange={value => handleFilterSelectChange('majorId', value)} loading={loadingFilterData && !!filters.universityId} disabled={!filters.universityId} showSearch filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}>
+                <Select placeholder="Tất cả ngành" style={{ width: '100%' }} allowClear value={filters.majorId} onChange={value => handleFilterSelectChange('majorId', value)} loading={loadingFilterData && !!filters.universityId} disabled={!filters.universityId} showSearch filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())}>
                     {majorsForFilter.map(m => <Option key={m.id} value={m.id} label={m.name}>{m.name} ({m.code})</Option>)}
                 </Select>
                 </Form.Item>
@@ -357,7 +357,7 @@ const AdminManageApplications: React.FC = () => {
         width={900}
         destroyOnHidden
        >
-        {loadingDetail && <div className="text-center py-8"><Spin size="large" tip="Đang tải chi tiết..." /></div>}
+        {loadingDetail && <div className="text-center py-8"><Spin size="large" /></div>}
         {!loadingDetail && selectedApplicationDetail && (
             <Descriptions bordered column={{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }} layout="vertical" size="small">
                 <Descriptions.Item label="Mã Hồ Sơ" span={2} contentStyle={{fontWeight: 'bold'}}>{selectedApplicationDetail._id}</Descriptions.Item>
@@ -409,11 +409,11 @@ const AdminManageApplications: React.FC = () => {
                                     actions={[
                                         <Button 
                                             type="link" 
-                                            href={doc.filePath ? `${import.meta.env.VITE_API_BASE_URL?.replace('/api','')}/${doc.filePath}` : '#'}
+                                            href={doc.filePath ? `${process.env.REACT_APP_API_BASE_URL?.replace('/api','')}/${doc.filePath}` : '#'}
                                             target="_blank" 
                                             rel="noopener noreferrer" 
                                             key="download"
-                                            icon={getDocumentIcon(doc.fileType || '')}
+                                            icon={getDocumentIcon(doc.documentType || '')}
                                             disabled={!doc.filePath}
                                             size="small"
                                         >
@@ -422,7 +422,7 @@ const AdminManageApplications: React.FC = () => {
                                     ]}
                                 >
                                     <List.Item.Meta
-                                        avatar={getDocumentIcon(doc.fileType || '')}
+                                        avatar={getDocumentIcon(doc.documentType || '')}
                                         title={<Text strong className="text-sm">{doc.originalName || 'Không rõ tên file'}</Text>}
                                         description={<Text type="secondary" className="text-xs">Loại: {doc.documentType || 'Không rõ'} - {doc.fileSize ? (doc.fileSize / (1024*1024)).toFixed(2) + ' MB' : 'Không rõ dung lượng'}</Text>}
                                     />

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, List, Card, Spin, Alert, Input, Pagination, Row, Col, Button } from 'antd';
-import { Link } from 'react-router-dom';
+import { Typography, Card, Spin, Alert, Input, Pagination, Button, Skeleton, Tooltip, Tag, Empty, Avatar } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
 import universityService from '../services/universityService';
-import { UniversityFE } from '../types'; // Import type cho University
-import { BankOutlined, SearchOutlined } from '@ant-design/icons';
+import { UniversityFE } from '../types';
+import { BankOutlined, SearchOutlined, GlobalOutlined, EnvironmentOutlined, PictureOutlined } from '@ant-design/icons';
+import styles from './UniversityListPage.module.css';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -13,9 +14,9 @@ const UniversityListPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [totalUniversities, setTotalUniversities] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(6); // Số trường mỗi trang
+  const [pageSize, setPageSize] = useState(12);
   const [searchTerm, setSearchTerm] = useState('');
-
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUniversities = async () => {
@@ -39,105 +40,110 @@ const UniversityListPage: React.FC = () => {
         setLoading(false);
       }
     };
-
     fetchUniversities();
   }, [currentPage, pageSize, searchTerm]);
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
-    setCurrentPage(1); // Reset về trang 1 khi tìm kiếm
+    setCurrentPage(1);
   };
-  
   const handlePageChange = (page: number, size?: number) => {
     setCurrentPage(page);
     if (size) setPageSize(size);
   };
 
-
-  if (loading && universities.length === 0) { // Chỉ hiển thị spinner to nếu chưa có dữ liệu
-    return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <Spin size="large" tip="Đang tải danh sách trường..." />
-      </div>
-    );
-  }
-
   return (
-    <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg">
-      <Title level={2} className="text-indigo-700 !mb-2 text-center">
-        <BankOutlined className="mr-2" /> Danh Sách Các Trường Đại Học
-      </Title>
-      <Paragraph className="text-gray-600 mb-8 text-center max-w-2xl mx-auto">
-        Khám phá thông tin về các trường đại học trên toàn quốc.
-      </Paragraph>
+    <div className={styles.container}>
+      <h1 className={styles.heading + ' ' + styles.redHeading}>
+        Danh Sách Các Trường Đại Học
+      </h1>
+      <div className={styles.subheading + ' ' + styles.centerSubheading}>
+        Khám phá thông tin về các trường đại học trên toàn quốc. Tìm kiếm, xem chi tiết ngành học, website, địa chỉ và nhiều thông tin hữu ích khác.
+      </div>
 
-      <Row justify="center" className="mb-6">
-        <Col xs={24} sm={16} md={12} lg={10}>
-            <Input.Search
-                placeholder="Tìm kiếm theo tên hoặc mã trường..."
-                enterButton={<><SearchOutlined /> Tìm</>}
-                size="large"
-                onSearch={handleSearch}
-                loading={loading && searchTerm !== ''} // Spinner nhỏ khi đang search
-                allowClear
-            />
-        </Col>
-      </Row>
-
+      <div style={{ display: 'flex', justifyContent: 'center' }} className="mb-8">
+        <Input.Search
+          placeholder="Tìm kiếm theo tên hoặc mã trường..."
+          enterButton={<><SearchOutlined /> Tìm</>}
+          size="large"
+          onSearch={handleSearch}
+          loading={loading && searchTerm !== ''}
+          allowClear
+          className="rounded-lg shadow"
+          style={{ maxWidth: 480, width: '100%' }}
+        />
+      </div>
 
       {error && !loading && <Alert message={error} type="error" showIcon className="mb-6" />}
-      
-      {loading && universities.length > 0 && <div className="text-center mb-4"><Spin tip="Đang cập nhật..."/></div>}
-
-      {!loading && universities.length === 0 && !error && (
-        <Alert message="Không tìm thấy trường đại học nào phù hợp." type="info" showIcon className="mb-6" />
+      {loading && universities.length === 0 && (
+        <div className={styles.grid + ' mb-8'}>
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className={styles.card}>
+              <Card className="w-full h-full" bodyStyle={{ minHeight: 260 }}>
+                <Skeleton avatar paragraph={{ rows: 4 }} active />
+              </Card>
+            </div>
+          ))}
+        </div>
       )}
-
-      <List
-        grid={{
-          gutter: 24,
-          xs: 1,
-          sm: 2,
-          md: 2,
-          lg: 3,
-          xl: 3,
-          xxl: 3,
-        }}
-        dataSource={universities}
-        renderItem={(uni) => (
-          <List.Item>
+      {!loading && universities.length === 0 && !error && (
+        <Empty description="Không tìm thấy trường đại học nào phù hợp." className="mb-8" />
+      )}
+      <div className={styles.grid}>
+        {universities.map((uni) => (
+          <div key={uni.id} className={styles.card}>
             <Card
               hoverable
-              className="shadow-md rounded-lg h-full flex flex-col"
-              title={<Link to={`/universities/${uni.id}`} className="text-indigo-600 hover:text-indigo-700 text-lg font-semibold">{uni.name} ({uni.code})</Link>}
-              // cover={uni.logoUrl ? <img alt={uni.name} src={uni.logoUrl} className="h-32 w-full object-contain p-2" onError={(e) => (e.currentTarget.style.display = 'none')} /> : null}
+              className="w-full h-full"
+              bodyStyle={{ display: 'flex', flexDirection: 'column', height: '100%', padding: 0, background: 'none' }}
+              cover={
+                <div className={styles.cardCover}>
+                  {uni.logoUrl ? (
+                    <Avatar src={uni.logoUrl} size={80} shape="square" className="bg-white border object-contain" alt={uni.name} />
+                  ) : (
+                    <Avatar size={80} shape="square" icon={<PictureOutlined />} className="bg-gray-200" />
+                  )}
+                </div>
+              }
             >
-              <div className="flex-grow">
-                {uni.logoUrl && (
-                    <div className="h-24 mb-3 flex items-center justify-center bg-gray-50 rounded">
-                        <img alt={uni.name} src={uni.logoUrl} className="max-h-full max-w-full object-contain p-1" onError={(e) => (e.currentTarget.parentElement!.style.display = 'none')} />
-                    </div>
-                )}
-                <Paragraph className="text-sm text-gray-600 mb-1">
-                  <Text strong>Địa chỉ:</Text> {uni.address || 'Chưa cập nhật'}
-                </Paragraph>
+              <div className={styles.cardContent}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <span className={styles.uniCode}>{uni.code}</span>
+                  <span className={styles.uniName} title={uni.name}>{uni.name}</span>
+                </div>
+                <Tooltip title={uni.address} placement="topLeft">
+                  <Paragraph className={styles.uniAddress}>
+                    <EnvironmentOutlined style={{ marginRight: 4 }} /> {uni.address || 'Chưa cập nhật'}
+                  </Paragraph>
+                </Tooltip>
                 {uni.website && (
-                  <Paragraph className="text-sm text-gray-600">
-                    <Text strong>Website:</Text> <a href={uni.website} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">{uni.website}</a>
+                  <Paragraph className={styles.uniWebsite}>
+                    <GlobalOutlined style={{ marginRight: 4 }} />
+                    <a href={uni.website} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline" title={uni.website}>{uni.website}</a>
                   </Paragraph>
                 )}
-              </div>
-              <div className="mt-auto pt-3">
-                 <Button type="primary" block className="bg-indigo-500 hover:bg-indigo-600" onClick={() => alert(`Xem chi tiết trường ${uni.code} (chức năng chưa hoàn thiện)`)}>
-                    Xem Chi Tiết Ngành
-                </Button>
+                {uni.description && (
+                  <Tooltip title={uni.description} placement="topLeft">
+                    <Paragraph className={styles.uniDescription}>{uni.description}</Paragraph>
+                  </Tooltip>
+                )}
+                <div style={{ marginTop: 'auto', paddingTop: 8 }}>
+                  <Button
+                    type="primary"
+                    block
+                    className={styles.detailBtn}
+                    onClick={() => navigate(`/universities/${uni.id}`)}
+                  >
+                    Xem chi tiết
+                  </Button>
+                </div>
               </div>
             </Card>
-          </List.Item>
-        )}
-      />
+          </div>
+        ))}
+      </div>
       {totalUniversities > 0 && (
-        <Row justify="center" className="mt-8">
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 40 }}>
           <Pagination
             current={currentPage}
             pageSize={pageSize}
@@ -145,8 +151,9 @@ const UniversityListPage: React.FC = () => {
             onChange={handlePageChange}
             showSizeChanger
             pageSizeOptions={['6', '12', '18', '24']}
+            showTotal={total => `Tổng cộng ${total} trường`}
           />
-        </Row>
+        </div>
       )}
     </div>
   );

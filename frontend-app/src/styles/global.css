@@ -1,4 +1,3 @@
-/* Import Be Vietnam Pro font (Regular and Bold) */
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
 
 @tailwind base;
@@ -6,153 +5,59 @@
 @tailwind utilities;
 
 html {
-  font-family: 'Be Vietnam Pro', system-ui, sans-serif; /* Font mặc định cho body - Be Vietnam Pro Regular */
-  font-feature-settings: 'liga' 1, 'calt' 1; 
+  font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+  font-feature-settings: 'liga' 1, 'calt' 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
   font-weight: 400;
 }
-body { @apply text-neutral-700 bg-neutral-100; }
+body { @apply text-neutral-800 bg-neutral-100; }
 
-
-/* Áp dụng Be Vietnam Pro Bold cho các tiêu đề và các thành phần UI quan trọng */
 h1, h2, h3, h4, h5, h6, .font-heading {
   font-family: 'Be Vietnam Pro', sans-serif;
   font-weight: 700;
 }
-::-webkit-scrollbar { width: 8px; height: 8px; }
 
-.section-padding { @apply py-12 md:py-20 lg:py-24; } /* Tăng padding chung cho section */
-
-.page-main-title {
-  @apply text-3xl md:text-4xl lg:text-5xl font-extrabold text-neutral-800 mb-4 text-center tracking-tight;
+.section-padding { @apply py-10 md:py-16 lg:py-20; }
+.section-title {
+  @apply text-3xl md:text-4xl font-extrabold text-center text-indigo-700 mb-4 tracking-tight font-heading;
 }
-.page-subtitle {
-  @apply text-lg md:text-xl text-neutral-600 mb-10 md:mb-12 text-center max-w-3xl mx-auto leading-relaxed;
+.section-subtitle {
+  @apply text-lg md:text-xl text-center text-gray-500 mb-8 max-w-2xl mx-auto;
+}
+.page-description {
+  @apply text-base md:text-lg text-gray-600 mb-8 text-center max-w-2xl mx-auto leading-relaxed;
 }
 
 .cta-button {
-  @apply font-semibold px-8 py-3 rounded-lg text-base shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center space-x-2;
-}
-.cta-button-primary {
-  @apply cta-button bg-primary text-white hover:bg-primary-dark shadow-button-primary;
-}
-.cta-button-secondary {
-  @apply cta-button bg-secondary text-neutral-800 hover:bg-secondary-dark shadow-button-secondary;
-}
-.cta-button-outline {
-   @apply cta-button border-2 border-primary text-primary hover:bg-primary/10;
+  @apply font-semibold px-8 py-3 rounded-lg text-base shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center space-x-2 bg-indigo-600 text-white hover:bg-indigo-700;
 }
 
-.feature-card-v2 {
-  @apply bg-white p-6 md:p-8 rounded-xl shadow-card hover:shadow-card-hover transition-all duration-300 ease-in-out transform hover:-translate-y-2 flex flex-col text-center h-full;
-}
-.feature-card-v2 .icon-wrapper {
-  @apply mx-auto w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center mb-5 text-3xl md:text-4xl;
-}
-.feature-card-v2 .card-title {
-  @apply text-xl md:text-2xl font-semibold text-neutral-800 mb-2;
-}
-.feature-card-v2 .card-description {
-  @apply text-neutral-600 text-sm md:text-base flex-grow;
-}
-.feature-card-v2 .card-link {
-  @apply mt-auto pt-3 font-semibold text-primary hover:text-primary-dark transition-colors;
+.card {
+  @apply bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6;
 }
 
-/* Decorative shapes for hero (optional) */
-.shape-blob {
-  @apply absolute rounded-full opacity-30 blur-3xl;
+/* Ant Design minimal font override */
+.ant-btn, .ant-typography, .ant-card-head-title {
+  font-family: 'Be Vietnam Pro', sans-serif;
 }
+
+/* Scrollbar */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { @apply bg-neutral-100 rounded-lg; }
 ::-webkit-scrollbar-thumb { @apply bg-neutral-300 rounded-lg border-2 border-solid border-neutral-100; }
 ::-webkit-scrollbar-thumb:hover { @apply bg-neutral-400; }
 
-.section-padding-y { @apply py-12 md:py-20 lg:py-24; }
-.section-padding-top { @apply pt-12 md:pt-20 lg:pt-24; }
-.section-padding-bottom { @apply pb-12 md:pb-20 lg:pb-24; }
-
-.page-main-title {
-  @apply text-3xl md:text-4xl lg:text-5xl font-extrabold text-brand-blue mb-3 text-center tracking-tight font-heading; /* Sử dụng font-heading */
-}
-.page-sub-title {
-  @apply text-2xl sm:text-3xl md:text-4xl font-bold text-brand-primary mb-4 text-center tracking-tight font-heading; /* Sử dụng font-heading */
-}
-.page-description {
-  @apply text-base sm:text-lg text-neutral-600 mb-8 md:mb-10 text-center max-w-2xl mx-auto leading-relaxed; /* Font body (Open Sans) */
+/* Utility for container */
+.container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
 }
 
-.ptit-cta-button {
-  @apply bg-brand-primary text-white px-6 py-3 rounded-md text-base
-         hover:bg-brand-primary-dark transition-all duration-300 shadow-button-ptit
-         flex items-center justify-center space-x-2 tracking-wide font-heading font-semibold; /* Sử dụng font-heading */
+/* Utility for responsive grid */
+.grid-2-col {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-6;
 }
-.ptit-cta-button-lg {
-  @apply !h-14 !text-lg !px-10;
-}
-
-.info-block-ptit {
-    @apply bg-brand-primary text-white p-8 md:p-10 lg:p-12 rounded-xl shadow-xl relative overflow-hidden;
-}
-.info-card-ptit {
-    @apply bg-white p-6 md:p-8 rounded-xl shadow-card-ptit hover:shadow-lg transition-shadow duration-300 h-full flex flex-col items-center text-center;
-}
-.info-card-ptit .icon-wrapper {
-    @apply w-16 h-16 bg-brand-primary/10 text-brand-primary rounded-full flex items-center justify-center mb-4 text-3xl;
-}
-.info-card-ptit .ant-card-head-title { /* Style cho tiêu đề Card của AntD nếu dùng */
-    font-family: 'Poppins', sans-serif !important;
-}
-.info-card-ptit .ant-typography { /* Đảm bảo Typography trong card dùng font body */
-    font-family: 'Be Vietnam Pro', sans-serif !important;
-}
-.info-card-ptit .ant-typography strong, .info-card-ptit .ant-typography h4 { /* Tiêu đề trong card dùng Be Vietnam Pro Bold */
-    font-family: 'Be Vietnam Pro', sans-serif !important;
-    font-weight: 700;
-}
-
-
-/* Ant Design Overrides & Enhancements */
-.ant-layout-header {
-   @apply shadow-header; 
-}
-.ant-card-head-title, .ant-modal-title .ant-typography {
-    font-family: 'Be Vietnam Pro', sans-serif !important; /* Tiêu đề Card, Modal dùng Be Vietnam Pro */
-    font-weight: 600 !important;
-}
-.ant-table-thead > tr > th {
-    font-family: 'Be Vietnam Pro', sans-serif;
-    @apply font-semibold text-neutral-600; 
-}
-.ant-btn, .ant-select-selection-item, .ant-select-item-option-content, .ant-menu-title-content, .ant-dropdown-menu-title-content {
-    font-family: 'Be Vietnam Pro', sans-serif; /* Các nút, select, menu item dùng Be Vietnam Pro */
-    @apply font-medium; 
-}
-.ant-typography, .ant-form-item-label > label, .ant-table-tbody, .ant-descriptions-item-label, .ant-descriptions-item-content, .ant-list-item-meta-description, .ant-message-notice-content {
-    font-family: 'Be Vietnam Pro', sans-serif; /* Nội dung thường dùng Open Sans */
-}
-.ant-typography strong, .ant-typography b, .ant-typography h1, .ant-typography h2, .ant-typography h3, .ant-typography h4, .ant-typography h5, .ant-typography h6 {
-    font-family: 'Be Vietnam Pro', sans-serif !important; /* Các thẻ strong, h trong Typography dùng Be Vietnam Pro Bold */
-    font-weight: 700;
-}
-.framed-feature-card {
-  @apply bg-white rounded-xl shadow-lg p-6 md:p-8 h-full flex flex-col items-center text-center transition-all duration-300 ease-in-out;
-}
-.framed-feature-card:hover {
-  @apply shadow-xl transform -translate-y-1;
-}
-.framed-feature-card .icon-container {
-  @apply w-16 h-16 md:w-20 md:h-20 mb-5 md:mb-6 rounded-full flex items-center justify-center text-3xl md:text-4xl text-white;
-  /* Màu nền sẽ được truyền qua props */
-}
-.framed-feature-card .card-title {
-  @apply text-lg md:text-xl font-semibold text-neutral-800 mb-2;
-}
-.framed-feature-card .card-description {
-  @apply text-neutral-600 text-sm md:text-base leading-relaxed flex-grow;
-}
-.framed-feature-card .card-link {
-  @apply mt-4 font-semibold text-primary hover:text-primary-dark transition-colors;
-}
+.grid-3-col {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+} 

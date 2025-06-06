@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'; // Bỏ useCallback nếu không dùng
-import { Typography, Row, Col, Card, Spin, Alert, Statistic, Select, message, Empty } from 'antd';
-import { BarChartOutlined, PieChartOutlined, ReconciliationOutlined, SnippetsOutlined, BankOutlined, SolutionOutlined } from '@ant-design/icons';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Typography, Row, Col, Card, Alert, Statistic, Select, Empty } from 'antd';
+import { BarChartOutlined, ReconciliationOutlined, SnippetsOutlined, BankOutlined, SolutionOutlined } from '@ant-design/icons';
 import { Column, Pie } from '@ant-design/charts';
 import statsAdminService, { ApplicationOverviewStats, ApplicationsByUniversityStat, ApplicationsByMajorStat } from '../services/statsAdminService';
 import universityAdminService from '../services/universityAdminService';
@@ -22,48 +22,88 @@ const AdminStatsPage: React.FC = () => {
 
   const [universitiesForFilter, setUniversitiesForFilter] = useState<Pick<UniversityFE, 'id' | 'name' | 'code'>[]>([]);
   const [selectedUniversityForMajorStats, setSelectedUniversityForMajorStats] = useState<string | undefined>(undefined);
-  const [loadingFilterData, setLoadingFilterData] = useState(false); // ĐẢM BẢO ĐÃ KHAI BÁO
+  const [loadingFilterData, setLoadingFilterData] = useState(false);
 
-  useEffect(() => {
-    const fetchOverview = async () => {
+  const fetchOverviewStats = useCallback(async () => {
+    try {
       setLoadingOverview(true);
-      const res = await statsAdminService.getApplicationOverview();
-      if (res.success && res.data) setOverviewStats(res.data);
-      else { setError(res.message || 'Lỗi tải thống kê tổng quan.'); message.error(res.message || 'Lỗi tải thống kê tổng quan.'); }
+      const response = await statsAdminService.getApplicationOverview();
+      if (response.success && response.data) {
+        setOverviewStats(response.data);
+      } else {
+        setError(response.message || 'Không thể tải thống kê tổng quan.');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Lỗi khi tải thống kê tổng quan.');
+    } finally {
       setLoadingOverview(false);
-    };
+    }
+  }, []);
 
-    const fetchUniStats = async () => {
+  const fetchUniversityStats = useCallback(async () => {
+    try {
       setLoadingUniStats(true);
-      const res = await statsAdminService.getApplicationsByUniversity();
-      if (res.success && res.data) setUniStats(res.data);
-      else { setError(res.message || 'Lỗi tải thống kê theo trường.'); message.error(res.message || 'Lỗi tải thống kê theo trường.');}
+      const response = await statsAdminService.getApplicationsByUniversity();
+      if (response.success && response.data) {
+        setUniStats(response.data);
+      } else {
+        setError(response.message || 'Không thể tải thống kê theo trường.');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Lỗi khi tải thống kê theo trường.');
+    } finally {
       setLoadingUniStats(false);
-    };
-    
-    const fetchUniversitiesForFilter = async () => {
-        setLoadingFilterData(true); // Bắt đầu loading
-        const res = await universityAdminService.getAll({limit: 1000, sortBy: 'name'});
-        if(res.success && res.data) setUniversitiesForFilter(res.data);
-        setLoadingFilterData(false); // Kết thúc loading
-    };
+    }
+  }, []);
 
-    fetchOverview();
-    fetchUniStats();
-    fetchUniversitiesForFilter();
+  const fetchMajorStats = useCallback(async (universityId?: string) => {
+    try {
+      setLoadingMajorStats(true);
+      const response = await statsAdminService.getApplicationsByMajor({ universityId });
+      if (response.success && response.data) {
+        setMajorStats(response.data);
+      } else {
+        setError(response.message || 'Không thể tải thống kê theo ngành.');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Lỗi khi tải thống kê theo ngành.');
+    } finally {
+      setLoadingMajorStats(false);
+    }
   }, []);
 
   useEffect(() => {
-    const fetchMajorStats = async () => {
-      setLoadingMajorStats(true);
-      const res = await statsAdminService.getApplicationsByMajor({ universityId: selectedUniversityForMajorStats });
-      if (res.success && res.data) setMajorStats(res.data);
-      else { setError(res.message || 'Lỗi tải thống kê theo ngành.'); message.error(res.message || 'Lỗi tải thống kê theo ngành.');}
-      setLoadingMajorStats(false);
-    };
-    fetchMajorStats();
-  }, [selectedUniversityForMajorStats]);
+    let mounted = true;
 
+    const loadData = async () => {
+      if (!mounted) return;
+      
+      try {
+        setLoadingFilterData(true);
+        const uniRes = await universityAdminService.getAll({ limit: 1000, sortBy: 'name' });
+        if (uniRes.success && uniRes.data && mounted) {
+          setUniversitiesForFilter(uniRes.data);
+        }
+      } catch (err: any) {
+        if (mounted) {
+          setError(err.message || 'Lỗi khi tải danh sách trường.');
+        }
+      } finally {
+        if (mounted) {
+          setLoadingFilterData(false);
+        }
+      }
+    };
+
+    loadData();
+    fetchOverviewStats();
+    fetchUniversityStats();
+    fetchMajorStats();
+
+    return () => {
+      mounted = false;
+    };
+  }, [fetchOverviewStats, fetchUniversityStats, fetchMajorStats]);
 
   const overviewChartData = overviewStats ? [
     { type: 'Chờ duyệt', value: overviewStats.pending },
@@ -125,7 +165,7 @@ const AdminStatsPage: React.FC = () => {
                 xAxis={{ label: { autoHide: true, autoRotate: true } }}
                 meta={{ name: { alias: 'Tên Trường' }, value: { alias: 'Số Hồ Sơ' } }}
                 height={400}
-                tooltip={{ title: (name) => name, formatter: (datum) => ({ name: 'Số hồ sơ', value: datum.value }) }}
+                tooltip={{ title: (name) => name, formatter: (datum: any) => ({ name: 'Số hồ sơ', value: datum.value }) }}
             />
         ) : (
             !loadingUniStats && <Empty description="Chưa có dữ liệu thống kê theo trường." />
@@ -161,7 +201,7 @@ const AdminStatsPage: React.FC = () => {
                 xAxis={{ label: { autoHide: true, autoRotate: true, } }}
                 meta={{ name: { alias: 'Tên Ngành (Trường)' }, value: { alias: 'Số Hồ Sơ' } }}
                 height={400}
-                tooltip={{ title: (name) => name, formatter: (datum) => ({ name: 'Số hồ sơ', value: datum.value }) }}
+                tooltip={{ title: (name) => name, formatter: (datum: any) => ({ name: 'Số hồ sơ', value: datum.value }) }}
             />
         ) : (
             !loadingMajorStats && <Empty description={selectedUniversityForMajorStats ? "Trường này chưa có hồ sơ nào theo ngành." : "Chọn trường để xem thống kê ngành hoặc chưa có dữ liệu."} />

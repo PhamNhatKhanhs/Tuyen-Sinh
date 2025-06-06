@@ -16,7 +16,7 @@ import { AdmissionMethodFE } from '../../admissionMethod/types';
 import { SubjectGroupFE } from '../../subjectGroup/types';
 
 
-const { Title, Paragraph } = Typography;
+const { Paragraph } = Typography;
 const { Option } = Select;
 
 const currentYear = new Date().getFullYear();
@@ -204,7 +204,7 @@ const AdminManageAdmissionLinks: React.FC = () => {
   
   const columns: TableProps<AdmissionLinkFE>['columns'] = [
     { title: 'Năm', dataIndex: 'year', key: 'year', width: 80, align: 'center', sorter: (a,b) => a.year - b.year, defaultSortOrder: 'descend' },
-    { title: 'Trường', dataIndex: 'universityName', key: 'universityName', render: (text, record) => `${text || 'N/A'} (${record.universityCode || record.universityId?.slice(-4) || 'N/A'})`, ellipsis: true, width: 250 },
+    { title: 'Trường', dataIndex: 'universityName', key: 'universityName', render: (text, record) => `${text || 'N/A'} (${record.universityId?.slice(-4) || 'N/A'})`, ellipsis: true, width: 250 },
     { title: 'Ngành', dataIndex: 'majorName', key: 'majorName', render: (text, record) => `${text || 'N/A'} (${record.majorCode || 'N/A'})`, ellipsis: true, width: 250 },
     { title: 'Phương Thức XT', dataIndex: 'admissionMethodName', key: 'admissionMethodName', ellipsis: true, width: 200 },
     { title: 'Tổ Hợp Môn', dataIndex: 'subjectGroupName', key: 'subjectGroupName', render: (text, record) => `${text || 'N/A'} (${record.subjectGroupCode || 'N/A'})`, ellipsis: true, width: 200 },
@@ -220,14 +220,14 @@ const AdminManageAdmissionLinks: React.FC = () => {
       <Row gutter={[16,16]} className="mb-4 items-end">
         <Col xs={24} sm={12} md={6} lg={5}>
             <Form.Item label="Lọc theo trường" className="!mb-0">
-                <Select placeholder="Tất cả trường" style={{width: '100%'}} allowClear value={filterUniversityId} onChange={val => {setFilterUniversityId(val); setFilterMajorId(undefined);}} loading={universities.length === 0 && loadingFilterData} showSearch filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}>
+                <Select placeholder="Tất cả trường" style={{width: '100%'}} allowClear value={filterUniversityId} onChange={val => {setFilterUniversityId(val); setFilterMajorId(undefined);}} loading={universities.length === 0 && loadingFilterData} showSearch filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())}>
                     {universities.map(u => <Option key={u.id} value={u.id} label={u.name}>{u.name} ({u.code})</Option>)}
                 </Select>
             </Form.Item>
         </Col>
          <Col xs={24} sm={12} md={6} lg={5}>
             <Form.Item label="Lọc theo ngành" className="!mb-0">
-                <Select placeholder="Tất cả ngành" style={{width: '100%'}} allowClear value={filterMajorId} onChange={val => setFilterMajorId(val)} loading={loadingFilterData && !!filterUniversityId} disabled={!filterUniversityId} showSearch filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}>
+                <Select placeholder="Tất cả ngành" style={{width: '100%'}} allowClear value={filterMajorId} onChange={val => setFilterMajorId(val)} loading={loadingFilterData && !!filterUniversityId} disabled={!filterUniversityId} showSearch filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())}>
                     {majorsForFilter.map(m => <Option key={m.id} value={m.id} label={m.name}>{m.name} ({m.code})</Option>)}
                 </Select>
             </Form.Item>
@@ -239,14 +239,14 @@ const AdminManageAdmissionLinks: React.FC = () => {
         </Col>
         <Col xs={24} sm={12} md={4} lg={4}>
              <Form.Item label="Phương thức" className="!mb-0">
-                <Select placeholder="Tất cả PTXT" style={{width: '100%'}} allowClear value={filterMethodId} onChange={val => setFilterMethodId(val)} loading={admissionMethods.length === 0 && loadingFilterData} showSearch filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}>
+                <Select placeholder="Tất cả PTXT" style={{width: '100%'}} allowClear value={filterMethodId} onChange={val => setFilterMethodId(val)} loading={admissionMethods.length === 0 && loadingFilterData} showSearch filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())}>
                     {admissionMethods.map(m => <Option key={m.id} value={m.id} label={m.name}>{m.name} {m.code ? `(${m.code})` : ''}</Option>)}
                 </Select>
             </Form.Item>
         </Col>
         <Col xs={24} sm={12} md={4} lg={4}>
              <Form.Item label="Tổ hợp" className="!mb-0">
-                 <Select placeholder="Tất cả tổ hợp" style={{width: '100%'}} allowClear value={filterGroupId} onChange={val => setFilterGroupId(val)} loading={subjectGroups.length === 0 && loadingFilterData} showSearch filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}>
+                 <Select placeholder="Tất cả tổ hợp" style={{width: '100%'}} allowClear value={filterGroupId} onChange={val => setFilterGroupId(val)} loading={subjectGroups.length === 0 && loadingFilterData} showSearch filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())}>
                     {subjectGroups.map(g => <Option key={g.id} value={g.id} label={g.name}>{g.name} ({g.code})</Option>)}
                 </Select>
             </Form.Item>
@@ -270,22 +270,22 @@ const AdminManageAdmissionLinks: React.FC = () => {
                 <Select options={yearOptions} disabled={!!editingLink} />
             </Form.Item>
             <Form.Item name="university" label="Trường Đại Học" rules={[{ required: true, message: 'Vui lòng chọn trường!' }]}>
-                <Select placeholder="Chọn trường" loading={universities.length === 0 && loadingModalData} showSearch filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())} disabled={!!editingLink}>
+                <Select placeholder="Chọn trường" loading={universities.length === 0 && loadingModalData} showSearch filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())} disabled={!!editingLink}>
                     {universities.map(uni => <Option key={uni.id} value={uni.id} label={`${uni.name} (${uni.code})`}>{uni.name} ({uni.code})</Option>)}
                 </Select>
             </Form.Item>
             <Form.Item name="major" label="Ngành Học" rules={[{ required: true, message: 'Vui lòng chọn ngành!' }]}>
-                <Select placeholder="Chọn ngành (chọn trường trước)" loading={loadingModalData && !!selectedUniversityInModal} disabled={!selectedUniversityInModal || majors.length === 0 || !!editingLink} showSearch filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}>
+                <Select placeholder="Chọn ngành (chọn trường trước)" loading={loadingModalData && !!selectedUniversityInModal} disabled={!selectedUniversityInModal || majors.length === 0 || !!editingLink} showSearch filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())}>
                     {majors.map(major => <Option key={major.id} value={major.id} label={`${major.name} (${major.code})`}>{major.name} ({major.code})</Option>)}
                 </Select>
             </Form.Item>
             <Form.Item name="admissionMethod" label="Phương Thức Xét Tuyển" rules={[{ required: true, message: 'Vui lòng chọn phương thức!' }]}>
-                <Select placeholder="Chọn phương thức" loading={admissionMethods.length === 0 && loadingModalData} showSearch filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())} disabled={!!editingLink}>
+                <Select placeholder="Chọn phương thức" loading={admissionMethods.length === 0 && loadingModalData} showSearch filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())} disabled={!!editingLink}>
                     {admissionMethods.map(method => <Option key={method.id} value={method.id} label={method.name}>{method.name} {method.code ? `(${method.code})` : ''}</Option>)}
                 </Select>
             </Form.Item>
             <Form.Item name="subjectGroup" label="Tổ Hợp Môn" rules={[{ required: true, message: 'Vui lòng chọn tổ hợp!' }]}>
-                <Select placeholder="Chọn tổ hợp môn" loading={subjectGroups.length === 0 && loadingModalData} showSearch filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())} disabled={!!editingLink}>
+                <Select placeholder="Chọn tổ hợp môn" loading={subjectGroups.length === 0 && loadingModalData} showSearch filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())} disabled={!!editingLink}>
                     {subjectGroups.map(group => <Option key={group.id} value={group.id} label={`${group.name} (${group.code}) - [${group.subjects.join(', ')}]`}>{group.name} ({group.code})</Option>)}
                 </Select>
             </Form.Item>

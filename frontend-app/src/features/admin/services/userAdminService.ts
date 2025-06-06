@@ -1,5 +1,5 @@
 import axiosInstance from '../../../lib/axios';
-import { User } from '../../auth/store/authSlice'; // Import User type
+import type { User } from '../../auth/types';
 
 // User type từ Backend có thể có _id thay vì id
 interface UserBE extends Omit<User, 'id'> {

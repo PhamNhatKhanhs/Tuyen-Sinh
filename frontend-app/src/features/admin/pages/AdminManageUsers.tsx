@@ -3,7 +3,7 @@ import { Typography, Table, Button, Space, Tooltip, Popconfirm, message, Switch,
 import { EditOutlined, ReloadOutlined, SearchOutlined, FilterOutlined, UserSwitchOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import type { TableProps, PaginationProps } from 'antd';
 import userAdminService from '../services/userAdminService';
-import { User } from '../../auth/store/authSlice'; // Import User type
+import type { User } from '../../auth/types';
 import dayjs from 'dayjs'; // Để format ngày tháng
 
 const { Title, Paragraph, Text } = Typography;
@@ -31,15 +31,22 @@ const AdminManageUsers: React.FC = () => {
     current: 1, pageSize: 10, total: 0, showSizeChanger: true, pageSizeOptions: ['10', '20', '50']
   });
 
-  const fetchUsers = useCallback(async (page = pagination.current, size = pagination.pageSize) => {
+  const fetchUsers = useCallback(async (
+    page = pagination.current,
+    size = pagination.pageSize,
+    sorter?: { field?: string; order?: 'ascend' | 'descend' | undefined }
+  ) => {
     setLoading(true); setError(null);
     try {
-      const params = {
-        page, limit: size,
-        search: filters.search || undefined,
-        role: filters.role,
-        sortBy: 'createdAt', sortOrder: 'desc',
+      const params: any = {
+        ...filters,
+        page: pagination.current,
+        limit: pagination.pageSize,
       };
+      if (sorter && sorter.field && sorter.order) {
+        params.sortBy = sorter.field;
+        params.sortOrder = sorter.order === 'ascend' ? 'asc' as const : sorter.order === 'descend' ? 'desc' as const : undefined;
+      }
       const response = await userAdminService.getAllUsers(params);
       if (response.success && response.data) {
         setUsers(response.data);
@@ -59,8 +66,8 @@ const AdminManageUsers: React.FC = () => {
     fetchUsers();
   }, [fetchUsers]);
 
-  const handleTableChange: TableProps<User>['onChange'] = (newPagination) => {
-    fetchUsers(newPagination.current, newPagination.pageSize);
+  const handleTableChange: TableProps<User>['onChange'] = (newPagination, _filters, sorter) => {
+    fetchUsers(newPagination.current, newPagination.pageSize, sorter as any);
   };
 
   const handleFilterInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -142,7 +149,7 @@ const AdminManageUsers: React.FC = () => {
     <Card title={<Title level={3} className="!mb-0">Quản Lý Người Dùng</Title>} className="shadow-lg rounded-lg">
       <Paragraph className="text-gray-600 mb-6">Xem và quản lý các tài khoản người dùng trong hệ thống.</Paragraph>
       
-      <Card title={<><FilterOutlined /> Bộ lọc người dùng</>} className="mb-6 shadow-sm rounded-lg" bordered={false} size="small">
+      <Card title={<><FilterOutlined /> Bộ lọc người dùng</>} className="mb-6 shadow-sm rounded-lg" variant="borderless" size="small">
         <Row gutter={[16,16]} align="bottom">
             <Col xs={24} sm={12} md={10} lg={8}>
                 <Form.Item label="Tìm kiếm Email/Họ tên" className="!mb-0">

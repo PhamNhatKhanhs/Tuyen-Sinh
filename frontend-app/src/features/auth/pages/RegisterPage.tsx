@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Input, Button, Typography, Alert, Select, Spin } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '../../../store/hooks'; // Bỏ useAppSelector nếu không dùng
+import { useAppDispatch } from '../../../store/hooks';
 import { loginSuccess } from '../store/authSlice'; 
 import authService, { RegisterData } from '../services/authService'; 
 
@@ -18,68 +18,97 @@ const RegisterPage: React.FC = () => {
   const [form] = Form.useForm();
 
   const onFinish = async (values: any) => {
-    setIsLoading(true);
-    setError(null);
-    setSuccessMessage(null);
+    try {
+      setIsLoading(true);
+      setError(null);
+      setSuccessMessage(null);
 
-    if (values.password !== values.confirmPassword) {
-      setError("Mật khẩu xác nhận không khớp!");
-      setIsLoading(false);
-      return;
-    }
+      if (values.password !== values.confirmPassword) {
+        setError("Mật khẩu xác nhận không khớp!");
+        return;
+      }
 
-    const registerData: RegisterData = {
+      const registerData: RegisterData = {
         email: values.email,
         password: values.password,
-        fullName: values.fullName, // Thêm fullName nếu có trong form
+        fullName: values.fullName,
         role: values.role,
-    };
+      };
 
-    try {
       const response = await authService.register(registerData);
       
       if (response.success && response.token && response.user) {
-        // Giả sử đăng ký thành công và tự động đăng nhập
+        localStorage.setItem('authToken', response.token);
+        localStorage.setItem('authUser', JSON.stringify(response.user));
+        
         dispatch(loginSuccess({ user: response.user, token: response.token }));
         
         setSuccessMessage("Đăng ký thành công! Bạn sẽ được chuyển hướng...");
+        
         setTimeout(() => {
           if (response.user.role === 'admin') {
-              navigate('/admin/dashboard', { replace: true });
+            navigate('/admin/dashboard', { replace: true });
           } else {
-              navigate('/candidate/dashboard', { replace: true });
+            navigate('/candidate/dashboard', { replace: true });
           }
         }, 2000);
       } else {
-         setError(response.message || "Đăng ký thất bại. Dữ liệu trả về không hợp lệ.");
+        setError(response.message || "Đăng ký thất bại. Vui lòng thử lại.");
       }
-
     } catch (err: any) {
-      const errorMessage = err.response?.data?.message || err.response?.data?.error || err.message || "Đăng ký thất bại. Vui lòng thử lại.";
-      setError(errorMessage);
+      setError(err.message || "Đã xảy ra lỗi khi đăng ký. Vui lòng thử lại.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <Spin size="large" tip="Đang xử lý..." />
+      </div>
+    );
+  }
+
   return (
-    <>
+    <div className="w-full">
       <Title level={3} className="text-center mb-6">Tạo Tài Khoản Mới</Title>
-      {error && <Alert message={error} type="error" showIcon className="mb-4" />}
-      {successMessage && <Alert message={successMessage} type="success" showIcon className="mb-4" />}
+      {error && (
+        <Alert 
+          message={error} 
+          type="error" 
+          showIcon 
+          className="mb-4" 
+          closable
+        />
+      )}
+      {successMessage && (
+        <Alert 
+          message={successMessage} 
+          type="success" 
+          showIcon 
+          className="mb-4" 
+        />
+      )}
       <Form
         form={form}
         name="register"
         onFinish={onFinish}
         layout="vertical"
         requiredMark="optional"
+        size="large"
       >
         <Form.Item
           name="fullName"
           label="Họ và Tên"
           rules={[{ required: true, message: 'Vui lòng nhập họ tên!' }]}
         >
-          <Input prefix={<UserOutlined />} placeholder="Họ và Tên" size="large"/>
+          <Input 
+            prefix={<UserOutlined className="text-gray-400" />} 
+            placeholder="Họ và Tên" 
+            size="large"
+            autoComplete="name"
+          />
         </Form.Item>
 
         <Form.Item
@@ -90,7 +119,12 @@ const RegisterPage: React.FC = () => {
             { type: 'email', message: 'Email không hợp lệ!' }
           ]}
         >
-          <Input prefix={<MailOutlined />} placeholder="Email" size="large"/>
+          <Input 
+            prefix={<MailOutlined className="text-gray-400" />} 
+            placeholder="Email" 
+            size="large"
+            autoComplete="email"
+          />
         </Form.Item>
 
         <Form.Item
@@ -102,7 +136,12 @@ const RegisterPage: React.FC = () => {
           ]}
           hasFeedback
         >
-          <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu" size="large"/>
+          <Input.Password 
+            prefix={<LockOutlined className="text-gray-400" />} 
+            placeholder="Mật khẩu" 
+            size="large"
+            autoComplete="new-password"
+          />
         </Form.Item>
 
         <Form.Item
@@ -122,38 +161,60 @@ const RegisterPage: React.FC = () => {
             }),
           ]}
         >
-          <Input.Password prefix={<LockOutlined />} placeholder="Xác nhận mật khẩu" size="large"/>
+          <Input.Password 
+            prefix={<LockOutlined className="text-gray-400" />} 
+            placeholder="Xác nhận mật khẩu" 
+            size="large"
+            autoComplete="new-password"
+          />
         </Form.Item>
 
         <Form.Item
-            name="role"
-            label="Bạn là?"
-            initialValue="candidate"
-            rules={[{ required: true, message: 'Vui lòng chọn vai trò!' }]}
+          name="role"
+          label="Bạn là?"
+          initialValue="candidate"
+          rules={[{ required: true, message: 'Vui lòng chọn vai trò!' }]}
         >
-            <Select placeholder="Chọn vai trò của bạn" size="large">
-                <Option value="candidate">Thí sinh</Option>
-                <Option value="admin">Quản trị viên (Yêu cầu quyền)</Option>
-            </Select>
+          <Select placeholder="Chọn vai trò của bạn" size="large">
+            <Option value="candidate">Thí sinh</Option>
+            <Option value="admin">Quản trị viên (Yêu cầu quyền)</Option>
+          </Select>
         </Form.Item>
+
         {form.getFieldValue('role') === 'admin' && (
-            <Alert message="Lưu ý: Vai trò Quản trị viên cần được tạo bởi một admin khác hoặc có mã mời đặc biệt (chức năng nâng cao)." type="info" showIcon className="mb-4 text-sm"/>
+          <Alert 
+            message="Lưu ý: Vai trò Quản trị viên cần được tạo bởi một admin khác hoặc có mã mời đặc biệt." 
+            type="info" 
+            showIcon 
+            className="mb-4 text-sm"
+          />
         )}
 
-
         <Form.Item>
-          <Button type="primary" htmlType="submit" loading={isLoading} block size="large" className="bg-indigo-600 hover:bg-indigo-700">
+          <Button 
+            type="primary" 
+            htmlType="submit" 
+            loading={isLoading} 
+            block 
+            size="large" 
+            className="bg-indigo-600 hover:bg-indigo-700 h-12 text-base"
+          >
             {isLoading ? 'Đang xử lý...' : 'Đăng Ký'}
           </Button>
         </Form.Item>
       </Form>
-      <div className="text-center">
-        <Typography.Text>Đã có tài khoản? </Typography.Text>
-        <Button type="link" onClick={() => navigate('/login')} className="p-0 text-indigo-600 hover:text-indigo-500">
+      <div className="text-center mt-4">
+        <Typography.Text className="text-gray-600">Đã có tài khoản? </Typography.Text>
+        <Button 
+          type="link" 
+          onClick={() => navigate('/login')} 
+          className="p-0 text-indigo-600 hover:text-indigo-500"
+        >
           Đăng nhập ngay
         </Button>
       </div>
-    </>
+    </div>
   );
 };
+
 export default RegisterPage;

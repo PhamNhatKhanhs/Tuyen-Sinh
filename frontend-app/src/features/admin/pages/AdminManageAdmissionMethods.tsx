@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Typography, Table, Button, Modal, Form, Input, Space, Tooltip, Popconfirm, message, Switch, Pagination } from 'antd';
+import { Typography, Table, Button, Modal, Form, Input, Space, Tooltip, Popconfirm, message, Switch, Pagination, Tag, Card, Row, Col } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, ReloadOutlined } from '@ant-design/icons';
 import type { TableProps, PaginationProps } from 'antd';
 import admissionMethodAdminService from '../services/admissionMethodAdminService';

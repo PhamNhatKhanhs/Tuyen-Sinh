@@ -1,4 +1,3 @@
-
 // backend-app/seeds/seedData.js
 
 const mongoose = require('mongoose');
@@ -99,6 +98,16 @@ const seedData = async () => {
         const kha = universities.find(u => u.code === 'KHA'); // Dùng cho application
         const ptit = universities.find(u => u.code === 'PTIT'); // Dùng cho application
 
+        // === THÊM NHIỀU TRƯỜNG ĐẠI HỌC MỚI ===
+        const moreUniversitiesData = [
+            { name: 'Đại học Y Hà Nội', code: 'HMU', address: '1 Tôn Thất Tùng, Đống Đa, Hà Nội', website: 'https://hmu.edu.vn', logoUrl: 'https://hmu.edu.vn/logo.png', createdBy: adminUser._id },
+            { name: 'Đại học Ngoại thương', code: 'FTU', address: '91 Chùa Láng, Đống Đa, Hà Nội', website: 'https://ftu.edu.vn', logoUrl: 'https://ftu.edu.vn/logo.png', createdBy: adminUser._id },
+            { name: 'Đại học Công nghệ Thông tin TP.HCM', code: 'UIT', address: 'Khu phố 6, Linh Trung, Thủ Đức, TP.HCM', website: 'https://uit.edu.vn', logoUrl: 'https://uit.edu.vn/logo.png', createdBy: adminUser._id },
+            { name: 'Đại học Sư phạm Hà Nội', code: 'HNUE', address: '136 Xuân Thủy, Cầu Giấy, Hà Nội', website: 'https://hnue.edu.vn', logoUrl: 'https://hnue.edu.vn/logo.png', createdBy: adminUser._id },
+            { name: 'Đại học Quốc gia TP.HCM', code: 'VNUHCM', address: 'Linh Trung, Thủ Đức, TP.HCM', website: 'https://vnuhcm.edu.vn', logoUrl: 'https://vnuhcm.edu.vn/logo.png', createdBy: adminUser._id },
+        ];
+        const moreUniversities = await University.insertMany(moreUniversitiesData);
+        moreUniversities.forEach(uni => { uniMap[uni.code] = uni._id; });
 
         // === TẠO MAJORS ===
         console.log('Seeding Majors...');
@@ -119,6 +128,30 @@ const seedData = async () => {
         const qtkd_kha = majors.find(m => m.code === 'QTKD1' && m.university.equals(kha._id));
         const it_ptit = majors.find(m => m.code === 'IT-PTIT' && m.university.equals(ptit._id));
 
+        // === THÊM NHIỀU NGÀNH MỚI CHO CÁC TRƯỜNG ===
+        const moreMajorsData = [
+            // HMU
+            { name: 'Y đa khoa', code: 'YDK', university: uniMap['HMU'], admissionQuota: 200, createdBy: adminUser._id },
+            { name: 'Răng hàm mặt', code: 'RHM', university: uniMap['HMU'], admissionQuota: 100, createdBy: adminUser._id },
+            { name: 'Dược học', code: 'DUOC', university: uniMap['HMU'], admissionQuota: 120, createdBy: adminUser._id },
+            // FTU
+            { name: 'Kinh tế quốc tế', code: 'KTQT', university: uniMap['FTU'], admissionQuota: 180, createdBy: adminUser._id },
+            { name: 'Tài chính quốc tế', code: 'TCQT', university: uniMap['FTU'], admissionQuota: 150, createdBy: adminUser._id },
+            { name: 'Luật kinh doanh quốc tế', code: 'LKDQT', university: uniMap['FTU'], admissionQuota: 100, createdBy: adminUser._id },
+            // UIT
+            { name: 'Khoa học máy tính', code: 'CS', university: uniMap['UIT'], admissionQuota: 200, createdBy: adminUser._id },
+            { name: 'Kỹ thuật phần mềm', code: 'SE', university: uniMap['UIT'], admissionQuota: 180, createdBy: adminUser._id },
+            { name: 'Hệ thống thông tin', code: 'IS', university: uniMap['UIT'], admissionQuota: 150, createdBy: adminUser._id },
+            // HNUE
+            { name: 'Sư phạm Toán', code: 'SPTOAN', university: uniMap['HNUE'], admissionQuota: 120, createdBy: adminUser._id },
+            { name: 'Sư phạm Văn', code: 'SPVAN', university: uniMap['HNUE'], admissionQuota: 100, createdBy: adminUser._id },
+            { name: 'Sư phạm Tiếng Anh', code: 'SPTA', university: uniMap['HNUE'], admissionQuota: 90, createdBy: adminUser._id },
+            // VNUHCM
+            { name: 'Công nghệ sinh học', code: 'BIO', university: uniMap['VNUHCM'], admissionQuota: 110, createdBy: adminUser._id },
+            { name: 'Kỹ thuật hóa học', code: 'CHE', university: uniMap['VNUHCM'], admissionQuota: 130, createdBy: adminUser._id },
+            { name: 'Kỹ thuật xây dựng', code: 'CIVIL', university: uniMap['VNUHCM'], admissionQuota: 140, createdBy: adminUser._id },
+        ];
+        await Major.insertMany(moreMajorsData);
 
         // === TẠO ADMISSION METHODS ===
         console.log('Seeding Admission Methods...');
@@ -136,6 +169,15 @@ const seedData = async () => {
         const methodHocBa = admissionMethods.find(m => m.code === 'HOCBA');
         const methodDGNL = admissionMethods.find(m => m.code === 'DGNL_HNU');
 
+        // === THÊM PHƯƠNG THỨC XÉT TUYỂN MỚI ===
+        const moreAdmissionMethodsData = [
+            { name: 'Xét tuyển thẳng học sinh giỏi', code: 'XTTHSG', createdBy: adminUser._id },
+            { name: 'Xét tuyển kết hợp chứng chỉ quốc tế', code: 'XTKHCCQT', createdBy: adminUser._id },
+            { name: 'Xét tuyển theo kết quả thi SAT', code: 'SAT', createdBy: adminUser._id },
+            { name: 'Xét tuyển theo kết quả thi ACT', code: 'ACT', createdBy: adminUser._id },
+            { name: 'Xét tuyển theo kết quả thi IELTS', code: 'IELTS', createdBy: adminUser._id },
+        ];
+        await AdmissionMethod.insertMany(moreAdmissionMethodsData);
 
         // === TẠO SUBJECT GROUPS ===
         console.log('Seeding Subject Groups...');
@@ -151,6 +193,15 @@ const seedData = async () => {
         // Lấy ID các tổ hợp để tạo application
         const groupA00 = subjectGroups.find(g => g.code === 'A00');
 
+        // === THÊM TỔ HỢP MÔN MỚI ===
+        const moreSubjectGroupsData = [
+            { code: 'B00', name: 'Toán, Hóa học, Sinh học', subjects: ['Toán', 'Hóa học', 'Sinh học'], createdBy: adminUser._id },
+            { code: 'C00', name: 'Ngữ văn, Lịch sử, Địa lý', subjects: ['Ngữ văn', 'Lịch sử', 'Địa lý'], createdBy: adminUser._id },
+            { code: 'D07', name: 'Toán, Hóa học, Tiếng Anh', subjects: ['Toán', 'Hóa học', 'Tiếng Anh'], createdBy: adminUser._id },
+            { code: 'A02', name: 'Toán, Vật lý, Sinh học', subjects: ['Toán', 'Vật lý', 'Sinh học'], createdBy: adminUser._id },
+            { code: 'A04', name: 'Toán, Vật lý, Địa lý', subjects: ['Toán', 'Vật lý', 'Địa lý'], createdBy: adminUser._id },
+        ];
+        await SubjectGroup.insertMany(moreSubjectGroupsData);
 
         // === TẠO MAJOR ADMISSION SUBJECT GROUPS ===
         console.log('Seeding Major Admission Subject Groups...');
@@ -164,6 +215,29 @@ const seedData = async () => {
             { major: it_ptit._id, admissionMethod: methodTHPT._id, subjectGroup: groupA00._id, year: nextYear, createdBy: adminUser._id },
         ]);
         console.log('Major Admission Subject Groups seeded.');
+
+        // === SEED MAPPING CHO TẤT CẢ NGÀNH/PHƯƠNG THỨC/TỔ HỢP NĂM HIỆN TẠI (currentYear) ===
+        console.log('Seeding full MajorAdmissionSubjectGroup mappings for currentYear...');
+        const allMajors_current = await Major.find();
+        const allMethods_current = await AdmissionMethod.find();
+        const allGroups_current = await SubjectGroup.find();
+        const mappingsCurrent = [];
+        for (const major of allMajors_current) {
+            for (const method of allMethods_current) {
+                for (const group of allGroups_current) {
+                    mappingsCurrent.push({
+                        major: major._id,
+                        admissionMethod: method._id,
+                        subjectGroup: group._id,
+                        year: currentYear,
+                        minScoreRequired: 20 + Math.floor(Math.random() * 10),
+                        createdBy: adminUser._id
+                    });
+                }
+            }
+        }
+        await MajorAdmissionSubjectGroup.insertMany(mappingsCurrent);
+        console.log('Full mappings for currentYear seeded.');
 
         // === TẠO CANDIDATE PROFILES ===
         console.log('Seeding Candidate Profiles...');
@@ -239,6 +313,91 @@ const seedData = async () => {
         ]);
         console.log('Notifications seeded.');
 
+        // === THÊM NHIỀU USER CANDIDATE MỚI ===
+        const moreCandidates = [];
+        for (let i = 4; i <= 15; i++) {
+            moreCandidates.push(await User.create({
+                email: `candidate${i}@example.com`,
+                password: `candidatePassword${i}`,
+                role: 'candidate',
+                fullName: `Thí sinh số ${i}`
+            }));
+        }
+        console.log('More candidates seeded.');
+
+        // === THÊM PROFILE, DOCUMENT, APPLICATION, NOTIFICATION CHO USER MỚI ===
+        for (let idx = 0; idx < moreCandidates.length; idx++) {
+            const candidate = moreCandidates[idx];
+            // Profile
+            const profile = await CandidateProfile.create({
+                user: candidate._id,
+                fullName: candidate.fullName,
+                dob: new Date(`2005-0${(idx%9)+1}-15`),
+                gender: idx%2===0 ? 'male' : 'female',
+                idNumber: `00120500${1000+idx}`,
+                idIssueDate: new Date(`2020-0${(idx%9)+1}-15`),
+                idIssuePlace: idx%2===0 ? 'CA Hà Nội' : 'CA TP.HCM',
+                ethnic: 'Kinh',
+                nationality: 'Việt Nam',
+                permanentAddress: `Số ${100+idx}, Đường ABC, Quận ${idx%5+1}, TP.HCM`,
+                contactAddress: `Số ${100+idx}, Đường ABC, Quận ${idx%5+1}, TP.HCM`,
+                phoneNumber: `09123${10000+idx}`,
+                email: candidate.email,
+                priorityArea: idx%3===0 ? 'KV1' : (idx%3===1 ? 'KV2' : 'KV3'),
+                highSchoolName: `THPT Số ${idx+1}`,
+                graduationYear: currentYear-1,
+                gpa10: 7.5+Math.random(),
+                gpa11: 7.8+Math.random(),
+                gpa12: 8.0+Math.random(),
+                conduct10: 'Tốt', conduct11: 'Tốt', conduct12: 'Tốt'
+            });
+            // Document
+            const doc = await DocumentProof.create({
+                user: candidate._id,
+                originalName: `TS${idx+4}_HocBa.pdf`,
+                fileName: `doc-ts${idx+4}-hb.pdf`,
+                filePath: `${config.uploadDir}/doc-ts${idx+4}-hb.pdf`,
+                fileType: 'application/pdf',
+                fileSize: 1024*400,
+                documentType: 'hoc_ba'
+            });
+            // Application (2-3 mỗi user, random trường/ngành/phương thức/tổ hợp)
+            const uniCodes = Object.keys(uniMap);
+            for (let j = 0; j < 2 + (idx%2); j++) {
+                const uniCode = uniCodes[(idx+j)%uniCodes.length];
+                // Lấy danh sách major/method/group hợp lệ
+                const majorsOfUni = await Major.find({ university: uniMap[uniCode] });
+                const methods = await AdmissionMethod.find();
+                const groups = await SubjectGroup.find();
+                if (!majorsOfUni.length || !methods.length || !groups.length) continue;
+                const major = majorsOfUni[Math.floor(Math.random() * majorsOfUni.length)];
+                const method = methods[Math.floor(Math.random() * methods.length)];
+                const group = groups[Math.floor(Math.random() * groups.length)];
+                const statusArr = ['pending','approved','rejected'];
+                const app = await Application.create({
+                    candidate: candidate._id,
+                    candidateProfileSnapshot: { fullName: profile.fullName, dob: profile.dob, idNumber: profile.idNumber, gpa12: profile.gpa12, phoneNumber: profile.phoneNumber, email: profile.email, permanentAddress: profile.permanentAddress },
+                    university: uniMap[uniCode],
+                    major: major._id,
+                    admissionMethod: method._id,
+                    subjectGroup: group._id,
+                    year: currentYear,
+                    examScores: { 'Toán': 7.5+Math.random(), 'Vật lý': 7.5+Math.random(), 'Hóa học': 7.5+Math.random() },
+                    documents: [doc._id],
+                    status: statusArr[(idx+j)%3]
+                });
+                // Notification
+                await Notification.create({
+                    user: candidate._id,
+                    title: `Hồ sơ mới của bạn đã được tạo!`,
+                    message: `Hồ sơ ${app._id} vào ngành ${major.name} - ${uniCode} đã được nộp.`,
+                    type: 'application_submitted',
+                    link: `/candidate/applications/${app._id}`,
+                    relatedApplication: app._id
+                });
+            }
+        }
+        console.log('More candidate profiles, documents, applications, notifications seeded.');
 
         console.log('\n================================================================');
         console.log(' EXTENSIVE DATA SEEDING COMPLETED SUCCESSFULLY! ');

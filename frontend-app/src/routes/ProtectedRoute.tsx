@@ -1,7 +1,8 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAppSelector } from '../store/hooks';
-import { selectIsAuthenticated, selectUser, User } from '../features/auth/store/authSlice';
+import { selectIsAuthenticated, selectUser } from '../features/auth/store/authSlice';
+import type { User } from '../features/auth/types';
 import AppSpinner from '../components/common/AppSpinner';
 
 interface ProtectedRouteProps {
@@ -12,10 +13,10 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const user = useAppSelector(selectUser) as User | null; // Cast to User type
-  const loading = useAppSelector((state) => state.auth.loading); // Giả sử có trạng thái loading trong authSlice
+  const isLoading = useAppSelector((state) => state.auth.isLoading); // Đúng với AuthState
   const location = useLocation();
 
-  if (loading) {
+  if (isLoading) {
     return <div className="flex justify-center items-center h-screen"><AppSpinner size="large" tip="Đang tải dữ liệu người dùng..." /></div>;
   }
 

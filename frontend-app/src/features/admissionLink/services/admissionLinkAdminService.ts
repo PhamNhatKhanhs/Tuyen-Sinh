@@ -1,8 +1,9 @@
 import axiosInstance from '../../../lib/axios';
-import { AdmissionLinkBE, AdmissionLinkFE } from '../../admissionLink/types';
-import { MajorFE } from '../../major/types';
-import { AdmissionMethodFE } from '../../admissionMethod/types';
-import { SubjectGroupFE } from '../../subjectGroup/types';
+import type { AdmissionLinkBE, AdmissionLinkFE } from '../../admissionLink/types';
+import type { MajorFE } from '../../major/types';
+import type { AdmissionMethodFE } from '../../admissionMethod/types';
+import type { SubjectGroupFE } from '../../subjectGroup/types';
+import type { UniversityFE } from '../../university/types';
 
 
 interface AdminAdmissionLinkResponse {
@@ -37,16 +38,15 @@ const mapAdmissionLinkBEToFE = (linkBE: AdmissionLinkBE): AdmissionLinkFE => {
   
   // Lấy thông tin university từ major (nếu đã populate)
   let universityName, universityId;
-  if (major && typeof major.universityId === 'string') { // Giả sử MajorFE có universityId
+  if (major && typeof major.universityId === 'string') { // MajorFE có universityId
       universityId = major.universityId;
-      // Nếu major.university là object (đã populate từ BE)
       if (major.universityName) {
           universityName = major.universityName;
       }
-      // Nếu BE trả về university là object trong major
-      else if (linkBE.major && typeof linkBE.major === 'object' && linkBE.major.university && typeof linkBE.major.university === 'object') {
-          universityName = (linkBE.major.university as any).name; // Cần type an toàn hơn
-          universityId = (linkBE.major.university as any)._id || (linkBE.major.university as any).id;
+      // Nếu BE trả về university là object trong major (MajorBE)
+      else if (linkBE.major && typeof linkBE.major === 'object' && (linkBE.major as any).university && typeof (linkBE.major as any).university === 'object') {
+          universityName = (linkBE.major as any).university.name;
+          universityId = (linkBE.major as any).university._id || (linkBE.major as any).university.id;
       }
   }
 
@@ -84,7 +84,7 @@ const admissionLinkAdminService = {
   }): Promise<{ success: boolean; data?: AdmissionLinkFE[]; total?: number; message?: string }> => {
     try {
       // API của Admin để lấy danh sách link có thể khác public API
-      const response = await axiosInstance.get<AdminGetAllAdmissionLinksResponse>('/admin/major-admission-subject-groups', { params });
+      const response = await axiosInstance.get<AdminGetAllAdmissionLinksResponse>('/admin/masg', { params });
       if (response.data.success && response.data.data) {
         const linksFE: AdmissionLinkFE[] = response.data.data.map(mapAdmissionLinkBEToFE);
         return { success: true, data: linksFE, total: response.data.total };
@@ -97,7 +97,7 @@ const admissionLinkAdminService = {
 
   create: async (linkData: AdmissionLinkFormData): Promise<AdminAdmissionLinkResponse> => {
     try {
-      const response = await axiosInstance.post<AdminAdmissionLinkResponse>('/admin/major-admission-subject-groups', linkData);
+      const response = await axiosInstance.post<AdminAdmissionLinkResponse>('/admin/masg', linkData);
       if (response.data.success && response.data.data) {
         return { ...response.data, data: mapAdmissionLinkBEToFE(response.data.data as AdmissionLinkBE) };
       }
@@ -110,7 +110,7 @@ const admissionLinkAdminService = {
   update: async (id: string, linkData: Partial<AdmissionLinkFormData>): Promise<AdminAdmissionLinkResponse> => {
     try {
       // Backend có thể không cho phép update major, admissionMethod, subjectGroup, year của link. Chỉ isActive, minScore.
-      const response = await axiosInstance.put<AdminAdmissionLinkResponse>(`/admin/major-admission-subject-groups/${id}`, linkData);
+      const response = await axiosInstance.put<AdminAdmissionLinkResponse>(`/admin/masg/${id}`, linkData);
       if (response.data.success && response.data.data) {
          return { ...response.data, data: mapAdmissionLinkBEToFE(response.data.data as AdmissionLinkBE) };
       }
@@ -122,7 +122,7 @@ const admissionLinkAdminService = {
 
   delete: async (id: string): Promise<{ success: boolean; message?: string }> => {
     try {
-      const response = await axiosInstance.delete<{ success: boolean; message?: string }>(`/admin/major-admission-subject-groups/${id}`);
+      const response = await axiosInstance.delete<{ success: boolean; message?: string }>(`/admin/masg/${id}`);
       return response.data;
     } catch (error: any) {
       return { success: false, message: error.response?.data?.message || error.message };

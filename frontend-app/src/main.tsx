@@ -1,25 +1,28 @@
+import 'antd/dist/reset.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, App as AntdApp } from 'antd'; // THÊM AntdApp
 import viVN from 'antd/locale/vi_VN';
 import App from './App';
 import { store } from './store';
 import './styles/global.css';
-import antdTheme from './styles/theme'; // IMPORT THEME MỚI
+import antdTheme from './styles/theme';
+import { loadUserFromStorage } from './features/auth/store/authSlice';
 
-// import { loadUserFromStorage } from './features/auth/store/authSlice';
 // store.dispatch(loadUserFromStorage());
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
+
     <Provider store={store}>
       <BrowserRouter>
-        <ConfigProvider locale={viVN} theme={antdTheme}> {/* ÁP DỤNG THEME MỚI */}
-          <App />
+        <ConfigProvider locale={viVN} theme={antdTheme}>
+          <AntdApp> {/* BỌC ỨNG DỤNG TRONG AntdApp */}
+            <App />
+          </AntdApp>
         </ConfigProvider>
       </BrowserRouter>
     </Provider>
-  </React.StrictMode>
+
 );

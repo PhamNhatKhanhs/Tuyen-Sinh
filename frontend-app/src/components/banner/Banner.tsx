@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Carousel, Button, Typography, Progress } from 'antd';
+import { Carousel, Button, Typography, Progress, Spin } from 'antd';
 import { ArrowRight, ChevronLeft, ChevronRight, Star } from 'lucide-react';
+import ClientOnly from '../ClientOnly';
 import './Banner.css';
 
 const { Title, Paragraph } = Typography;
@@ -97,69 +98,71 @@ const Banner: React.FC<BannerProps> = ({ items }) => {
         />
       </div>
       
-      <Carousel
-        autoplay={!isHovered}
-        effect="fade"
-        dots={{ className: 'custom-dots' }}
-        autoplaySpeed={5000}
-        className="banner-carousel"
-        ref={carouselRef}
-        afterChange={handleSlideChange}
-      >
-        {items.map((item) => (
-          <div key={item.id}>
-            <div 
-              className="banner-slide" 
-              style={{ 
-                backgroundImage: `linear-gradient(to right, ${item.gradientColors}), url(${item.imageUrl})` 
-              }}
-            >
-              {/* Decorative elements */}
-              <div className="banner-decorative-circle banner-circle-1"></div>
-              <div className="banner-decorative-circle banner-circle-2"></div>
-              <div className="banner-decorative-circle banner-circle-3"></div>
-              
-              <div className="banner-content">
-                <div className="banner-text-container">
-                  <div className="banner-badge">
-                    <Star size={14} className="banner-badge-icon" />
-                    {item.subtitle}
-                  </div>
-                  <Title level={1} className="banner-title">{item.title}</Title>
-                  <Paragraph className="banner-description">
-                    {item.description}
-                  </Paragraph>
-                  <div className="banner-buttons">
-                    <Button 
-                      type="primary" 
-                      size="large"
-                      href={item.buttonLink}
-                      className="banner-button banner-button-primary"
-                      icon={<ArrowRight className="ml-2" size={18} />}
-                    >
-                      {item.buttonText}
-                    </Button>
-                    <Button 
-                      size="large"
-                      href="/universities"
-                      className="banner-button banner-button-secondary"
-                    >
-                      Xem tất cả trường
-                    </Button>
-                  </div>
-                </div>
+      <ClientOnly fallback={<div style={{height: '500px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.02)'}}><Spin size="large" /></div>}>
+        <Carousel
+          autoplay={!isHovered}
+          effect="fade"
+          dots={{ className: 'custom-dots' }}
+          autoplaySpeed={5000}
+          className="banner-carousel"
+          ref={carouselRef}
+          afterChange={handleSlideChange}
+        >
+          {items.map((item) => (
+            <div key={item.id}>
+              <div 
+                className="banner-slide" 
+                style={{ 
+                  backgroundImage: `linear-gradient(to right, ${item.gradientColors}), url(${item.imageUrl})` 
+                }}
+              >
+                {/* Decorative elements */}
+                <div className="banner-decorative-circle banner-circle-1"></div>
+                <div className="banner-decorative-circle banner-circle-2"></div>
+                <div className="banner-decorative-circle banner-circle-3"></div>
                 
-                {/* Slide indicator */}
-                <div className="banner-slide-indicator">
-                  <span className="current-slide">{String(currentSlide + 1).padStart(2, '0')}</span>
-                  <span className="slide-separator">/</span>
-                  <span className="total-slides">{String(items.length).padStart(2, '0')}</span>
+                <div className="banner-content">
+                  <div className="banner-text-container">
+                    <div className="banner-badge">
+                      <Star size={14} className="banner-badge-icon" />
+                      {item.subtitle}
+                    </div>
+                    <Title level={1} className="banner-title">{item.title}</Title>
+                    <Paragraph className="banner-description">
+                      {item.description}
+                    </Paragraph>
+                    <div className="banner-buttons">
+                      <Button 
+                        type="primary" 
+                        size="large"
+                        href={item.buttonLink}
+                        className="banner-button banner-button-primary"
+                        icon={<ArrowRight className="ml-2" size={18} />}
+                      >
+                        {item.buttonText}
+                      </Button>
+                      <Button 
+                        size="large"
+                        href="/universities"
+                        className="banner-button banner-button-secondary"
+                      >
+                        Xem tất cả trường
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {/* Slide indicator */}
+                  <div className="banner-slide-indicator">
+                    <span className="current-slide">{String(currentSlide + 1).padStart(2, '0')}</span>
+                    <span className="slide-separator">/</span>
+                    <span className="total-slides">{String(items.length).padStart(2, '0')}</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </Carousel>
+          ))}
+        </Carousel>
+      </ClientOnly>
     </div>
   );
 };

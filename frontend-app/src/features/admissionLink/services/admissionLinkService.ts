@@ -1,4 +1,16 @@
 import axiosInstance from '../../../lib/axios';
+import type { AdmissionLinkBE, AdmissionLinkFE } from '../types';
+import type { MajorFE, MajorBE } from '../../major/types';
+import type { AdmissionMethodFE, AdmissionMethodBE } from '../../admissionMethod/types';
+import type { SubjectGroupFE, SubjectGroupBE } from '../../subjectGroup/types';
+import type { UniversityFE } from '../../university/types';
+
+// Định nghĩa GetAdmissionLinksResponse nếu chưa có
+interface GetAdmissionLinksResponse {
+  success: boolean;
+  data?: AdmissionLinkBE[];
+  message?: string;
+}
 
 const mapAdmissionLinkBEToFE = (linkBE: AdmissionLinkBE): AdmissionLinkFE => {
   const placeholderMajor: MajorFE = { id: 'N/A_MAJOR', name: 'Ngành không xác định', code: 'N/A', universityId: 'N/A', universityName: 'N/A' };
@@ -6,31 +18,40 @@ const mapAdmissionLinkBEToFE = (linkBE: AdmissionLinkBE): AdmissionLinkFE => {
   const placeholderGroup: SubjectGroupFE = { id: 'N/A_GROUP_OR_NONE', name: 'Không yêu cầu tổ hợp', code: '', subjects: [] };
 
   let major: MajorFE;
-  if (typeof linkBE.major === 'object' && linkBE.major !== null) {
-      const beMajor = linkBE.major as MajorBE; // Ép kiểu để truy cập _id
+  if (typeof linkBE.major === 'object' && linkBE.major !== null && '_id' in linkBE.major && 'university' in linkBE.major) {
+      const beMajor = linkBE.major as MajorBE;
+      let universityId = 'N/A';
+      let universityName = undefined;
+      if (typeof beMajor.university === 'string') {
+          universityId = beMajor.university;
+      } else if (typeof beMajor.university === 'object' && beMajor.university !== null && '_id' in beMajor.university) {
+          universityId = beMajor.university._id;
+          universityName = beMajor.university.name;
+      }
       major = { 
-          ...beMajor, 
           id: beMajor._id, 
-          universityId: typeof beMajor.university === 'string' ? beMajor.university : (typeof beMajor.university === 'object' && beMajor.university !== null ? (beMajor.university as UniversityFE)._id || (beMajor.university as UniversityFE).id : 'N/A'),
-          universityName: typeof beMajor.university === 'object' && beMajor.university !== null ? (beMajor.university as UniversityFE).name : undefined,
+          name: beMajor.name,
+          code: beMajor.code,
+          universityId,
+          universityName,
+          description: beMajor.description,
+          admissionQuota: beMajor.admissionQuota,
+          isActive: beMajor.isActive,
       };
+  } else if (typeof linkBE.major === 'object' && linkBE.major !== null && 'id' in linkBE.major) {
+      major = linkBE.major as MajorFE;
   } else if (typeof linkBE.major === 'string') {
       major = { ...placeholderMajor, id: linkBE.major, name: `ID Ngành: ${linkBE.major.slice(-6)}` };
   } else {
       major = placeholderMajor;
   }
-  // Đảm bảo universityId và universityName được lấy đúng từ major (nếu major được populate với university)
-  // Hoặc nếu BE trả về university trực tiếp trong linkBE
-  if (linkBE.university && typeof linkBE.university === 'object' && linkBE.university !== null) {
-      major.universityId = (linkBE.university as UniversityFE)._id || (linkBE.university as UniversityFE).id;
-      major.universityName = (linkBE.university as UniversityFE).name;
-  }
-
 
   let admissionMethod: AdmissionMethodFE;
-  if (typeof linkBE.admissionMethod === 'object' && linkBE.admissionMethod !== null) {
+  if (typeof linkBE.admissionMethod === 'object' && linkBE.admissionMethod !== null && '_id' in linkBE.admissionMethod) {
       const beMethod = linkBE.admissionMethod as AdmissionMethodBE;
-      admissionMethod = { ...beMethod, id: beMethod._id };
+      admissionMethod = { id: beMethod._id, name: beMethod.name, code: beMethod.code, description: beMethod.description, isActive: beMethod.isActive };
+  } else if (typeof linkBE.admissionMethod === 'object' && linkBE.admissionMethod !== null && 'id' in linkBE.admissionMethod) {
+      admissionMethod = linkBE.admissionMethod as AdmissionMethodFE;
   } else if (typeof linkBE.admissionMethod === 'string') {
       admissionMethod = { ...placeholderMethod, id: linkBE.admissionMethod, name: `ID PTXT: ${linkBE.admissionMethod.slice(-6)}` };
   } else {
@@ -38,9 +59,11 @@ const mapAdmissionLinkBEToFE = (linkBE: AdmissionLinkBE): AdmissionLinkFE => {
   }
 
   let subjectGroup: SubjectGroupFE;
-  if (typeof linkBE.subjectGroup === 'object' && linkBE.subjectGroup !== null) {
+  if (typeof linkBE.subjectGroup === 'object' && linkBE.subjectGroup !== null && '_id' in linkBE.subjectGroup) {
       const beGroup = linkBE.subjectGroup as SubjectGroupBE;
-      subjectGroup = { ...beGroup, id: beGroup._id, subjects: beGroup.subjects || [] };
+      subjectGroup = { id: beGroup._id, code: beGroup.code, name: beGroup.name, subjects: beGroup.subjects, isActive: beGroup.isActive };
+  } else if (typeof linkBE.subjectGroup === 'object' && linkBE.subjectGroup !== null && 'id' in linkBE.subjectGroup) {
+      subjectGroup = linkBE.subjectGroup as SubjectGroupFE;
   } else if (typeof linkBE.subjectGroup === 'string') {
       subjectGroup = { ...placeholderGroup, id: linkBE.subjectGroup, name: `ID Tổ hợp: ${linkBE.subjectGroup.slice(-6)}` };
   } else { 
@@ -49,16 +72,13 @@ const mapAdmissionLinkBEToFE = (linkBE: AdmissionLinkBE): AdmissionLinkFE => {
 
   return {
       id: linkBE._id,
-      major: major, // Trả về object MajorFE đầy đủ
       majorId: major.id,
       majorName: major.name,
       majorCode: major.code,
       universityId: major.universityId,
       universityName: major.universityName,
-      admissionMethod: admissionMethod, // Trả về object AdmissionMethodFE đầy đủ
       admissionMethodId: admissionMethod.id,
       admissionMethodName: admissionMethod.name,
-      subjectGroup: subjectGroup, // Trả về object SubjectGroupFE đầy đủ
       subjectGroupId: subjectGroup.id,
       subjectGroupName: subjectGroup.name,
       subjectGroupCode: subjectGroup.code,

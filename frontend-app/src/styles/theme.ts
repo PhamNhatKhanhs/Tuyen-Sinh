@@ -13,14 +13,14 @@ const antdTheme: ThemeConfig = {
     fontFamily: '"Poppins", "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
     fontSize: 14,
     
-    borderRadius: 6, // Giảm bo góc chung của AntD để gần với PTIT hơn
+    borderRadius: 6,
     borderRadiusLG: 8,
 
     colorTextBase: '#212529', 
     colorTextSecondary: '#495057', 
     
     colorBorder: '#DEE2E6', 
-    controlHeight: 40, // Tăng chiều cao control
+    controlHeight: 40,
     controlHeightLG: 48,
   },
   components: {
@@ -38,24 +38,23 @@ const antdTheme: ThemeConfig = {
     },
     Layout: {
       headerBg: '#FFFFFF',
-      headerHeight: 72, // Chiều cao header
+      headerHeight: 72,
     },
     Menu: {
       itemColor: '#212529', 
       itemHoverColor: '#D8242C', 
       itemSelectedColor: '#D8242C',
-      itemActiveBg: '#FDECEA', // Màu nền rất nhạt của brand-primary khi active
+      itemActiveBg: '#FDECEA',
       itemSelectedBg: '#FDECEA',
       horizontalItemSelectedColor: '#D8242C',
-      horizontalItemBorderRadius: 0, // Bỏ bo góc cho item menu ngang
-      horizontalLineHeight: '70px', // Căn giữa text trong menu ngang
+      horizontalItemBorderRadius: 0,
+      horizontalLineHeight: '70px',
     },
     Card: {
       headerBg: 'transparent',
       paddingLG: 24,
       borderRadiusLG: 10,
     },
-    // Các component khác có thể giữ nguyên hoặc tùy chỉnh thêm
   },
 };
 export default antdTheme;

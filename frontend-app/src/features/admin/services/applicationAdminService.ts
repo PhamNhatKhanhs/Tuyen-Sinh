@@ -1,5 +1,5 @@
 import axiosInstance from '../../../lib/axios';
-// import { ApplicationDetailBE, ApplicationAdminListItemFE } from '../../application/types'; // Đã import ở trên
+import type { ApplicationDetailBE, ApplicationAdminListItemFE } from '../../application/types';
 
 interface GetAllApplicationsAdminResponse {
   success: boolean;

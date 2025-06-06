@@ -1,5 +1,5 @@
 import axiosInstance from '../../../lib/axios';
-import { MajorBE, MajorFE } from '../../major/types'; 
+import type { MajorFE, MajorBE } from '../../major/types';
 import { UniversityFE } from '../../university/types';
 
 interface AdminMajorResponse {

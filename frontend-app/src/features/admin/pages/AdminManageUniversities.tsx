@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Typography, Table, Button, Modal, Form, Input, Space, Tooltip, Popconfirm, message, Switch, InputNumber, Pagination, Row, Col, Tag, Card   } from 'antd';
+import { Typography, Table, Button, Modal, Form, Input, Space, Tooltip, Popconfirm, message, Switch, InputNumber, Pagination, Row, Col, Tag, Card } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, ReloadOutlined } from '@ant-design/icons';
 import type { TableProps, PaginationProps } from 'antd';
 import universityAdminService from '../services/universityAdminService';

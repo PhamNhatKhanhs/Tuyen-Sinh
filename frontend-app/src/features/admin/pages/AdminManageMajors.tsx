@@ -140,7 +140,7 @@ const AdminManageMajors: React.FC = () => {
             style={{ width: '100%' }}
             allowClear
             loading={universitiesForFilter.length === 0 && loading} // Chỉ loading khi chưa có dữ liệu trường
-            filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+            filterOption={(input, option) => (option?.label?.toString().toLowerCase().includes(input.toLowerCase()) || option?.value?.toString().toLowerCase().includes(input.toLowerCase()))}
             value={filterUniversityId}
           >
             {universitiesForFilter.map(uni => <AntdAdminOption key={uni.id} value={uni.id} label={`${uni.name} (${uni.code})`}>{uni.name} ({uni.code})</AntdAdminOption>)}
@@ -157,7 +157,7 @@ const AdminManageMajors: React.FC = () => {
       <Modal title={editingMajor ? "Chỉnh Sửa Ngành Học" : "Thêm Ngành Học Mới"} open={isModalVisible} onOk={handleModalOk} onCancel={() => setIsModalVisible(false)} confirmLoading={loading} okText={editingMajor ? "Lưu" : "Thêm"} cancelText="Hủy" destroyOnClose width={600}>
         <Form form={form} layout="vertical" name="majorFormAdmin">
           <Form.Item name="university" label="Trường Đại Học" rules={[{ required: true, message: 'Vui lòng chọn trường!' }]}>
-            <Select placeholder="Chọn trường" showSearch filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())} disabled={!!editingMajor}>
+            <Select placeholder="Chọn trường" showSearch filterOption={(input, option) => (option?.label?.toString().toLowerCase().includes(input.toLowerCase()) || option?.value?.toString().toLowerCase().includes(input.toLowerCase()))} disabled={!!editingMajor}>
               {universitiesForFilter.map(uni => <AntdAdminOption key={uni.id} value={uni.id} label={`${uni.name} (${uni.code})`}>{uni.name} ({uni.code})</AntdAdminOption>)}
             </Select>
           </Form.Item>
