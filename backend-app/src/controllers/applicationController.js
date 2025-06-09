@@ -45,21 +45,63 @@ exports.submitApplication = async (req, res, next) => {
             return res.status(400).json({ success: false, message: 'Email trong thông tin cá nhân hoặc email tài khoản không được để trống.' });
         }
 
-        console.log('SUBMIT_APP_CTRL: Step 1 - Upserting CandidateProfile...');
+        console.log('SUBMIT_APP_CTRL: Step 1 - Processing CandidateProfile...');
+        const { idNumber } = personalInfo;
+
+        if (!idNumber) {
+            console.error('SUBMIT_APP_CTRL: Validation Error - idNumber is missing from personalInfo.');
+            return res.status(400).json({ success: false, message: 'Số CMND/CCCD (idNumber) không được để trống trong thông tin cá nhân.' });
+        }
+
         const { examScores: scoresInAcademic, ...otherAcademicInfo } = safeAcademicInfo;
-        const profileDetailsToSave = {
+        const profileDataForUpdate = {
             ...personalInfo,
-            ...otherAcademicInfo, 
+            ...otherAcademicInfo,
             user: candidateId,
             email: profileEmail
         };
 
-        let candidateProfile = await CandidateProfile.findOneAndUpdate(
-            { user: candidateId },
-            profileDetailsToSave,
-            { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true }
-        );
-        console.log('SUBMIT_APP_CTRL: CandidateProfile upserted:', candidateProfile._id);
+        // Check if a profile with this idNumber already exists
+        const existingProfileWithIdNumber = await CandidateProfile.findOne({ idNumber: idNumber });
+
+        let candidateProfile;
+
+        if (existingProfileWithIdNumber) {
+            // A profile with this idNumber exists.
+            // Check if it belongs to the current user.
+            if (existingProfileWithIdNumber.user.toString() !== candidateId.toString()) {
+                // idNumber belongs to another user. This is a conflict.
+                console.error(`SUBMIT_APP_CTRL: Conflict - idNumber ${idNumber} already registered to user ${existingProfileWithIdNumber.user}`);
+                return res.status(400).json({ success: false, message: `Số CMND/CCCD '${idNumber}' đã được sử dụng bởi một tài khoản khác.` });
+            } else {
+                // idNumber belongs to the current user. Update their profile.
+                console.log(`SUBMIT_APP_CTRL: idNumber ${idNumber} confirmed for current user ${candidateId}. Updating profile.`);
+                candidateProfile = await CandidateProfile.findOneAndUpdate(
+                    { _id: existingProfileWithIdNumber._id, user: candidateId }, // Ensure updating the correct user's profile
+                    profileDataForUpdate,
+                    { new: true, runValidators: true } // No upsert needed, we know it exists
+                );
+                if (!candidateProfile) {
+                     console.error(`SUBMIT_APP_CTRL: Error - Failed to update existing profile for user ${candidateId} with idNumber ${idNumber}.`);
+                     return res.status(500).json({ success: false, message: 'Lỗi khi cập nhật thông tin cá nhân.' });
+                }
+            }
+        } else {
+            // No profile with this idNumber exists.
+            // Create or update the current user's profile with this idNumber.
+            console.log(`SUBMIT_APP_CTRL: idNumber ${idNumber} is new or user ${candidateId} is updating to it. Upserting profile for user.`);
+            candidateProfile = await CandidateProfile.findOneAndUpdate(
+                { user: candidateId }, // Find by user
+                profileDataForUpdate,   // This will set/update their idNumber
+                { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true }
+            );
+        }
+
+        if (!candidateProfile) {
+            console.error(`SUBMIT_APP_CTRL: Critical Error - CandidateProfile could not be established for user ${candidateId}.`);
+            return res.status(500).json({ success: false, message: 'Không thể xử lý thông tin cá nhân thí sinh.' });
+        }
+        console.log('SUBMIT_APP_CTRL: CandidateProfile processed:', candidateProfile._id, 'with idNumber:', candidateProfile.idNumber);
 
         console.log('SUBMIT_APP_CTRL: Step 2 - Validating IDs...');
         const university = await University.findById(applicationChoice.universityId);
@@ -121,17 +163,17 @@ exports.submitApplication = async (req, res, next) => {
 
         const newApplicationArray = await Application.create([newApplicationData]);
         const newApplication = newApplicationArray[0];
-        console.log('SUBMIT_APP_CTRL: Application document created:', newApplication._id);
-
-        console.log('SUBMIT_APP_CTRL: Step 5 - Sending email and creating notification...');
+        console.log('SUBMIT_APP_CTRL: Application document created:', newApplication._id);        console.log('SUBMIT_APP_CTRL: Step 5 - Sending email and creating notification...');
         const emailSubject = `Xác nhận nộp hồ sơ thành công - Mã HS: ${newApplication._id}`;
-        const emailHtml = `<p>Chào ${candidateProfile.fullName || 'bạn'},</p><p>Hồ sơ của bạn (Mã: <strong>${newApplication._id}</strong>) ứng tuyển ngành ${major.name} - ${university.name} đã được nộp thành công.</p><p>Trạng thái hiện tại: Chờ duyệt. Chúng tôi sẽ thông báo khi có cập nhật.</p><p>Trân trọng,</p><p>Hệ thống Tuyển sinh Đại học</p>`;
-
-        sendEmail(candidateEmail, emailSubject, '', emailHtml).catch(err => console.error("SUBMIT_APP_CTRL: Failed to send submission email:", err));
+        const emailHtml = `<p>Chào ${candidateProfile.fullName || 'bạn'},</p><p>Hồ sơ của bạn (Mã: <strong>${newApplication._id}</strong>) ứng tuyển ngành ${major.name} - ${university.name} đã được nộp thành công.</p><p>Trạng thái hiện tại: Chờ duyệt. Chúng tôi sẽ thông báo khi có cập nhật.</p><p>Trân trọng,</p><p>Hệ thống Tuyển sinh Đại học</p>`;        sendEmail(candidateEmail, emailSubject, '', emailHtml).catch(err => console.error("SUBMIT_APP_CTRL: Failed to send submission email:", err));
         createNotification( candidateId, 'Nộp hồ sơ thành công!', `Hồ sơ ${newApplication._id} đã được nộp.`, 'application_submitted', `/candidate/applications/${newApplication._id}`, newApplication._id).catch(err => console.error("SUBMIT_APP_CTRL: Failed to create submission notification:", err));
         console.log('SUBMIT_APP_CTRL: Email and notification tasks initiated.');
 
-        res.status(201).json({ success: true, message: 'Nộp hồ sơ thành công!', data: newApplication });
+        res.status(201).json({ 
+            success: true, 
+            message: 'Nộp hồ sơ thành công!', 
+            data: newApplication
+        });
 
     } catch (error) {
         console.error('SUBMIT_APP_CTRL: Error in submitApplication Controller:', error); 

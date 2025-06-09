@@ -1,0 +1,202 @@
+/* Custom styles for Profile Page */
+.profile-tabs .ant-tabs-nav {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 12px;
+  padding: 8px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.profile-tabs .ant-tabs-tab {
+  border-radius: 8px !important;
+  border: none !important;
+  background: transparent !important;
+  color: #64748b !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+
+.profile-tabs .ant-tabs-tab:hover {
+  background: rgba(255, 255, 255, 0.8) !important;
+  color: #3b82f6 !important;
+}
+
+.profile-tabs .ant-tabs-tab-active {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
+}
+
+.profile-tabs .ant-tabs-ink-bar {
+  display: none !important;
+}
+
+.custom-descriptions .ant-descriptions-item-label {
+  border-radius: 8px 0 0 8px !important;
+  font-size: 14px !important;
+}
+
+.custom-descriptions .ant-descriptions-item-content {
+  border-radius: 0 8px 8px 0 !important;
+  font-size: 14px !important;
+}
+
+.custom-descriptions .ant-descriptions-row:not(:last-child) .ant-descriptions-item {
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+.custom-descriptions .ant-descriptions-row:last-child .ant-descriptions-item-label {
+  border-radius: 8px 0 8px 8px !important;
+}
+
+.custom-descriptions .ant-descriptions-row:last-child .ant-descriptions-item-content {
+  border-radius: 0 8px 8px 8px !important;
+}
+
+/* Progress bar animation */
+.ant-progress-line .ant-progress-bg {
+  transition: all 0.8s ease !important;
+}
+
+/* Form animations */
+.ant-form-item {
+  margin-bottom: 20px !important;
+}
+
+.ant-input,
+.ant-input-password,
+.ant-picker,
+.ant-select-selector {
+  transition: all 0.3s ease !important;
+  border: 2px solid #e5e7eb !important;
+}
+
+.ant-input:focus,
+.ant-input-password:focus,
+.ant-picker:focus,
+.ant-select-focused .ant-select-selector {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Button hover effects */
+.ant-btn {
+  transition: all 0.3s ease !important;
+}
+
+.ant-btn:hover {
+  transform: translateY(-2px) !important;
+}
+
+/* Card hover effects */
+.ant-card {
+  transition: all 0.3s ease !important;
+}
+
+.ant-card:hover {
+  transform: translateY(-4px) !important;
+}
+
+/* Avatar animation */
+.ant-avatar {
+  transition: all 0.3s ease !important;
+}
+
+.ant-avatar:hover {
+  transform: scale(1.05) !important;
+}
+
+/* Badge pulse animation */
+.ant-badge-status-dot {
+  animation: pulse 2s infinite !important;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+}
+
+/* Gradient text animation */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.gradient-text {
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899, #3b82f6);
+  background-size: 300% 300%;
+  animation: gradientShift 3s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Loading spinner custom style */
+.ant-spin-dot-item {
+  background-color: #3b82f6 !important;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .profile-tabs .ant-tabs-nav {
+    padding: 4px;
+  }
+  
+  .custom-descriptions {
+    font-size: 12px !important;
+  }
+  
+  .ant-avatar {
+    width: 100px !important;
+    height: 100px !important;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .profile-tabs .ant-tabs-nav {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  }
+  
+  .custom-descriptions .ant-descriptions-item-label {
+    background-color: #1e293b !important;
+    color: #e2e8f0 !important;
+  }
+  
+  .custom-descriptions .ant-descriptions-item-content {
+    background-color: #0f172a !important;
+    color: #f1f5f9 !important;
+  }
+}

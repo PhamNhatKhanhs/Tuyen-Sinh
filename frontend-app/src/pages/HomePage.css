@@ -160,7 +160,7 @@ body {
 /* .feature-card and .benefit-card inherit from .card-base */
 
 .feature-card {
-  /* border: 1px solid var(--color-border); /* Removed border */ */
+  /* border: 1px solid var(--color-border); */ /* Corrected comment */
   background-color: var(--color-bg-white);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
@@ -322,6 +322,20 @@ body {
   font-weight: 600;
   color: white;
   border: 2px solid rgba(255, 255, 255, 0.5);
+  margin-bottom: 1rem; /* Added margin for spacing when avatar is present */
+}
+
+/* Added style for Ant Design Avatar when used as image */
+.testimonial-avatar-img {
+  width: 56px !important; /* Ensure size consistency */
+  height: 56px !important; /* Ensure size consistency */
+  border-radius: 50% !important; /* Ensure it's circular */
+  border: 3px solid var(--color-primary) !important; /* Add a border matching primary color */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  margin-bottom: 1rem; /* Consistent margin */
+  display: block; /* Ensure proper block display */
+  margin-left: auto; /* Center if needed, or adjust based on card layout */
+  margin-right: auto; /* Center if needed */
 }
 
 .testimonial-rating .star-icon {
@@ -487,18 +501,75 @@ body {
 }
 
 /* Testimonials Section Styling */
-.testimonials-section-tagline,
-.testimonials-section-title,
-.testimonials-section-subtitle {
-  text-align: center;
+.testimonials-section {
+  background: linear-gradient(135deg, #fddde6, #e6e6fa);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* For Safari */
+  position: relative; /* Needed for potential pseudo-elements if adding texture via CSS */
+  overflow: hidden; /* Ensures pseudo-elements don't overflow if used */
 }
+
+/* Optional: Subtle texture using a pseudo-element with a noise pattern or SVG */
+/*
+.testimonials-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Cfilter id="n" x="0" y="0"%3E%3CfeTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="4" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100" height="100" filter="url(%23n)" opacity=".07"/%3E%3C/svg%3E');
+  opacity: 0.5; 
+  z-index: 0; 
+}
+*/
+
+/* Ensure content within the section is above the pseudo-element if used */
+.testimonials-section > .container { /* Assuming .container is the direct child holding content */
+  position: relative;
+  z-index: 1;
+}
+
+
+/* Testimonials Section Specific Heading Styling - More Forceful */
+.testimonials-section .testimonials-section-tagline {
+  text-align: center !important;
+  font-size: 1.5rem !important; /* Increased size */
+  font-weight: 600 !important;
+  color: var(--color-secondary) !important; /* Vibrant blue */
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem !important;
+}
+
+.testimonials-section .testimonials-section-title {
+  text-align: center !important;
+  font-family: var(--font-display), sans-serif !important;
+  font-size: clamp(2.8rem, 6vw, 3.8rem) !important; /* Significantly larger */
+  font-weight: 800 !important;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent), var(--color-secondary)) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important; /* Fallback for text color */
+  line-height: 1.2 !important;
+  margin-bottom: 1.5rem !important;
+  padding-bottom: 0.3em !important; /* Add some padding for the gradient to show */
+}
+
+.testimonials-section .testimonials-section-subtitle {
+  text-align: center !important;
+  font-size: 1.3rem !important; /* Increased size */
+  color: var(--color-text-muted) !important; /* Muted but clear */
+  max-width: 700px;
+  margin: 0 auto 2.5rem auto !important; /* Increased bottom margin */
+  line-height: 1.7 !important;
+  font-weight: 500 !important;
+}
+
 
 /* Why Choose Us Section Specific Styling */
 .why-choose-us-section .feature-card {
   background: linear-gradient(145deg, var(--color-bg-light), var(--color-bg-white)); /* Subtle gradient background */
   border: 1px solid var(--color-border); /* Light border */
-}
-
-.why-choose-us-section .feature-card:hover {
-  border-color: var(--color-primary);
 }

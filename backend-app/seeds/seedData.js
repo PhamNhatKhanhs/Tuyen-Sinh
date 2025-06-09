@@ -201,27 +201,14 @@ const seedData = async () => {
             { code: 'A02', name: 'Toán, Vật lý, Sinh học', subjects: ['Toán', 'Vật lý', 'Sinh học'], createdBy: adminUser._id },
             { code: 'A04', name: 'Toán, Vật lý, Địa lý', subjects: ['Toán', 'Vật lý', 'Địa lý'], createdBy: adminUser._id },
         ];
-        await SubjectGroup.insertMany(moreSubjectGroupsData);
-
-        // === TẠO MAJOR ADMISSION SUBJECT GROUPS ===
-        console.log('Seeding Major Admission Subject Groups...');
-        await MajorAdmissionSubjectGroup.insertMany([
-            { major: it1_bka._id, admissionMethod: methodTHPT._id, subjectGroup: groupA00._id, year: currentYear, minScoreRequired: 27.5, createdBy: adminUser._id },
-            { major: it1_bka._id, admissionMethod: methodTHPT._id, subjectGroup: groupMap['A01'], year: currentYear, minScoreRequired: 27.0, createdBy: adminUser._id },
-            { major: it1_bka._id, admissionMethod: methodDGNL._id, year: currentYear, minScoreRequired: 90, createdBy: adminUser._id },
-            { major: qtkd_kha._id, admissionMethod: methodTHPT._id, subjectGroup: groupA00._id, year: currentYear, minScoreRequired: 26.0, createdBy: adminUser._id },
-            { major: qtkd_kha._id, admissionMethod: methodTHPT._id, subjectGroup: groupMap['D01'], year: currentYear, minScoreRequired: 26.5, createdBy: adminUser._id },
-            { major: qtkd_kha._id, admissionMethod: methodHocBa._id, year: currentYear, minScoreRequired: 27.5, createdBy: adminUser._id },
-            { major: it_ptit._id, admissionMethod: methodTHPT._id, subjectGroup: groupA00._id, year: nextYear, createdBy: adminUser._id },
-        ]);
-        console.log('Major Admission Subject Groups seeded.');
-
-        // === SEED MAPPING CHO TẤT CẢ NGÀNH/PHƯƠNG THỨC/TỔ HỢP NĂM HIỆN TẠI (currentYear) ===
+        await SubjectGroup.insertMany(moreSubjectGroupsData);        // === SEED MAPPING CHO TẤT CẢ NGÀNH/PHƯƠNG THỨC/TỔ HỢP NĂM HIỆN TẠI (currentYear) ===
         console.log('Seeding full MajorAdmissionSubjectGroup mappings for currentYear...');
         const allMajors_current = await Major.find();
         const allMethods_current = await AdmissionMethod.find();
         const allGroups_current = await SubjectGroup.find();
         const mappingsCurrent = [];
+        
+        // Tạo tất cả combinations của major x method x subjectGroup
         for (const major of allMajors_current) {
             for (const method of allMethods_current) {
                 for (const group of allGroups_current) {
@@ -236,8 +223,36 @@ const seedData = async () => {
                 }
             }
         }
-        await MajorAdmissionSubjectGroup.insertMany(mappingsCurrent);
-        console.log('Full mappings for currentYear seeded.');
+        
+        // Sử dụng insertMany với ordered: false để bỏ qua duplicates
+        try {
+            await MajorAdmissionSubjectGroup.insertMany(mappingsCurrent, { ordered: false });
+            console.log(`Full mappings for currentYear seeded: ${mappingsCurrent.length} combinations created.`);
+        } catch (error) {
+            if (error.name === 'BulkWriteError') {
+                const insertedCount = error.result.insertedCount;
+                const duplicateCount = mappingsCurrent.length - insertedCount;
+                console.log(`Full mappings for currentYear seeded: ${insertedCount} new, ${duplicateCount} duplicates skipped.`);
+            } else {
+                throw error;
+            }
+        }
+
+        // === TẠO SOME SPECIFIC MAPPINGS FOR NEXT YEAR (optional) ===
+        console.log('Seeding some specific mappings for nextYear...');
+        const specificMappings = [
+            { major: it_ptit._id, admissionMethod: methodTHPT._id, subjectGroup: groupA00._id, year: nextYear, minScoreRequired: 25.0, createdBy: adminUser._id },
+        ];
+        try {
+            await MajorAdmissionSubjectGroup.insertMany(specificMappings, { ordered: false });
+            console.log('Specific mappings for nextYear seeded.');
+        } catch (error) {
+            if (error.name === 'BulkWriteError') {
+                console.log('Some specific mappings already existed, skipped duplicates.');
+            } else {
+                throw error;
+            }
+        }
 
         // === TẠO CANDIDATE PROFILES ===
         console.log('Seeding Candidate Profiles...');

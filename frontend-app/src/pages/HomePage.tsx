@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Button, Row, Col, Space, Badge } from 'antd'; // Removed Avatar
+import { Typography, Button, Row, Col, Space, Badge, Avatar } from 'antd'; // Added Avatar
 import './HomePage.css';
 import './BorderStyles.css';
 import './HeroSection.css';
@@ -91,17 +91,22 @@ interface TestimonialCardProps {
   quote: string;
   name: string;
   role: string;
-  avatarChar?: string; 
+  avatarChar?: string;
+  avatarUrl?: string; // Added avatarUrl
   rating?: number;
-  bgColor?: string; 
-  icon?: React.ReactNode; 
+  bgColor?: string;
+  icon?: React.ReactNode;
 }
 
-const TestimonialCard: React.FC<TestimonialCardProps> = ({ quote, name, role, avatarChar, rating, bgColor, icon }) => {
+const TestimonialCard: React.FC<TestimonialCardProps> = ({ quote, name, role, avatarChar, avatarUrl, rating, bgColor, icon }) => {
   return (
     <div className={classNames("testimonial-card", bgColor)}> {/* Used bgColor here */}
       {icon && <div className="testimonial-icon">{icon}</div>}
-      {avatarChar && <div className="testimonial-avatar">{avatarChar}</div>}
+      {avatarUrl ? (
+        <Avatar src={avatarUrl} size={56} className="testimonial-avatar-img" />
+      ) : avatarChar ? (
+        <div className="testimonial-avatar">{avatarChar}</div>
+      ) : null}
       <Paragraph className="testimonial-quote">"{quote}"</Paragraph>
       <Text strong className="testimonial-name">{name}</Text>
       <Text className="testimonial-role">{role}</Text>
@@ -124,8 +129,9 @@ const testimonialsData: TestimonialCardProps[] = [
     name: "Nguyễn Văn An",
     role: "Thí sinh K27",
     avatarChar: "A",
+    avatarUrl: "https://picsum.photos/seed/an/100/100", // Added avatarUrl
     rating: 5,
-    bgColor: "bg-gradient-to-br from-pink-400 via-rose-400 to-fuchsia-500", 
+    bgColor: "bg-gradient-to-br from-pink-400 via-rose-400 to-fuchsia-500",
     icon: <ThumbsUp size={24} />
   },
   {
@@ -133,8 +139,9 @@ const testimonialsData: TestimonialCardProps[] = [
     name: "Trần Thị Bình",
     role: "Phụ huynh",
     avatarChar: "B",
+    avatarUrl: "https://picsum.photos/seed/binh/100/100", // Added avatarUrl
     rating: 5,
-    bgColor: "bg-gradient-to-br from-sky-400 via-cyan-400 to-teal-500", 
+    bgColor: "bg-gradient-to-br from-sky-400 via-cyan-400 to-teal-500",
     icon: <MessageSquare size={24} />
   },
   {
@@ -142,8 +149,9 @@ const testimonialsData: TestimonialCardProps[] = [
     name: "Lê Minh Cường",
     role: "Thí sinh K26",
     avatarChar: "C",
+    avatarUrl: "https://picsum.photos/seed/cuong/100/100", // Added avatarUrl
     rating: 5,
-    bgColor: "bg-gradient-to-br from-amber-400 via-orange-500 to-red-500", 
+    bgColor: "bg-gradient-to-br from-amber-400 via-orange-500 to-red-500",
     icon: <Heart size={24} />
   }
 ];
@@ -621,10 +629,10 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-12 md:py-20 bg-gray-100 testimonials-section">
+      <section className="py-12 md:py-20 testimonials-section"> {/* Removed bg-gray-100 */}
         <div className="container mx-auto px-4">
           <div className="text-center mb-12 md:mb-16">
-            <Paragraph className="text-sm font-semibold text-red-600 uppercase tracking-wider testimonials-section-tagline">
+            <Paragraph className="testimonials-section-tagline">
               Đánh giá từ người dùng
             </Paragraph>
             <Title level={2} className="testimonials-section-title">
@@ -642,6 +650,7 @@ const HomePage: React.FC = () => {
                   name={testimonial.name}
                   role={testimonial.role}
                   avatarChar={testimonial.avatarChar}
+                  avatarUrl={testimonial.avatarUrl}
                   rating={testimonial.rating}
                   bgColor={testimonial.bgColor}
                   icon={testimonial.icon}
@@ -650,9 +659,9 @@ const HomePage: React.FC = () => {
             ))}
           </Row>
           <div className="text-center mt-12">
-            <Button type="primary" size="large" className="view-all-testimonials-button">
+            {/* <Button type="primary" size="large" className="view-all-testimonials-button">
               Xem thêm đánh giá
-            </Button>
+            </Button> */}
           </div>
         </div>
       </section>
