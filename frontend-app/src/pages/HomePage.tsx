@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Button, Row, Col, Avatar, Space, Badge } from 'antd';
+import { Typography, Button, Row, Col, Space, Badge } from 'antd'; // Removed Avatar
 import './HomePage.css';
 import './BorderStyles.css';
 import './HeroSection.css';
@@ -18,13 +18,16 @@ import { useAppSelector } from '../store/hooks';
 import { selectIsAuthenticated, selectUser } from '../features/auth/store/authSlice';
 import type { User } from '../features/auth/types';
 import { 
+    MessageSquare, 
+    Heart,         
+    ThumbsUp,      
     BookOpen, ShieldCheck, Zap, Award, TrendingUp, 
-    Target, BarChart2, Newspaper, MessageCircleQuestion, 
-    ChevronRight, Sparkles, Star, Users, Crown, Briefcase, GraduationCap
-} from 'lucide-react';
-import Banner from '../components/banner/Banner'; 
+    ChevronRight, Sparkles, Star, Users, Crown, GraduationCap, Briefcase // Added Briefcase, GraduationCap
+} from 'lucide-react'; 
+import Banner from '../components/banner/Banner';
+import classNames from 'classnames'; // Re-added classNames import
 
-const { Title, Paragraph, Text, Link: AntLink } = Typography;
+const { Title, Paragraph, Text } = Typography;
 
 // Super Enhanced BenefitCard với nhiều màu sắc và hiệu ứng
 interface BenefitCardProps {
@@ -88,54 +91,64 @@ interface TestimonialCardProps {
   quote: string;
   name: string;
   role: string;
-  avatarUrl?: string;
+  avatarChar?: string; 
   rating?: number;
-  bgGradient?: string;
+  bgColor?: string; 
+  icon?: React.ReactNode; 
 }
-const TestimonialCard: React.FC<TestimonialCardProps> = ({ quote, name, role, avatarUrl, rating = 5, bgGradient = 'from-indigo-500 to-purple-600' }) => (
-  <div className="group relative overflow-hidden rounded-xl h-full">
-    <div className={`absolute inset-0 bg-gradient-to-br ${bgGradient} opacity-5 group-hover:opacity-10 transition-opacity duration-500`}></div>
-    <div style={{ border: '1px solid #e0e7ff', borderRadius: '12px', padding: '1.5rem', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)' }} className="relative bg-white p-6 transition-all duration-500 transform hover:-translate-y-2 h-full flex flex-col">
-      <div className="absolute top-4 right-4 text-6xl leading-none text-indigo-100 opacity-60 font-serif">"</div>
-      
-      <div className="flex mb-4">
-        <div className="flex space-x-1 mt-1">
-          {[...Array(rating)].map((_, i) => (
-            <StarFilled key={i} className="text-yellow-400 text-sm" />
-          ))}
-        </div>
-      </div>
-      
-      <Paragraph className="text-gray-700 text-lg leading-relaxed mb-6 flex-grow relative z-10 italic">
-        {quote}
-      </Paragraph>
-      
-      <div className="flex items-center mt-auto pt-4 border-t border-gray-100 relative z-10">
-        {avatarUrl ? (
-          <div className="relative">
-            <Avatar src={avatarUrl} size={48} className="mr-3 border-2 border-indigo-100" />
-            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full border-2 border-white"></div>
-          </div>
-        ) : (
-          <div className="relative">
-            <Avatar size={48} className="mr-3 bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center border-2 border-white shadow-md">
-              {name.charAt(0)}
-            </Avatar>
-            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full border-2 border-white"></div>
-          </div>
-        )}
-        <div>
-          <Text strong className="block text-gray-800 text-base">{name}</Text>
-          <Text className="text-gray-500 text-sm font-medium">{role}</Text>
-        </div>
-      </div>
-      
-      <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-gradient-to-br from-purple-200/20 to-pink-200/20 rounded-full group-hover:scale-150 group-hover:rotate-45 transition-all duration-1000"></div>
-    </div>
-  </div>
-);
 
-// Super Enhanced FeatureCard
+const TestimonialCard: React.FC<TestimonialCardProps> = ({ quote, name, role, avatarChar, rating, bgColor, icon }) => {
+  return (
+    <div className={classNames("testimonial-card", bgColor)}> {/* Used bgColor here */}
+      {icon && <div className="testimonial-icon">{icon}</div>}
+      {avatarChar && <div className="testimonial-avatar">{avatarChar}</div>}
+      <Paragraph className="testimonial-quote">"{quote}"</Paragraph>
+      <Text strong className="testimonial-name">{name}</Text>
+      <Text className="testimonial-role">{role}</Text>
+      {rating && (
+        <div className="testimonial-rating">
+          {Array(rating)
+            .fill(0)
+            .map((_, i) => (
+              <StarFilled key={i} style={{ color: '#FFD700' }} />
+            ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const testimonialsData: TestimonialCardProps[] = [
+  {
+    quote: "Hệ thống rất dễ sử dụng và giúp tôi tiết kiệm rất nhiều thời gian trong việc nộp hồ sơ. Giao diện thân thiện và quy trình rõ ràng.",
+    name: "Nguyễn Văn An",
+    role: "Thí sinh K27",
+    avatarChar: "A",
+    rating: 5,
+    bgColor: "bg-gradient-to-br from-pink-400 via-rose-400 to-fuchsia-500", 
+    icon: <ThumbsUp size={24} />
+  },
+  {
+    quote: "Thông tin về các trường đại học rất đầy đủ và cập nhật. Tôi có thể so sánh và lựa chọn trường phù hợp một cách dễ dàng.",
+    name: "Trần Thị Bình",
+    role: "Phụ huynh",
+    avatarChar: "B",
+    rating: 5,
+    bgColor: "bg-gradient-to-br from-sky-400 via-cyan-400 to-teal-500", 
+    icon: <MessageSquare size={24} />
+  },
+  {
+    quote: "Dịch vụ hỗ trợ tuyệt vời! Nhân viên tư vấn nhiệt tình và giải đáp mọi thắc mắc một cách chi tiết và chuyên nghiệp.",
+    name: "Lê Minh Cường",
+    role: "Thí sinh K26",
+    avatarChar: "C",
+    rating: 5,
+    bgColor: "bg-gradient-to-br from-amber-400 via-orange-500 to-red-500", 
+    icon: <Heart size={24} />
+  }
+];
+
+// Enhanced FeatureCard
 const FeatureCard: React.FC<{
   icon: React.ReactNode;
   title: string;
@@ -159,9 +172,7 @@ const FeatureCard: React.FC<{
     >
       <div className="card-content">
         <div className="card-icon-wrapper">
-          <div className="card-icon">
-            {icon}
-          </div>
+          <div className="card-icon">{icon}</div>
         </div>
         <div className="card-body">
           <Title level={4} className="card-title">
@@ -175,7 +186,7 @@ const FeatureCard: React.FC<{
           <div className="card-footer">
             <div className="card-link">
               <span>{linkText || 'Tìm hiểu thêm'}</span>
-              <ChevronRight size={20} className="card-link-icon" />
+              <ChevronRight className="card-link-icon" size={18} />
             </div>
           </div>
         )}
@@ -184,41 +195,51 @@ const FeatureCard: React.FC<{
   );
 };
 
-// Colorful StatCard
-const StatCard: React.FC<{
+// Colorful StatCard - Rewritten for Custom CSS
+interface StatCardProps {
   icon: React.ReactNode;
   title: string;
   value: string;
-  bgGradient?: string;
-  iconColor?: string;
-}> = ({ icon, title, value, bgGradient = 'from-blue-500 to-indigo-600', iconColor = 'text-blue-600' }) => (
-  <div className="group relative overflow-hidden rounded-xl h-full">
-    <div className={`absolute inset-0 bg-gradient-to-br ${bgGradient} opacity-10 group-hover:opacity-20 transition-opacity duration-700`}></div>
-    <div style={{ border: '1px solid #dbeafe', borderRadius: '12px', padding: '1.5rem', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)' }} className="relative bg-white p-6 transition-all duration-500 transform hover:-translate-y-2 hover:scale-102 text-center h-full flex flex-col justify-center">
-      <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
-        <Sparkles className="text-yellow-400 w-5 h-5 animate-spin" />
-      </div>
-      <div className="relative z-10">
-        <div className={`text-5xl md:text-6xl mb-6 ${iconColor} group-hover:scale-125 group-hover:rotate-12 transition-all duration-500`}>
-          {icon}
-        </div>
-        <div className="text-4xl md:text-5xl font-bold mb-4 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-500 group-hover:to-purple-500 group-hover:bg-clip-text transition-all duration-500">
-          {value}
-        </div>
-        <div className="text-gray-600 font-medium text-lg group-hover:text-gray-700">
-          {title}
-        </div>
-      </div>
-      <div className="absolute -top-8 -left-8 w-24 h-24 bg-gradient-to-br from-blue-200/20 to-purple-200/20 rounded-full group-hover:scale-150 group-hover:rotate-45 transition-all duration-1000"></div>
-      <div className="absolute -bottom-6 -right-6 w-20 h-20 bg-gradient-to-br from-purple-200/20 to-pink-200/20 rounded-full group-hover:scale-125 group-hover:-rotate-90 transition-all duration-1000 delay-300"></div> {/* Cần Tailwind plugin cho delay */}
+}
+
+const StatCard: React.FC<StatCardProps> = ({ icon, title, value }) => (
+  <div className="custom-stat-card">
+    <div className="custom-stat-card-icon-wrapper">
+      {icon}
     </div>
+    <Text className="custom-stat-card-value">{value}</Text>
+    <Paragraph className="custom-stat-card-title">{title}</Paragraph>
   </div>
 );
 
+// Placeholder for SectionTitle component
+interface SectionTitleProps {
+  title: string;
+  subtitle?: string;
+  className?: string;
+}
+
+const SectionTitle: React.FC<SectionTitleProps> = ({ title, subtitle, className }) => (
+  <div className={classNames("section-title-wrapper", className)}> {/* Changed class for clarity */}
+    <Title level={2} className="section-title-main-heading"> {/* Added specific class */}
+      {title}
+    </Title>
+    {subtitle && <Paragraph className="section-title-subheading">{subtitle}</Paragraph>} {/* Changed to a more specific class */}
+  </div>
+);
+
+// Placeholder for benefitsData
+const benefitsData: BenefitCardProps[] = [
+  { icon: <Zap />, title: "Lợi ích 1", description: "Mô tả lợi ích 1", colorClass: "bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600" },
+  { icon: <BookOpen />, title: "Lợi ích 2", description: "Mô tả lợi ích 2", colorClass: "bg-gradient-to-br from-blue-400 via-indigo-500 to-purple-600" },
+  { icon: <TrendingUp />, title: "Lợi ích 3", description: "Mô tả lợi ích 3", colorClass: "bg-gradient-to-br from-purple-400 via-violet-500 to-pink-600" },
+  { icon: <ShieldCheck />, title: "Lợi ích 4", description: "Mô tả lợi ích 4", colorClass: "bg-gradient-to-br from-teal-400 via-cyan-500 to-blue-600" },
+];
+
 const HomePage: React.FC = () => {
-  const navigate = useNavigate();
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const user = useAppSelector(selectUser) as User | null;
+  const navigate = useNavigate(); // Ensure navigate is defined
+  const isAuthenticated = useAppSelector(selectIsAuthenticated); // Ensure isAuthenticated is defined
+  const user = useAppSelector(selectUser) as User | null; // Ensure user is defined
 
   // Banner data
   const bannerItems = [
@@ -293,40 +314,18 @@ const HomePage: React.FC = () => {
   };
 
   const statsData = [
-    { title: 'Trường Đại Học', value: "200+", icon: <BankOutlined />, iconColor: 'text-blue-600', bgGradient: 'from-blue-400 to-cyan-400' },
-    { title: 'Ngành Tuyển Sinh', value: "1,500+", icon: <SolutionOutlined />, iconColor: 'text-green-600', bgGradient: 'from-green-400 to-emerald-400' },
-    { title: 'Hồ Sơ Đã Nộp', value: "50K+", icon: <FormOutlined />, iconColor: 'text-purple-600', bgGradient: 'from-purple-400 to-violet-400' },
-    { title: 'Thí Sinh Tin Dùng', value: "100K+", icon: <Users />, iconColor: 'text-orange-600', bgGradient: 'from-orange-400 to-red-400' },
+    { title: 'Trường Đại Học', value: "200+", icon: <BankOutlined /> },
+    { title: 'Ngành Tuyển Sinh', value: "1,500+", icon: <SolutionOutlined /> },
+    { title: 'Hồ Sơ Đã Nộp', value: "50K+", icon: <FormOutlined /> },
+    { title: 'Thí Sinh Tin Dùng', value: "100K+", icon: <Users /> }, // Users is LucideUsers
   ];
 
-  const whyChooseUsItems = [
-    { icon: <Zap />, title: "Nộp Hồ Sơ Nhanh Chóng", description: "Quy trình trực tuyến tinh gọn, tiết kiệm thời gian tối đa cho thí sinh và phụ huynh với giao diện thân thiện.", colorClass: "bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600", accentColor: "from-green-400 to-emerald-500", linkTo: !isAuthenticated ? "/register" : (user?.role === 'candidate' ? "/candidate/submit-application" : undefined), linkText: "Nộp hồ sơ ngay" },
+  const whyChooseUsFeatures = [
+    { icon: <Zap />, title: "Nộp Hồ Sơ Nhanh Chóng", description: "Quy trình trực tuyến tinh gọn, tiết kiệm thời gian tối đa cho thí sinh và phụ huynh với giao diện thân thiện.", colorClass: "bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600", accentColor: "from-green-400 to-emerald-500", linkTo: !isAuthenticated ? "/auth/register" : (user?.role === 'candidate' ? "/candidate/submit-application" : undefined), linkText: "Nộp hồ sơ ngay" },
     { icon: <BookOpen />, title: "Thông Tin Đa Dạng", description: "Cập nhật liên tục thông tin tuyển sinh, chỉ tiêu, điểm chuẩn từ hàng trăm trường đại học uy tín trên cả nước.", colorClass: "bg-gradient-to-br from-blue-400 via-indigo-500 to-purple-600", accentColor: "from-blue-400 to-indigo-500", linkTo: "/universities", linkText: "Khám phá các trường" },
-    { icon: <TrendingUp />, title: "Theo Dõi Trực Quan", description: "Dễ dàng theo dõi trạng thái xử lý hồ sơ và nhận thông báo kết quả nhanh nhất qua hệ thống thông minh.", colorClass: "bg-gradient-to-br from-purple-400 via-violet-500 to-pink-600", accentColor: "from-purple-400 to-violet-500", linkTo: isAuthenticated && user?.role === 'candidate' ? "/candidate/my-applications" : "/login", linkText: "Kiểm tra hồ sơ" },
+    { icon: <TrendingUp />, title: "Theo Dõi Trực Quan", description: "Dễ dàng theo dõi trạng thái xử lý hồ sơ và nhận thông báo kết quả nhanh nhất qua hệ thống thông minh.", colorClass: "bg-gradient-to-br from-purple-400 via-violet-500 to-pink-600", accentColor: "from-purple-400 to-violet-500", linkTo: isAuthenticated && user?.role === 'candidate' ? "/candidate/my-applications" : "/auth/login", linkText: "Kiểm tra hồ sơ" },
     { icon: <ShieldCheck />, title: "Bảo Mật Tuyệt Đối", description: "Thông tin cá nhân và hồ sơ được mã hóa, bảo vệ an toàn theo tiêu chuẩn bảo mật quốc tế cao nhất.", colorClass: "bg-gradient-to-br from-teal-400 via-cyan-500 to-blue-600", accentColor: "from-teal-400 to-cyan-500" },
   ];
-
-  const testimonials = [
-    { quote: "Hệ thống rất dễ sử dụng và giúp tôi tiết kiệm rất nhiều thời gian trong việc nộp hồ sơ. Giao diện thân thiện và quy trình rõ ràng.", name: "Nguyễn Văn An", role: "Thí sinh K27", rating: 5, bgGradient: "from-blue-500 to-indigo-600", avatarUrl: "https://placehold.co/100x100/E2E8F0/4A5568?text=A" },
-    { quote: "Thông tin về các trường đại học rất đầy đủ và cập nhật. Tôi có thể so sánh và lựa chọn trường phù hợp một cách dễ dàng.", name: "Trần Thị Bình", role: "Phụ huynh", rating: 5, bgGradient: "from-purple-500 to-pink-600", avatarUrl: "https://placehold.co/100x100/FEF2F2/B91C1C?text=B" },
-    { quote: "Dịch vụ hỗ trợ tuyệt vời! Nhân viên tư vấn nhiệt tình và giải đáp mọi thắc mắc một cách chi tiết và chuyên nghiệp.", name: "Lê Minh Cường", role: "Thí sinh K26", rating: 4, bgGradient: "from-green-500 to-teal-600", avatarUrl: "https://placehold.co/100x100/EFF6FF/1D4ED8?text=C" }
-  ];
-  
-  const benefitsData = [
-    { icon: <Target />, title: "Tư Vấn Chuyên Nghiệp", description: "Đội ngũ chuyên gia giàu kinh nghiệm sẵn sàng hỗ trợ và tư vấn 24/7 để giúp bạn chọn ngành học phù hợp nhất.", colorClass: "bg-gradient-to-br from-rose-400 via-pink-500 to-purple-600", accentColor: "from-rose-400 to-pink-500" },
-    { icon: <BarChart2 />, title: "Phân Tích Thông Minh", description: "Hệ thống AI phân tích khả năng và đưa ra gợi ý trường-ngành phù hợp dựa trên điểm số và sở thích của bạn.", colorClass: "bg-gradient-to-br from-amber-400 via-orange-500 to-red-600", accentColor: "from-amber-400 to-orange-500" },
-    { icon: <Newspaper />, title: "Cập Nhật Liên Tục", description: "Tin tức tuyển sinh, thông báo quan trọng được cập nhật theo thời gian thực từ các trường đại học.", colorClass: "bg-gradient-to-br from-emerald-400 via-green-500 to-teal-600", accentColor: "from-emerald-400 to-green-500" },
-    { icon: <MessageCircleQuestion />, title: "Hỗ Trợ Tận Tình", description: "Chatbot thông minh và đội ngũ hỗ trợ 24/7 giải đáp mọi thắc mắc về quy trình tuyển sinh một cách nhanh chóng.", colorClass: "bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600", accentColor: "from-sky-400 to-blue-500" }
-  ];
-
-  const SectionTitle: React.FC<{ title: string, subtitle?: string }> = ({ title, subtitle }) => (
-    <div className="text-center mb-16">
-      <Title level={2} className="!text-4xl lg:!text-5xl !font-extrabold !text-gray-800 !mb-4">
-        {title}
-      </Title>
-      {subtitle && <Paragraph className="text-lg text-gray-600 max-w-2xl mx-auto">{subtitle}</Paragraph>}
-    </div>
-  );
 
   return (
     <div className="bg-gradient-to-br from-slate-50 via-stone-50 to-gray-100 min-h-screen">
@@ -397,15 +396,15 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="py-16 lg:py-24">
+      <section className="py-16 lg:py-24 why-choose-us-section"> {/* Added why-choose-us-section class */}
         <div className="container mx-auto px-6">
           <SectionTitle 
             title="Tại Sao Chọn Hệ Thống Của Chúng Tôi?"
             subtitle="Trải nghiệm tuyển sinh trực tuyến toàn diện, dễ dàng tiếp cận cơ hội học tập tại các trường đại học hàng đầu với những ưu điểm vượt trội."
           />
-          <Row gutter={[32, 32]}>
-            {whyChooseUsItems.map((item, index) => (
-              <Col xs={24} sm={12} lg={6} key={index}>
+          <Row gutter={[32, 40]}> {/* Increased gutter for more spacing */}
+            {whyChooseUsFeatures.map((item, index) => (
+              <Col xs={24} sm={12} md={8} key={index}> {/* Changed to 12 for sm, 8 for md/lg for 2/3 columns */}
                 <FeatureCard {...item} />
               </Col>
             ))}
@@ -414,7 +413,7 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* Sự kiện sắp diễn ra */}
-      <section className="py-16 lg:py-20 relative overflow-hidden" style={{ margin: '3rem 2rem', border: '2px solid #fbcfe8', borderRadius: '16px', backgroundColor: 'white', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)' }}>
+      <section className="py-16 lg:py-20 relative overflow-hidden upcoming-events-section" style={{ margin: '3rem 2rem', border: '2px solid #fbcfe8', borderRadius: '16px', backgroundColor: 'white', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)' }}>
         {/* Background Elements */}
         <div className="absolute inset-0 bg-gradient-to-br from-pink-50 via-rose-50 to-pink-50 z-0"></div>
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-pink-400 via-rose-400 to-pink-400 opacity-70"></div>
@@ -426,13 +425,10 @@ const HomePage: React.FC = () => {
         
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-3xl mx-auto text-center mb-12">
-            <Badge count={<CalendarOutlined className="text-pink-500" />} className="mb-6">
-              <span className="text-sm font-semibold text-pink-600 uppercase tracking-wider px-4 py-2 bg-pink-50 rounded-full border border-pink-100">Sự kiện sắp diễn ra</span>
-            </Badge>
-            <Title level={2} className="!text-4xl md:!text-5xl !font-extrabold !text-gray-800 !mb-6 !leading-tight">
-              Sự Kiện <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-rose-600">Tuyển Sinh 2025</span>
+            <Title level={2} className="!mb-6 !leading-tight upcoming-event-title">
+              Sự Kiện Tuyển Sinh 2025
             </Title>
-            <Paragraph className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <Paragraph className="max-w-2xl mx-auto upcoming-event-subtitle">
               Tham gia các sự kiện tuyển sinh để cập nhật thông tin mới nhất và gặp gỡ đại diện các trường đại học
             </Paragraph>
           </div>
@@ -624,6 +620,43 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
+      {/* Testimonials Section */}
+      <section className="py-12 md:py-20 bg-gray-100 testimonials-section">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12 md:mb-16">
+            <Paragraph className="text-sm font-semibold text-red-600 uppercase tracking-wider testimonials-section-tagline">
+              Đánh giá từ người dùng
+            </Paragraph>
+            <Title level={2} className="testimonials-section-title">
+              Lắng Nghe Chia Sẻ
+            </Title>
+            <Paragraph className="testimonials-section-subtitle">
+              Cảm nhận thực tế từ các thí sinh và phụ huynh đã tin tưởng lựa chọn đồng hành cùng chúng tôi.
+            </Paragraph>
+          </div>
+          <Row gutter={[24, 24]} justify="center">
+            {testimonialsData.map((testimonial: TestimonialCardProps, index: number) => (
+              <Col xs={24} sm={24} md={12} lg={8} key={index}>
+                <TestimonialCard
+                  quote={testimonial.quote}
+                  name={testimonial.name}
+                  role={testimonial.role}
+                  avatarChar={testimonial.avatarChar}
+                  rating={testimonial.rating}
+                  bgColor={testimonial.bgColor}
+                  icon={testimonial.icon}
+                />
+              </Col>
+            ))}
+          </Row>
+          <div className="text-center mt-12">
+            <Button type="primary" size="large" className="view-all-testimonials-button">
+              Xem thêm đánh giá
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* Benefits Section - Enhanced Modern Design */}
       <section className="py-20 lg:py-28 relative overflow-hidden" style={{ margin: '5rem 2rem', backgroundColor: 'transparent' }}>
         {/* Background Elements - Animated Gradient */}
@@ -659,8 +692,8 @@ const HomePage: React.FC = () => {
             
             {/* Enhanced Title with Animation */}
             <div className="animate-fadeInUp" style={{ animationDuration: '1s', animationDelay: '0.2s' }}>
-              <Title level={2} className="!text-5xl md:!text-6xl !font-extrabold !text-gray-800 !mb-6 !leading-tight relative inline-block">
-                <span className="relative z-10">Lợi Ích</span>{' '}
+              <Title level={2} className="!text-5xl md:!text-6xl !font-extrabold !mb-6 !leading-tight relative inline-block">
+                <span className="relative z-10">Lợi Ích</span>
                 <span className="relative">
                   <span className="absolute -inset-1 bg-gradient-to-r from-purple-400/20 to-pink-400/20 blur-lg rounded-lg"></span>
                   <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 animate-shimmer" style={{ backgroundSize: '200% 100%', animationDuration: '3s' }}>Vượt Trội</span>
@@ -680,12 +713,10 @@ const HomePage: React.FC = () => {
             <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-purple-200 to-transparent hidden lg:block"></div>
             
             <Row gutter={[32, 32]} className="items-stretch">
-              {benefitsData.map((item, index) => (
+              {benefitsData.map((item: BenefitCardProps, index: number) => ( // Explicitly typed item and index
                 <Col xs={24} sm={12} lg={6} key={index} className="animate-fadeInUp" style={{ animationDuration: '1.5s', animationDelay: `${0.2 + index * 0.2}s` }}>
                   <div className="group relative h-full transform transition-all duration-500 hover:translate-y-[-8px]">
-                    {/* Card highlight effect on hover */}
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl opacity-0 group-hover:opacity-100 blur transition duration-1000 group-hover:duration-200"></div>
-                    
+                    {/* Correctly call BenefitCard with item props */}
                     <BenefitCard {...item} />
                   </div>
                 </Col>
@@ -739,8 +770,7 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* Statistics Section - Clean Design */}
-      <section className="py-20 lg:py-28 relative overflow-hidden" style={{ border: '2px solid #bfdbfe', borderRadius: '16px', margin: '3rem 2rem', backgroundColor: 'white', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)' }}>
-        {/* Background Elements */}
+      <section className="py-20 lg:py-28 relative overflow-hidden stats-display-section" style={{ border: '2px solid #bfdbfe', borderRadius: '16px', margin: '3rem 2rem', backgroundColor: 'white', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)' }}>
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-sky-50 to-indigo-50 z-0"></div>
         
         {/* Decorative Elements */}
@@ -751,68 +781,29 @@ const HomePage: React.FC = () => {
         
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-3xl mx-auto text-center mb-16">
-            <Badge count={<BarChart2 size={16} className="text-blue-500" />} className="mb-6">
-              <span className="text-sm font-semibold text-blue-600 uppercase tracking-wider px-4 py-2 bg-blue-50 rounded-full">Thành tựu ấn tượng</span>
-            </Badge>
-            <Title level={2} className="!text-4xl md:!text-5xl !font-extrabold !text-gray-800 !mb-6 !leading-tight">
+            {/* REMOVED Badge component */}
+            <Title level={2} className="!text-4xl md:!text-5xl !font-extrabold !text-gray-800 !mb-6 !leading-tight stats-section-title">
               Những Con Số <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Biết Nói</span>
             </Title>
-            <Paragraph className="text-lg text-gray-600 max-w-2xl mx-auto">
+            {/* ADDED custom class stats-section-subtitle */}
+            <Paragraph className="text-lg text-gray-600 max-w-2xl mx-auto stats-section-subtitle">
               Minh chứng cho sự tin tưởng và hiệu quả mà hệ thống đã mang lại cho hàng ngàn thí sinh trên cả nước.
             </Paragraph>
           </div>
           
           <div className="relative">
-            {/* Connecting lines between stats */}
-            <div className="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-blue-100 via-indigo-200 to-blue-100 hidden lg:block"></div>
+            {/* Connecting lines between stats - kept for context, might need removal if cards are full width vertical */}
+            {/* <div className="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-blue-100 via-indigo-200 to-blue-100 hidden lg:block"></div> */}
             
-            <Row gutter={[32, 32]} className="items-stretch relative z-10">
+            {/* MODIFIED: Removed justify-center from Row */}
+            <Row gutter={[32, 48]} className="items-stretch relative z-10">
               {statsData.map((stat, index) => (
-                <Col xs={24} sm={12} lg={6} key={index}>
-                  <StatCard {...stat} />
+                // MODIFIED: Col spans for full vertical stacking, removed flex justify-center
+                <Col xs={24} sm={12} md={12} lg={6} key={index}>
+                  <StatCard icon={stat.icon} title={stat.title} value={stat.value} />
                 </Col>
               ))}
             </Row>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section - Enhanced */}
-      <section className="py-16 lg:py-24 relative overflow-hidden" style={{ border: '2px solid #ddd6fe', borderRadius: '16px', margin: '3rem 2rem', backgroundColor: 'white', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)' }}>
-        {/* Background Elements */}
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 opacity-50 z-0"></div>
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400 opacity-70"></div>
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400 opacity-70"></div>
-        
-        {/* Decorative Elements */}
-        <div className="absolute -top-20 right-0 w-64 h-64 bg-gradient-to-br from-indigo-200/20 to-purple-200/20 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-20 left-0 w-64 h-64 bg-gradient-to-br from-purple-200/20 to-pink-200/20 rounded-full blur-3xl"></div>
-        
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="text-center mb-12">
-            <div className="inline-block mb-4 px-4 py-1 rounded-full bg-indigo-100 text-indigo-800 text-sm font-medium">
-              Đánh giá từ người dùng
-            </div>
-            <Title level={2} className="!text-3xl md:!text-4xl !font-bold !mb-4 !text-transparent !bg-clip-text !bg-gradient-to-r !from-indigo-600 !via-purple-600 !to-indigo-600">
-              Lắng Nghe Chia Sẻ
-            </Title>
-            <Paragraph className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Cảm nhận thực tế từ các thí sinh và phụ huynh đã tin tưởng lựa chọn đồng hành cùng chúng tôi.
-            </Paragraph>
-          </div>
-          
-          <Row gutter={[32, 32]} className="items-stretch">
-            {testimonials.map((testimonial, index) => (
-              <Col xs={24} md={12} lg={8} key={index} className="mb-8">
-                <TestimonialCard {...testimonial} />
-              </Col>
-            ))}
-          </Row>
-          
-          <div className="text-center mt-8">
-            <Button type="default" size="large" className="!rounded-full !px-8 !border-indigo-300 !text-indigo-700 hover:!text-indigo-800 hover:!border-indigo-500 !font-medium">
-              Xem thêm đánh giá
-            </Button>
           </div>
         </div>
       </section>
@@ -835,7 +826,6 @@ const HomePage: React.FC = () => {
           {/* Banner style cards */}
           <div className="banner-container mb-8">
             <div className="banner-slide" style={{ backgroundImage: `linear-gradient(to right, rgba(5, 150, 105, 0.85) 0%, rgba(16, 185, 129, 0.85) 100%), url(https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80)` }}>
-              {/* Decorative elements */}
               <div className="banner-decorative-circle banner-circle-1" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
               <div className="banner-decorative-circle banner-circle-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
               
@@ -882,7 +872,6 @@ const HomePage: React.FC = () => {
           
           <div className="banner-container mb-8">
             <div className="banner-slide" style={{ backgroundImage: `linear-gradient(to right, rgba(217, 119, 6, 0.85) 0%, rgba(234, 88, 12, 0.85) 100%), url(https://images.unsplash.com/photo-1664575599736-c5197c684128?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80)` }}>
-              {/* Decorative elements */}
               <div className="banner-decorative-circle banner-circle-1" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
               <div className="banner-decorative-circle banner-circle-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
               
@@ -929,7 +918,6 @@ const HomePage: React.FC = () => {
           
           <div className="banner-container mb-8">
             <div className="banner-slide" style={{ backgroundImage: `linear-gradient(to right, rgba(220, 38, 38, 0.85) 0%, rgba(185, 28, 28, 0.85) 100%), url(https://images.unsplash.com/photo-1631217868264-e6036a81fbc1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1491&q=80)` }}>
-              {/* Decorative elements */}
               <div className="banner-decorative-circle banner-circle-1" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
               <div className="banner-decorative-circle banner-circle-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
               
@@ -974,10 +962,8 @@ const HomePage: React.FC = () => {
             </div>
           </div>
           
-          {/* Banner xem tất cả ngành học */}
           <div className="banner-container">
             <div className="banner-slide" style={{ backgroundImage: `linear-gradient(to right, rgba(6, 95, 70, 0.9) 0%, rgba(4, 120, 87, 0.9) 100%), url(https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80)`, height: '400px' }}>
-              {/* Decorative elements */}
               <div className="banner-decorative-circle banner-circle-1" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
               <div className="banner-decorative-circle banner-circle-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
               <div className="banner-decorative-circle banner-circle-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
@@ -1046,12 +1032,8 @@ const HomePage: React.FC = () => {
       {/* Footer */}
       <footer className="py-12 bg-gray-800 text-gray-400 text-center">
         <div className="container mx-auto px-6">
-          {/* <Paragraph className="!mb-2">
-            &copy; {new Date().getFullYear()} Hệ Thống Tuyển Sinh Đại Học. All rights reserved.
-          </Paragraph> */}
           <Paragraph className="text-sm">
-            {/* <AntLink href="/privacy-policy" className="!text-gray-400 hover:!text-white">Chính sách bảo mật</AntLink> | 
-            <AntLink href="/terms-of-service" className="!text-gray-400 hover:!text-white ml-1">Điều khoản dịch vụ</AntLink> */}
+            {/* Footer content can be added here */}
           </Paragraph>
         </div>
       </footer>

@@ -11,6 +11,8 @@
   --color-primary-dark: #4338ca; /* Tím indigo đậm hơn */
   --color-secondary: #0ea5e9;    /* Xanh da trời */
   --color-accent: #ec4899;       /* Hồng */
+  --color-danger: #ef4444;       /* Đỏ */
+  --color-accent-red: #f87171;   /* Đỏ nhạt hơn */
   
   --color-text-header: #111827;  /* Xám đậm cho tiêu đề */
   --color-text-body: #374151;    /* Xám cho văn bản thường */
@@ -72,37 +74,42 @@ body {
   to { transform: translateX(110%) skewX(-20deg); }
 }
 
+@keyframes glowingText {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 /* --- 4. LAYOUT & SECTION STYLING --- */
-section {
-  padding: var(--spacing-16) var(--spacing-4);
-}
+/* section { ... } */ /* Assuming this is correctly defined elsewhere if needed */
 
-@media (min-width: 768px) {
-  section {
-    padding: var(--spacing-24) var(--spacing-8);
-  }
-}
-
-.section-title {
+.section-title-wrapper {
   text-align: center;
   margin-bottom: var(--spacing-16);
   animation: fadeInUp 1s ease-out;
 }
 
-.section-title .ant-typography-title {
+.section-title-main-heading {
   font-family: var(--font-display) !important;
   font-weight: 800 !important;
-  font-size: clamp(2.25rem, 5vw, 3rem) !important; /* Typography co giãn */
-  color: var(--color-text-header) !important;
-  line-height: 1.2 !important;
-  margin-bottom: var(--spacing-4) !important;
+  font-size: clamp(2.5rem, 5vw, 3.25rem) !important;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-primary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  line-height: 1.25 !important;
+  margin-bottom: var(--spacing-6) !important;
+  padding-bottom: 0.2em;
 }
 
-.section-title .ant-typography-paragraph {
-  font-size: 1.125rem !important;
-  color: var(--color-text-muted) !important;
-  max-width: 650px;
-  margin: 0 auto !important;
+.section-title-subheading {
+  font-size: 1.4rem !important;
+  color: var(--color-accent) !important;
+  max-width: 800px;
+  margin: 0 auto var(--spacing-8) auto !important;
+  line-height: 1.75 !important;
+  font-weight: 500 !important;
 }
 
 /* --- 5. COMPONENT STYLES - REFINED --- */
@@ -110,29 +117,30 @@ section {
 /* --- Card Base (Dùng cho tất cả các loại thẻ) --- */
 .card-base {
   background-color: var(--color-bg-white);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-xl); /* Tăng bo góc */
+  box-shadow: var(--shadow-lg); /* Tăng shadow mặc định */
   padding: var(--spacing-8);
   height: 100%;
-  transition: var(--transition-all);
-  border: 1px solid var(--color-border);
+  transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, border-color 0.3s ease-out; /* Tách transition */
+  border: 1px solid transparent; /* Viền trong suốt ban đầu */
   position: relative;
   overflow: hidden;
 }
 
 .card-base:hover {
-  transform: translateY(-8px);
+  transform: translateY(-10px) scale(1.02); /* Hiệu ứng nổi bật hơn */
   box-shadow: var(--shadow-xl);
-  border-color: transparent;
+  /* border-color: var(--color-primary); */ /* Có thể dùng nếu muốn viền màu khi hover */
 }
 
-/* Thêm một lớp "viền chuyển màu" khi hover cho tất cả các card */
+/* Bỏ ::before nếu không dùng viền gradient phức tạp nữa để đơn giản hóa */
+/*
 .card-base::before {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: var(--radius-xl);
-  padding: 1px; /* Độ dày của viền */
+  padding: 1px; 
   background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
   -webkit-mask: 
      linear-gradient(#fff 0 0) content-box, 
@@ -146,199 +154,351 @@ section {
 .card-base:hover::before {
   opacity: 1;
 }
+*/
 
 /* --- Feature Card & Benefit Card --- */
-.feature-card, .benefit-card {
-  text-align: center;
-  cursor: pointer;
+/* .feature-card and .benefit-card inherit from .card-base */
+
+.feature-card {
+  /* border: 1px solid var(--color-border); /* Removed border */ */
+  background-color: var(--color-bg-white);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: var(--spacing-8);
+  height: 100%;
+  transition: transform 0.35s ease-out, box-shadow 0.35s ease-out;
+  display: flex; /* Added to help with card-content flex */
+  flex-direction: column; /* Added to help with card-content flex */
+  cursor: pointer; /* Indicate it's clickable */
 }
+
+.feature-card:hover {
+  transform: translateY(-12px) scale(1.03); /* Enhanced hover effect */
+  box-shadow: var(--shadow-xl);
+}
+
+.feature-card .card-content { /* Thêm class này vào JSX nếu chưa có */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align items to the start, icon will be at top */
+  justify-content: flex-start; /* Align items to the start, icon will be at top */
+  text-align: left; /* Align text to the left */
+  height: 100%; /* Đảm bảo card-content chiếm toàn bộ chiều cao */
+}
+
 
 .feature-card .card-icon-wrapper,
 .benefit-card .card-icon-wrapper {
-  margin: 0 auto 1.5rem auto;
+  margin-bottom: var(--spacing-6); /* Tăng khoảng cách dưới icon */
+  align-self: flex-start; /* Align icon to the left */
 }
 
 .feature-card .card-icon,
 .benefit-card .card-icon {
-  width: 72px;
-  height: 72px;
-  border-radius: var(--radius-md);
+  width: 72px; /* Adjusted kích thước icon */
+  height: 72px; /* Adjusted kích thước icon */
+  border-radius: var(--radius-lg); /* Bo góc icon mềm mại hơn */
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.25rem;
+  font-size: 2.5rem; /* Adjusted kích thước font của icon */
   color: white;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-  transition: var(--transition-all);
-  box-shadow: 0 8px 15px rgba(79, 70, 229, 0.3);
+  background: linear-gradient(145deg, var(--color-primary), var(--color-secondary)); /* Điều chỉnh góc gradient */
+  transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+  box-shadow: 0 10px 20px rgba(79, 70, 229, 0.25); /* Shadow mềm hơn */
 }
 
 .feature-card:hover .card-icon,
 .benefit-card:hover .card-icon {
-  transform: scale(1.1) rotate(-8deg);
-  box-shadow: 0 12px 25px rgba(79, 70, 229, 0.4);
+  transform: scale(1.12) rotate(-8deg); /* Adjusted hover icon rõ rệt hơn */
+  box-shadow: 0 15px 30px rgba(79, 70, 229, 0.35);
 }
+
+.feature-card .card-body { /* Thêm class này vào JSX nếu chưa có */
+  flex-grow: 1; /* Cho phép phần body co giãn để đẩy footer xuống */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Align content to the start */
+  text-align: left; /* Align text to the left */
+}
+
 
 .feature-card .card-title,
 .benefit-card .card-title {
   font-family: var(--font-display) !important;
-  font-size: 1.375rem !important;
+  font-size: 1.35rem !important; /* Adjusted kích thước tiêu đề */
   font-weight: 700 !important;
-  color: var(--color-text-header) !important;
-  margin-bottom: 0.5rem !important;
+  color: var(--color-primary) !important; /* Changed color for title */
+  margin-bottom: var(--spacing-4) !important; /* Tăng khoảng cách dưới tiêu đề */
+  line-height: 1.35;
+  text-align: left; /* Ensure title text is left-aligned */
 }
 
 .feature-card .card-description,
 .benefit-card .card-description {
-  color: var(--color-text-muted);
+  color: var(--color-text-body) !important; /* Changed color for description */
+  font-size: 0.9rem; /* Chỉnh kích thước font mô tả */
+  line-height: 1.65;
+  margin-bottom: var(--spacing-6); /* Thêm khoảng cách dưới mô tả */
+  text-align: left; /* Ensure description text is left-aligned */
+}
+
+.feature-card .card-footer {
+  margin-top: auto; 
+  padding-top: var(--spacing-4); 
+  width: 100%; /* Đảm bảo footer chiếm toàn bộ chiều rộng */
+  display: flex;
+  justify-content: flex-start; /* Align link to the left */
+}
+
+.feature-card .card-link {
+  display: inline-flex; 
+  align-items: center; 
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 0.95rem; /* Added font size */
+  transition: color 0.3s ease, transform 0.3s ease; /* Thêm transition cho transform */
+  padding: 0.5rem 1rem; /* Thêm padding cho link dễ click hơn */
+  border-radius: var(--radius-md); /* Bo góc cho link */
+}
+
+.feature-card .card-link:hover {
+  color: var(--color-accent); /* Đổi màu khi hover sang màu accent */
+  transform: translateX(3px); /* Hiệu ứng di chuyển nhẹ sang phải */
+}
+
+.feature-card .card-link:hover .card-link-icon {
+  transform: translateX(4px); /* Di chuyển icon mạnh hơn */
+}
+
+.feature-card .card-link-icon {
+  margin-left: 0.4rem; /* Adjusted khoảng cách icon */
+  transition: transform 0.3s ease-out;
 }
 
 /* --- Testimonial Card --- */
 .testimonial-card {
   display: flex;
   flex-direction: column;
-}
-
-.testimonial-card .testimonial-rating {
-  color: #facc15; /* Màu vàng */
-  margin-bottom: var(--spacing-4);
-}
-
-.testimonial-card .testimonial-quote {
-  font-size: 1.1rem;
-  color: var(--color-text-body);
-  flex-grow: 1;
-  margin-bottom: var(--spacing-6) !important;
+  border-radius: 1rem; /* 16px */
+  padding: 2rem; /* 32px */
   position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%; /* Ensure cards in a row have same height */
+  display: flex;
+  flex-direction: column;
 }
 
-.testimonial-card .testimonial-quote::before {
-  content: '“';
-  position: absolute;
-  top: -1.5rem;
-  left: -0.5rem;
-  font-size: 5rem;
-  color: var(--color-border);
-  z-index: 0;
-  line-height: 1;
-  font-family: serif;
+.testimonial-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-.testimonial-card .testimonial-author {
+.testimonial-card-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.testimonial-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem; /* 24px */
+}
+
+.testimonial-avatar {
+  width: 3.5rem; /* 56px */
+  height: 3.5rem; /* 56px */
+  border-radius: 9999px; /* full */
+  background-color: rgba(255, 255, 255, 0.2);
   display: flex;
   align-items: center;
-  margin-top: auto;
-  padding-top: var(--spacing-6);
-  border-top: 1px solid var(--color-border);
+  justify-content: center;
+  font-size: 1.5rem; /* 24px */
+  font-weight: 600;
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.5);
 }
 
-.testimonial-card .ant-avatar {
-  margin-right: var(--spacing-4);
-  border: 2px solid var(--color-primary);
+.testimonial-rating .star-icon {
+  color: #facc15; /* Yellow-400 */
+  font-size: 1rem; /* 16px */
+  margin-left: 0.25rem; /* 4px */
 }
 
-/* --- Stat Card --- */
-.stat-card {
+.testimonial-quote {
+  font-size: 1.125rem; /* 18px */
+  line-height: 1.8;
+  font-style: italic;
+  margin-bottom: 1.5rem; /* 24px */
+  flex-grow: 1;
+  color: #333; /* Added dark gray color for better readability */
+}
+
+.testimonial-author {
+  margin-top: auto; /* Pushes author to the bottom if card content is short */
+  padding-top: 1rem; /* 16px */
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.testimonial-name {
+  display: block;
+  font-weight: 600;
+  font-size: 1rem; /* 16px */
+  color: #111; /* Added very dark gray / black color */
+}
+
+.testimonial-role {
+  font-size: 0.875rem; /* 14px */
+  color: #555; /* Added medium gray color */
+}
+
+.testimonial-card-icon {
+  position: absolute;
+  bottom: 1.5rem; /* 24px */
+  right: 1.5rem; /* 24px */
+  font-size: 2.5rem; /* 40px */
+  color: rgba(255, 255, 255, 0.3);
+  opacity: 0.5;
+  transform: rotate(-15deg);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.testimonial-card:hover .testimonial-card-icon {
+  opacity: 1;
+  transform: rotate(-5deg) scale(1.1);
+}
+
+/* Decorative element for card - subtle */
+.testimonial-card-decoration {
+  position: absolute;
+  top: -50px;
+  left: -50px;
+  width: 150px;
+  height: 150px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 9999px;
+  transform: rotate(45deg);
+  transition: transform 0.5s ease;
+  z-index: 1;
+}
+
+.testimonial-card:hover .testimonial-card-decoration {
+  transform: rotate(60deg) scale(1.2);
+}
+
+.view-all-testimonials-button {
+  background-color: #ef4444; /* Red-500 */
+  border-color: #ef4444;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* ===================================================================
+   THỐNG KÊ NỔI BẬT - STATISTICS SECTION
+   =================================================================== */
+
+/* Stats Section */
+.stats-display-section {
+  padding: 60px 20px; /* Increased padding, reduced horizontal padding for smaller screens */
+  /* background-color: #f9f9f9; */ /* Light gray background for the section - Overridden by inline style */
+}
+
+/* MODIFIED: Changed selector to be more specific */
+.stats-display-section .stats-section-title {
   text-align: center;
-  padding: var(--spacing-6);
+  margin-bottom: 20px !important; /* Reduced margin */
+  font-size: 2.25rem !important; /* Slightly reduced title size for balance */
+  font-weight: bold !important;
+  color: #333 !important; /* Ensure color is applied */
 }
 
-.stat-card .stat-value {
+.stats-section-subtitle {
+  text-align: center;
+  font-size: 1.1rem; /* Adjust as needed */
+  line-height: 1.7; /* Improved readability */
+  max-width: 700px; /* Ensure it doesn't get too wide on large screens */
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 50px; /* Added margin below subtitle */
+}
+
+/* Custom Stat Card Styling */
+.custom-stat-card {
+  background: linear-gradient(145deg, #ffffff, #f0f2f5);
+  border-radius: 16px; /* var(--radius-lg) */
+  padding: 32px; /* var(--spacing-8) */
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08), 0 5px 10px rgba(0, 0, 0, 0.04);
+  transition: transform 0.3s ease, box-shadow 0.4s ease;
+  height: 100%; /* Ensure cards in a row have same height */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Center content vertically */
+  border: 1px solid #e5e7eb; /* var(--color-border) */
+}
+
+.custom-stat-card:hover {
+  transform: translateY(-12px) scale(1.03);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+.custom-stat-card-icon-wrapper {
+  margin-bottom: 24px; /* var(--spacing-6) */
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  color: white;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%; /* Circular icon background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem; /* Increased icon size */
+  box-shadow: 0 8px 16px rgba(79, 70, 229, 0.25);
+  transition: all 0.3s ease;
+}
+
+.custom-stat-card:hover .custom-stat-card-icon-wrapper {
+  transform: scale(1.1) rotate(10deg);
+  box-shadow: 0 12px 24px rgba(79, 70, 229, 0.35);
+}
+
+.custom-stat-card-value {
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 6vw, 3.5rem) !important;
+  font-size: clamp(2.25rem, 5vw, 3rem) !important; /* Responsive font size */
   font-weight: 800 !important;
   color: var(--color-primary) !important;
   line-height: 1.1 !important;
+  margin-bottom: 8px !important; /* var(--spacing-2) */
 }
 
-.stat-card .stat-title {
-  font-size: 1rem;
-  color: var(--color-text-muted);
-  font-weight: 500;
+.custom-stat-card-title {
+  font-size: 1rem; /* 16px */
+  color: var(--color-text-muted) !important;
+  font-weight: 500 !important;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
-/* --- CTA Section --- */
-.premium-section {
-  border-radius: var(--radius-xl);
-  margin: 0 var(--spacing-6);
+/* Testimonials Section Styling */
+.testimonials-section-tagline,
+.testimonials-section-title,
+.testimonials-section-subtitle {
   text-align: center;
 }
 
-.premium-section .premium-section-title {
-  font-family: var(--font-display) !important;
-  font-size: clamp(2rem, 5vw, 2.75rem) !important;
+/* Why Choose Us Section Specific Styling */
+.why-choose-us-section .feature-card {
+  background: linear-gradient(145deg, var(--color-bg-light), var(--color-bg-white)); /* Subtle gradient background */
+  border: 1px solid var(--color-border); /* Light border */
 }
 
-.premium-section .premium-button {
-  box-shadow: var(--shadow-lg);
-  transform: scale(1);
-}
-
-.premium-section .premium-button:hover {
-  transform: scale(1.05);
-  box-shadow: var(--shadow-xl);
-}
-
-/* --- Banner trên HomePage (Không phải Banner Component) --- */
-.banner-container-homepage { /* Đổi tên class để tránh xung đột */
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  box-shadow: var(--shadow-lg);
-  margin-bottom: var(--spacing-8);
-}
-
-.banner-slide-homepage { /* Đổi tên class */
-  padding: 4rem;
-  background-size: cover;
-  background-position: center;
-  position: relative;
-  color: white;
-  min-height: 450px;
-  display: flex;
-  align-items: center;
-  text-shadow: 0 2px 15px rgba(0,0,0,0.5);
-}
-
-.banner-slide-homepage .ant-typography-title {
-    font-size: clamp(2rem, 5vw, 3rem) !important;
-    font-weight: 800 !important;
-    color: white !important;
-}
-
-.banner-slide-homepage .ant-typography-paragraph {
-    font-size: 1.125rem;
-    max-width: 600px;
-    color: rgba(255, 255, 255, 0.9) !important;
-}
-
-.banner-slide-homepage .ant-btn {
-    margin-top: 1rem;
-    height: 50px !important;
-    padding: 0 2rem !important;
-    font-size: 1rem !important;
-    font-weight: 600 !important;
-}
-
-/* Hiệu ứng "shine" tinh tế cho các button */
-.ant-btn-primary {
-  position: relative;
-  overflow: hidden;
-}
-
-.ant-btn-primary::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 200%;
-  height: 100%;
-  background-image: linear-gradient(100deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
-  transform: translateX(-100%) skewX(-20deg);
-}
-
-.ant-btn-primary:hover::after {
-  transform: translateX(100%) skewX(-20deg);
-  transition: transform 1s;
+.why-choose-us-section .feature-card:hover {
+  border-color: var(--color-primary);
 }
