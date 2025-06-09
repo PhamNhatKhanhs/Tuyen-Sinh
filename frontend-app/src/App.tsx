@@ -20,7 +20,6 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const CandidateDashboardPage = lazy(() => import('./features/candidate/pages/CandidateDashboardPage'));
 const CandidateSubmitApplicationPage = lazy(() => import('./features/candidate/pages/CandidateSubmitApplicationPage'));
 const CandidateViewApplicationsPage = lazy(() => import('./features/candidate/pages/CandidateViewApplicationsPage'));
-const CandidateApplicationDetailPage = lazy(() => import('./features/candidate/pages/CandidateApplicationDetailPage'));
 const CandidateProfilePage = lazy(() => import('./features/candidate/pages/CandidateProfilePage'));
 
 // Admin Pages
@@ -105,19 +104,12 @@ function App() {
                 <CandidateSubmitApplicationPage />
               </ProtectedRoute>
             } 
-          />            <Route 
+          />
+            <Route 
             path="/candidate/my-applications" 
             element={
               <ProtectedRoute allowedRoles={['candidate']}>
                 <CandidateViewApplicationsPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/candidate/applications/:id" 
-            element={
-              <ProtectedRoute allowedRoles={['candidate']}>
-                <CandidateApplicationDetailPage />
               </ProtectedRoute>
             } 
           />

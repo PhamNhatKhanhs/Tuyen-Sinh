@@ -30,7 +30,7 @@ const AppFooter = () => {
   const currentYear = new Date().getFullYear();
 
   const quickLinks = [
-    { text: 'Trang chủ PTIT', href: '#' },
+    { text: 'Trang chủ', href: '#' },
     { text: 'Đề án tuyển sinh', href: '#' },
     { text: 'Các ngành đào tạo', href: '#' },
     { text: 'Tin tức & Thông báo', href: '#' },

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Layout, Menu, Button, Avatar, Dropdown, Badge, List, Typography, Spin, Empty, message, Drawer
@@ -16,7 +16,6 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { logout, selectUser, selectIsAuthenticated } from '../../features/auth/store/authSlice';
 import notificationService from '../../features/notification/services/notificationService';
 import { NotificationFE } from '../../features/notification/types';
-import SettingsModal from '../settings/SettingsModal';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/vi';
@@ -42,10 +41,10 @@ const AppHeader: React.FC = () => {
   }, []);
 
   const [notifications, setNotifications] = useState<NotificationFE[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);  const [loadingNotifications, setLoadingNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [loadingNotifications, setLoadingNotifications] = useState(false);
   const [notificationDropdownVisible, setNotificationDropdownVisible] = useState(false);
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
-  const [settingsModalVisible, setSettingsModalVisible] = useState(false);
 
   const fetchNotifications = useCallback(async (showLoading = true) => {
     if (!isAuthenticated) return;
@@ -122,7 +121,8 @@ const AppHeader: React.FC = () => {
         </div>
       ),
       onClick: () => navigate(user?.role === 'admin' ? '/admin/dashboard' : '/candidate/profile')
-    },    {
+    },
+    {
       key: 'settings',
       label: (
         <div className="dropdown-item">
@@ -130,7 +130,7 @@ const AppHeader: React.FC = () => {
           <span>Cài đặt</span>
         </div>
       ),
-      onClick: () => setSettingsModalVisible(true)
+      onClick: () => message.info('Chức năng cài đặt chưa có!')
     },
     { type: 'divider' },
     {
@@ -451,15 +451,10 @@ const AppHeader: React.FC = () => {
               >
                 Đăng Xuất
               </Button>
-            </div>          )}
+            </div>
+          )}
         </div>
       </Drawer>
-
-      {/* Settings Modal */}
-      <SettingsModal 
-        visible={settingsModalVisible} 
-        onClose={() => setSettingsModalVisible(false)} 
-      />
     </>
   );
 };

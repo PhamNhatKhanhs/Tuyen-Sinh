@@ -101,24 +101,74 @@ interface TestimonialCardProps {
 const TestimonialCard: React.FC<TestimonialCardProps> = ({ quote, name, role, avatarChar, avatarUrl, rating, bgColor, icon }) => {
   return (
     <div className={classNames("testimonial-card", bgColor)}> {/* Used bgColor here */}
-      {icon && <div className="testimonial-icon">{icon}</div>}
-      {avatarUrl ? (
-        <Avatar src={avatarUrl} size={56} className="testimonial-avatar-img" />
-      ) : avatarChar ? (
-        <div className="testimonial-avatar">{avatarChar}</div>
-      ) : null}
-      <Paragraph className="testimonial-quote">"{quote}"</Paragraph>
-      <Text strong className="testimonial-name">{name}</Text>
-      <Text className="testimonial-role">{role}</Text>
-      {rating && (
-        <div className="testimonial-rating">
-          {Array(rating)
-            .fill(0)
-            .map((_, i) => (
-              <StarFilled key={i} style={{ color: '#FFD700' }} />
-            ))}
+      <div className="testimonial-card-content">
+        {icon && <div className="testimonial-icon">{icon}</div>}
+        {avatarUrl ? (
+          <Avatar src={avatarUrl} size={56} className="testimonial-avatar-img" />
+        ) : avatarChar ? (
+          <div className="testimonial-avatar">{avatarChar}</div>
+        ) : null}
+        <Paragraph className="testimonial-quote">"{quote}"</Paragraph>
+        <Text strong className="testimonial-name">{name}</Text>
+        <Text className="testimonial-role">{role}</Text>
+        {rating && (
+          <div className="testimonial-rating">
+            {Array(rating)
+              .fill(0)
+              .map((_, i) => (
+                <StarFilled key={i} style={{ color: '#FFD700' }} />
+              ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// WhyChooseUsCard với thiết kế dựa trên testimonials pattern
+interface WhyChooseUsCardProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  bgColor?: string;
+  linkTo?: string;
+  linkText?: string;
+}
+
+const WhyChooseUsCard: React.FC<WhyChooseUsCardProps> = ({ icon, title, description, bgColor, linkTo, linkText }) => {
+  const navigate = useNavigate();
+  
+  const handleCardClick = () => {
+    if (linkTo) {
+      navigate(linkTo);
+    }
+  };  return (
+    <div 
+      className={classNames("why-choose-us-card", linkTo ? "cursor-pointer" : "")} 
+      onClick={handleCardClick}
+    >
+      <div className="why-choose-us-card-content">
+        {/* Icon wrapper */}
+        <div className={classNames("why-choose-us-card-icon", bgColor)}>
+          {icon}
         </div>
-      )}
+        
+        {/* Title */}
+        <Text strong className="why-choose-us-card-title">{title}</Text>
+        
+        {/* Description */}
+        <Paragraph className="why-choose-us-card-description">{description}</Paragraph>
+        
+        {/* Footer with link */}
+        {linkTo && (
+          <div className="why-choose-us-card-footer">
+            <div className="why-choose-us-card-link">
+              <span>{linkText || 'Tìm hiểu thêm'}</span>
+              <ChevronRight className="card-link-icon" size={18} />
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -327,12 +377,10 @@ const HomePage: React.FC = () => {
     { title: 'Hồ Sơ Đã Nộp', value: "50K+", icon: <FormOutlined /> },
     { title: 'Thí Sinh Tin Dùng', value: "100K+", icon: <Users /> }, // Users is LucideUsers
   ];
-
   const whyChooseUsFeatures = [
     { icon: <Zap />, title: "Nộp Hồ Sơ Nhanh Chóng", description: "Quy trình trực tuyến tinh gọn, tiết kiệm thời gian tối đa cho thí sinh và phụ huynh với giao diện thân thiện.", colorClass: "bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600", accentColor: "from-green-400 to-emerald-500", linkTo: !isAuthenticated ? "/auth/register" : (user?.role === 'candidate' ? "/candidate/submit-application" : undefined), linkText: "Nộp hồ sơ ngay" },
     { icon: <BookOpen />, title: "Thông Tin Đa Dạng", description: "Cập nhật liên tục thông tin tuyển sinh, chỉ tiêu, điểm chuẩn từ hàng trăm trường đại học uy tín trên cả nước.", colorClass: "bg-gradient-to-br from-blue-400 via-indigo-500 to-purple-600", accentColor: "from-blue-400 to-indigo-500", linkTo: "/universities", linkText: "Khám phá các trường" },
     { icon: <TrendingUp />, title: "Theo Dõi Trực Quan", description: "Dễ dàng theo dõi trạng thái xử lý hồ sơ và nhận thông báo kết quả nhanh nhất qua hệ thống thông minh.", colorClass: "bg-gradient-to-br from-purple-400 via-violet-500 to-pink-600", accentColor: "from-purple-400 to-violet-500", linkTo: isAuthenticated && user?.role === 'candidate' ? "/candidate/my-applications" : "/auth/login", linkText: "Kiểm tra hồ sơ" },
-    { icon: <ShieldCheck />, title: "Bảo Mật Tuyệt Đối", description: "Thông tin cá nhân và hồ sơ được mã hóa, bảo vệ an toàn theo tiêu chuẩn bảo mật quốc tế cao nhất.", colorClass: "bg-gradient-to-br from-teal-400 via-cyan-500 to-blue-600", accentColor: "from-teal-400 to-cyan-500" },
   ];
 
   return (
@@ -366,7 +414,7 @@ const HomePage: React.FC = () => {
                   type="primary" 
                   size="large"
                   className="!h-auto !px-8 !py-3 !text-base !font-medium bg-gradient-to-r from-indigo-500 to-purple-500 border-none shadow-lg hover:shadow-xl transition-all duration-300"
-                  onClick={() => navigate('/university')}
+                  onClick={() => navigate('/universities')}
                 >
                   <span className="flex items-center">
                     <BankOutlined className="mr-2" />
@@ -401,239 +449,185 @@ const HomePage: React.FC = () => {
             </Col>
           </Row>
         </div>
-      </section>
-
-      {/* Why Choose Us Section */}
-      <section className="py-16 lg:py-24 why-choose-us-section"> {/* Added why-choose-us-section class */}
-        <div className="container mx-auto px-6">
-          <SectionTitle 
-            title="Tại Sao Chọn Hệ Thống Của Chúng Tôi?"
-            subtitle="Trải nghiệm tuyển sinh trực tuyến toàn diện, dễ dàng tiếp cận cơ hội học tập tại các trường đại học hàng đầu với những ưu điểm vượt trội."
-          />
-          <Row gutter={[32, 40]}> {/* Increased gutter for more spacing */}
+      </section>      {/* Why Choose Us Section - Using Testimonials Design Pattern */}
+      <section className="py-12 md:py-20 why-choose-us-section"> {/* Matching testimonials section spacing */}
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12 md:mb-16">
+            <Paragraph className="why-choose-us-section-tagline">
+              {/* LỢI ÍCH VƯỢT TRỘI */}
+            </Paragraph>
+            <Title level={2} className="why-choose-us-section-title">
+              Tại Sao Chọn Hệ Thống Của Chúng Tôi?
+            </Title>
+            <Paragraph className="why-choose-us-section-subtitle">
+              Trải nghiệm tuyển sinh trực tuyến toàn diện, dễ dàng tiếp cận cơ hội học tập tại các trường đại học hàng đầu với những ưu điểm vượt trội.
+            </Paragraph>
+          </div>          <Row gutter={[24, 24]} justify="center">
             {whyChooseUsFeatures.map((item, index) => (
-              <Col xs={24} sm={12} md={8} key={index}> {/* Changed to 12 for sm, 8 for md/lg for 2/3 columns */}
-                <FeatureCard {...item} />
+              <Col xs={24} sm={24} md={12} lg={8} key={index}>
+                <WhyChooseUsCard
+                  icon={item.icon}
+                  title={item.title}
+                  description={item.description}
+                  bgColor={item.accentColor ? `bg-gradient-to-br ${item.accentColor}` : 'bg-gradient-to-br from-blue-400 to-indigo-500'}
+                  linkTo={item.linkTo}
+                  linkText={item.linkText}
+                />
               </Col>
             ))}
+          </Row>
+          <div className="text-center mt-12">
+            {/* Optional: Add a CTA button here */}
+          </div>
+        </div>
+      </section>      {/* Featured Universities Section - Enhanced Premium */}
+      <section className="universities-enhanced-section relative py-24 lg:py-40 overflow-hidden" style={{ margin: '4rem 2rem', borderRadius: '24px' }}>
+        {/* Enhanced Background with Multiple Layers */}
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600"></div>
+        <div className="absolute inset-0 bg-gradient-to-tr from-green-800/80 via-transparent to-blue-800/80"></div>
+        
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 universities-bg-pattern opacity-20">
+          <div className="absolute -top-40 -left-40 w-96 h-96 bg-white/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-white/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-1/4 right-1/3 w-64 h-64 bg-yellow-300/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute bottom-1/3 left-1/4 w-80 h-80 bg-blue-300/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '3s' }}></div>
+        </div>
+
+        {/* Decorative Grid Pattern */}
+        <div className="absolute inset-0 opacity-5" style={{ 
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.8'%3E%3Cpath d='M36 30c0-8.284-6.716-15-15-15s-15 6.716-15 15 6.716 15 15 15 15-6.716 15-15zm-5 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` 
+        }}></div>        <div className="container mx-auto px-6 relative z-10">
+          <Row align="middle" gutter={[48, 48]}>
+            {/* Left Column - Content */}
+            <Col xs={24} lg={12} xl={13}>
+              <div className="universities-content-container">
+                {/* Enhanced Badge */}
+                <div className="universities-enhanced-badge">
+                  <span className="universities-badge-icon">🏛️</span>
+                  <span className="universities-badge-text">TOP TRƯỜNG ĐẠI HỌC HÀNG ĐẦU</span>
+                  <span className="universities-badge-icon">⭐</span>
+                </div>
+
+                {/* Enhanced Title */}
+                <Title level={1} className="universities-enhanced-title">
+                  <span className="universities-title-line1">Khám Phá Những</span>
+                  <br />
+                  <span className="universities-title-line2">Trường Đại Học Uy Tín</span>
+                </Title>
+
+                {/* Enhanced Description */}
+                <div className="universities-description-container">
+                  <Paragraph className="universities-enhanced-description">
+                    <strong>Tìm hiểu thông tin chi tiết</strong> về các trường đại học uy tín hàng đầu Việt Nam. 
+                    Khám phá <span className="universities-highlight-text">chương trình đào tạo chất lượng cao</span> 
+                    và cơ hội nghề nghiệp tương lai rộng mở.
+                  </Paragraph>
+                  <Paragraph className="universities-enhanced-description">
+                    Hãy lựa chọn môi trường học tập lý tưởng với 
+                    <span className="universities-highlight-text"> đội ngũ giảng viên uy tín</span> và 
+                    cơ sở vật chất hiện đại nhất!
+                  </Paragraph>
+                </div>
+
+                {/* Enhanced Features List */}
+                <div className="universities-features-list">
+                  <div className="universities-feature-item">
+                    <div className="universities-feature-icon">🎓</div>
+                    <span>200+ trường đại học uy tín</span>
+                  </div>
+                  <div className="universities-feature-item">
+                    <div className="universities-feature-icon">📚</div>
+                    <span>1,500+ ngành học đa dạng</span>
+                  </div>
+                  <div className="universities-feature-item">
+                    <div className="universities-feature-icon">🏆</div>
+                    <span>Xếp hạng quốc tế cao</span>
+                  </div>
+                </div>
+
+                {/* Enhanced Buttons */}
+                <div className="universities-buttons-container">
+                  <Button 
+                    type="primary" 
+                    size="large" 
+                    className="universities-primary-button"
+                    icon={<Star className="universities-button-icon"/>}
+                    onClick={() => navigate('/universities')}
+                  >
+                    <span className="universities-button-text">Xem Tất Cả Trường</span>
+                  </Button>
+                  <Button 
+                    size="large" 
+                    className="universities-secondary-button"
+                    icon={<ArrowRightOutlined className="universities-button-icon"/>}
+                    onClick={() => navigate('/top-truong-dai-hoc')}
+                  >
+                    <span className="universities-button-text">Top 10 Trường</span>
+                  </Button>
+                </div>
+
+                {/* Trust Indicators */}
+                <div className="universities-trust-indicators">
+                  <div className="universities-trust-item">
+                    <strong>95%</strong> tỷ lệ đỗ đại học
+                  </div>
+                  <div className="universities-trust-divider">•</div>
+                  <div className="universities-trust-item">
+                    <strong>200+</strong> trường đối tác
+                  </div>
+                  <div className="universities-trust-divider">•</div>
+                  <div className="universities-trust-item">
+                    <strong>50K+</strong> sinh viên
+                  </div>
+                </div>
+              </div>
+            </Col>            {/* Right Column - Image */}
+            <Col xs={24} lg={12} xl={11}>
+              <div className="universities-image-container">
+                <div className="universities-image-wrapper">                  <img 
+                    src="https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1586&q=80" 
+                    alt="Trường đại học uy tín" 
+                    className="universities-main-image"
+                  />
+                  {/* Floating University Cards */}
+                  <div className="universities-floating-card universities-card-1">
+                    <div className="universities-card-icon">🏛️</div>
+                    <div className="universities-card-content">
+                      <div className="universities-card-title">Đại học Quốc gia</div>
+                      <div className="universities-card-rating">★★★★★</div>
+                    </div>
+                  </div>
+                  <div className="universities-floating-card universities-card-2">
+                    <div className="universities-card-icon">📊</div>
+                    <div className="universities-card-content">
+                      <div className="universities-card-title">Tỷ lệ việc làm</div>
+                      <div className="universities-card-value">96%</div>
+                    </div>
+                  </div>
+                  <div className="universities-floating-card universities-card-3">
+                    <div className="universities-card-icon">🎯</div>
+                    <div className="universities-card-content">
+                      <div className="universities-card-title">Chương trình</div>
+                      <div className="universities-card-value">1,500+</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Col>
           </Row>
         </div>
       </section>
 
-      {/* Sự kiện sắp diễn ra */}
-      <section className="py-16 lg:py-20 relative overflow-hidden upcoming-events-section" style={{ margin: '3rem 2rem', border: '2px solid #fbcfe8', borderRadius: '16px', backgroundColor: 'white', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)' }}>
-        {/* Background Elements */}
-        <div className="absolute inset-0 bg-gradient-to-br from-pink-50 via-rose-50 to-pink-50 z-0"></div>
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-pink-400 via-rose-400 to-pink-400 opacity-70"></div>
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-pink-400 via-rose-400 to-pink-400 opacity-70"></div>
-        
-        {/* Decorative Elements */}
-        <div className="absolute -top-20 -right-20 w-80 h-80 bg-gradient-to-br from-pink-200/20 to-rose-200/20 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-20 w-96 h-96 bg-gradient-to-br from-rose-200/20 to-pink-200/20 rounded-full blur-3xl"></div>
-        
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-3xl mx-auto text-center mb-12">
-            <Title level={2} className="!mb-6 !leading-tight upcoming-event-title">
-              Sự Kiện Tuyển Sinh 2025
-            </Title>
-            <Paragraph className="max-w-2xl mx-auto upcoming-event-subtitle">
-              Tham gia các sự kiện tuyển sinh để cập nhật thông tin mới nhất và gặp gỡ đại diện các trường đại học
-            </Paragraph>
-          </div>
-          
-          {/* Sự kiện 1 - Banner style */}
-          <div className="banner-container mb-8">
-            <div className="banner-slide" style={{ backgroundImage: `linear-gradient(to right, rgba(219, 39, 119, 0.85) 0%, rgba(236, 72, 153, 0.85) 100%), url(https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80)` }}>
-              {/* Decorative elements */}
-              <div className="banner-decorative-circle banner-circle-1" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
-              <div className="banner-decorative-circle banner-circle-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
-              
-              <div className="banner-content">
-                <div className="banner-text-container">
-                  <div className="banner-badge">
-                    <CalendarOutlined className="banner-badge-icon" />
-                    SỰ KIỆN NỔI BẬT
-                  </div>
-                  <Title level={1} className="banner-title">Ngày Hội Tư Vấn Tuyển Sinh</Title>
-                  <Paragraph className="banner-description">
-                    Sự kiện quy tụ hơn 50 trường đại học hàng đầu, cung cấp thông tin tuyển sinh và tư vấn trực tiếp.
-                  </Paragraph>
-                  <div className="flex items-center mb-4">
-                    <div className="bg-white/20 px-4 py-2 rounded-full text-white font-semibold mr-4">
-                      <CalendarOutlined className="mr-2" /> 10/06/2025 (8:00 - 17:00)
-                    </div>
-                    <div className="bg-white/20 px-4 py-2 rounded-full text-white font-semibold">
-                      <EnvironmentOutlined className="mr-2" /> TP. Hồ Chí Minh
-                    </div>
-                  </div>
-                  <div className="banner-buttons">
-                    <Button 
-                      type="primary" 
-                      size="large"
-                      className="banner-button banner-button-primary"
-                      icon={<ArrowRightOutlined />}
-                      onClick={() => navigate('/su-kien/ngay-hoi-tu-van')}
-                    >
-                      Xem chi tiết
-                    </Button>
-                    <Button 
-                      size="large"
-                      className="banner-button banner-button-secondary"
-                      onClick={() => navigate('/dang-ky-su-kien/ngay-hoi-tu-van')}
-                    >
-                      Đăng ký tham gia
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Sự kiện 2 - Banner style */}
-          <div className="banner-container mb-8">
-            <div className="banner-slide" style={{ backgroundImage: `linear-gradient(to right, rgba(37, 99, 235, 0.85) 0%, rgba(59, 130, 246, 0.85) 100%), url(https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80)` }}>
-              {/* Decorative elements */}
-              <div className="banner-decorative-circle banner-circle-1" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
-              <div className="banner-decorative-circle banner-circle-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
-              
-              <div className="banner-content">
-                <div className="banner-text-container">
-                  <div className="banner-badge">
-                    <GlobalOutlined className="banner-badge-icon" />
-                    TRỰC TUYẾN
-                  </div>
-                  <Title level={1} className="banner-title">Webinar: Chọn Ngành Đúng</Title>
-                  <Paragraph className="banner-description">
-                    Chuyên gia tư vấn hướng nghiệp sẽ chia sẻ phương pháp chọn ngành phù hợp với năng lực và sở thích.
-                  </Paragraph>
-                  <div className="flex items-center mb-4">
-                    <div className="bg-white/20 px-4 py-2 rounded-full text-white font-semibold mr-4">
-                      <CalendarOutlined className="mr-2" /> 25/05/2025 (19:30 - 21:00)
-                    </div>
-                    <div className="bg-white/20 px-4 py-2 rounded-full text-white font-semibold">
-                      <GlobalOutlined className="mr-2" /> Zoom & Facebook
-                    </div>
-                  </div>
-                  <div className="banner-buttons">
-                    <Button 
-                      type="primary" 
-                      size="large"
-                      className="banner-button banner-button-primary"
-                      icon={<ArrowRightOutlined />}
-                      onClick={() => navigate('/su-kien/webinar-chon-nganh')}
-                    >
-                      Xem chi tiết
-                    </Button>
-                    <Button 
-                      size="large"
-                      className="banner-button banner-button-secondary"
-                      onClick={() => navigate('/dang-ky-su-kien/webinar-chon-nganh')}
-                    >
-                      Đăng ký tham gia
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Sự kiện 3 - Banner style */}
-          <div className="banner-container mb-8">
-            <div className="banner-slide" style={{ backgroundImage: `linear-gradient(to right, rgba(124, 58, 237, 0.85) 0%, rgba(139, 92, 246, 0.85) 100%), url(https://images.unsplash.com/photo-1517486808906-6ca8b3f8e1c1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80)` }}>
-              {/* Decorative elements */}
-              <div className="banner-decorative-circle banner-circle-1" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
-              <div className="banner-decorative-circle banner-circle-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
-              
-              <div className="banner-content">
-                <div className="banner-text-container">
-                  <div className="banner-badge">
-                    <Star size={14} className="banner-badge-icon" />
-                    MIỄN PHÍ
-                  </div>
-                  <Title level={1} className="banner-title">Workshop Kỹ Năng Phỏng Vấn</Title>
-                  <Paragraph className="banner-description">
-                    Tập huấn kỹ năng trả lời phỏng vấn, chuẩn bị hồ sơ và các bí quyết để trúng tuyển vào trường mong muốn.
-                  </Paragraph>
-                  <div className="flex items-center mb-4">
-                    <div className="bg-white/20 px-4 py-2 rounded-full text-white font-semibold mr-4">
-                      <CalendarOutlined className="mr-2" /> 15/06/2025 (14:00 - 17:00)
-                    </div>
-                    <div className="bg-white/20 px-4 py-2 rounded-full text-white font-semibold">
-                      <EnvironmentOutlined className="mr-2" /> Hà Nội
-                    </div>
-                  </div>
-                  <div className="banner-buttons">
-                    <Button 
-                      type="primary" 
-                      size="large"
-                      className="banner-button banner-button-primary"
-                      icon={<ArrowRightOutlined />}
-                      onClick={() => navigate('/su-kien/workshop-ky-nang')}
-                    >
-                      Xem chi tiết
-                    </Button>
-                    <Button 
-                      size="large"
-                      className="banner-button banner-button-secondary"
-                      onClick={() => navigate('/dang-ky-su-kien/workshop-ky-nang')}
-                    >
-                      Đăng ký tham gia
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Banner xem tất cả sự kiện */}
-          <div className="banner-container">
-            <div className="banner-slide" style={{ backgroundImage: `linear-gradient(to right, rgba(190, 24, 93, 0.9) 0%, rgba(219, 39, 119, 0.9) 100%), url(https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80)`, height: '400px' }}>
-              {/* Decorative elements */}
-              <div className="banner-decorative-circle banner-circle-1" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
-              <div className="banner-decorative-circle banner-circle-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
-              <div className="banner-decorative-circle banner-circle-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
-              
-              <div className="banner-content">
-                <div className="banner-text-container">
-                  <div className="banner-badge">
-                    <CalendarOutlined className="banner-badge-icon" />
-                    SỰ KIỆN 2025
-                  </div>
-                  <Title level={1} className="banner-title">Xem Tất Cả Sự Kiện Tuyển Sinh</Title>
-                  <Paragraph className="banner-description">
-                    Cập nhật lịch trình và đăng ký tham gia các sự kiện tuyển sinh trên toàn quốc. Tham gia các sự kiện để cập nhật thông tin mới nhất và gặp gỡ đại diện các trường đại học.
-                  </Paragraph>
-                  <div className="banner-buttons">
-                    <Button 
-                      type="primary" 
-                      size="large"
-                      className="banner-button banner-button-primary"
-                      icon={<ArrowRightOutlined />}
-                      onClick={() => navigate('/su-kien')}
-                    >
-                      Xem Lịch Sự Kiện
-                    </Button>
-                    <Button 
-                      size="large"
-                      className="banner-button banner-button-secondary"
-                      onClick={() => navigate('/dang-ky-thong-bao')}
-                    >
-                      Đăng ký nhận thông báo
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+
+      
 
       {/* Testimonials Section */}
       <section className="py-12 md:py-20 testimonials-section"> {/* Removed bg-gray-100 */}
         <div className="container mx-auto px-4">
           <div className="text-center mb-12 md:mb-16">
             <Paragraph className="testimonials-section-tagline">
-              Đánh giá từ người dùng
+              {/* Đánh giá từ người dùng */}
             </Paragraph>
             <Title level={2} className="testimonials-section-title">
               Lắng Nghe Chia Sẻ
@@ -665,171 +659,113 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </section>
-
-      {/* Benefits Section - Enhanced Modern Design */}
-      <section className="py-20 lg:py-28 relative overflow-hidden" style={{ margin: '5rem 2rem', backgroundColor: 'transparent' }}>
-        {/* Background Elements - Animated Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/80 via-purple-50/80 to-pink-50/80 z-0 animate-gradientShift" style={{ backgroundSize: '200% 200%' }}></div>
-        
-        {/* Decorative Elements - Enhanced with Animation */}
-        <div className="absolute -top-20 -right-20 w-96 h-96 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full blur-3xl animate-float" style={{ animationDuration: '15s' }}></div>
-        <div className="absolute -bottom-40 -left-20 w-112 h-112 bg-gradient-to-br from-blue-200/30 to-indigo-200/30 rounded-full blur-3xl animate-floatSlow" style={{ animationDuration: '20s', animationDelay: '2s' }}></div>
-        <div className="absolute top-1/3 left-1/4 w-24 h-24 bg-gradient-to-br from-pink-200/40 to-purple-200/40 rounded-full blur-xl animate-pulse" style={{ animationDuration: '4s' }}></div>
-        <div className="absolute bottom-1/3 right-1/4 w-16 h-16 bg-gradient-to-br from-indigo-200/40 to-blue-200/40 rounded-full blur-lg animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }}></div>
-        
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            {/* Enhanced Badge with Animation */}
-            <div className="inline-block relative mb-8 animate-fadeInUp" style={{ animationDuration: '0.8s' }}>
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 opacity-20 blur-md rounded-full"></div>
-              <Badge 
-                count={
-                  <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full shadow-lg animate-pulse" style={{ animationDuration: '3s' }}>
-                    <Crown size={16} className="text-white" />
-                  </div>
-                } 
-                className="custom-hero-badge"
-                offset={[0, 0]}
-              >
-                <span className="text-sm font-semibold text-indigo-700 uppercase tracking-wider px-6 py-3 bg-white rounded-full border border-indigo-100 shadow-sm flex items-center gap-2">
-                  <span className="inline-block w-2 h-2 bg-indigo-500 rounded-full"></span>
-                  Đặc quyền dành cho bạn
-                  <span className="inline-block w-2 h-2 bg-indigo-500 rounded-full"></span>
-                </span>
-              </Badge>
-            </div>
-            
-            {/* Enhanced Title with Animation */}
-            <div className="animate-fadeInUp" style={{ animationDuration: '1s', animationDelay: '0.2s' }}>
-              <Title level={2} className="!text-5xl md:!text-6xl !font-extrabold !mb-6 !leading-tight relative inline-block">
-                <span className="relative z-10">Lợi Ích</span>
-                <span className="relative">
-                  <span className="absolute -inset-1 bg-gradient-to-r from-purple-400/20 to-pink-400/20 blur-lg rounded-lg"></span>
-                  <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 animate-shimmer" style={{ backgroundSize: '200% 100%', animationDuration: '3s' }}>Vượt Trội</span>
-                </span>
-              </Title>
-            </div>
-            
-            {/* Enhanced Description with Animation */}
-            <Paragraph className="text-xl text-gray-600 max-w-2xl mx-auto animate-fadeInUp" style={{ animationDuration: '1.2s', animationDelay: '0.4s' }}>
-              Chúng tôi không chỉ giúp bạn nộp hồ sơ, mà còn mang đến những giá trị cộng thêm độc đáo và hữu ích cho hành trình học tập của bạn.
-            </Paragraph>
-          </div>
-          
-          {/* Enhanced Benefits Card Layout */}
-          <div className="relative">
-            {/* Connecting line between cards */}
-            <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-purple-200 to-transparent hidden lg:block"></div>
-            
-            <Row gutter={[32, 32]} className="items-stretch">
-              {benefitsData.map((item: BenefitCardProps, index: number) => ( // Explicitly typed item and index
-                <Col xs={24} sm={12} lg={6} key={index} className="animate-fadeInUp" style={{ animationDuration: '1.5s', animationDelay: `${0.2 + index * 0.2}s` }}>
-                  <div className="group relative h-full transform transition-all duration-500 hover:translate-y-[-8px]">
-                    {/* Correctly call BenefitCard with item props */}
-                    <BenefitCard {...item} />
-                  </div>
-                </Col>
-              ))}
-            </Row>
-          </div>
-          
-          {/* Banner giữa trang - Trường đại học nổi bật */}
-          <div className="mt-20 mb-10">
-            <div className="banner-container">
-              <div className="banner-slide" style={{ backgroundImage: `linear-gradient(to right, rgba(79, 70, 229, 0.85) 0%, rgba(45, 212, 191, 0.85) 100%), url(https://images.unsplash.com/photo-1523050854058-41bc2dd41cd2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80)` }}>
-                {/* Decorative elements */}
-                <div className="banner-decorative-circle banner-circle-1"></div>
-                <div className="banner-decorative-circle banner-circle-2"></div>
-                <div className="banner-decorative-circle banner-circle-3"></div>
-                
-                <div className="banner-content">
-                  <div className="banner-text-container">
-                    <div className="banner-badge">
-                      <Star size={14} className="banner-badge-icon" />
-                      TRƯỜNG ĐẠI HỌC NỔI BẬT
-                    </div>
-                    <Title level={1} className="banner-title">Khám Phá Top Trường Đại Học Hàng Đầu</Title>
-                    <Paragraph className="banner-description">
-                      Tìm hiểu thông tin chi tiết về các trường đại học uy tín, chương trình đào tạo và cơ hội nghề nghiệp.
-                    </Paragraph>
-                    <div className="banner-buttons">
-                      <Button 
-                        type="primary" 
-                        size="large"
-                        className="banner-button banner-button-primary"
-                        icon={<ArrowRightOutlined />}
-                        onClick={() => navigate('/universities')}
-                      >
-                        Xem Tất Cả Trường Đại Học
-                      </Button>
-                      <Button 
-                        size="large"
-                        className="banner-button banner-button-secondary"
-                        onClick={() => navigate('/top-truong-dai-hoc')}
-                      >
-                        Top 10 Trường
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+      {/* Statistics Section - Enhanced Premium Design */}
+      <section className="stats-enhanced-section relative py-24 lg:py-32 overflow-hidden" style={{ margin: '4rem 2rem', borderRadius: '24px' }}>
+        {/* Enhanced Background with Image */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900"></div>        <div 
+          className="absolute inset-0 opacity-25" 
+          style={{ 
+            backgroundImage: `url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        ></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/85 via-indigo-900/70 to-purple-900/85"></div>
+          {/* Enhanced Decorative Elements */}
+        <div className="absolute inset-0 stats-bg-pattern opacity-30">
+          <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-400/25 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-400/25 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-cyan-400/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-indigo-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '3s' }}></div>
+          <div className="absolute top-10 left-1/4 w-32 h-32 bg-pink-400/15 rounded-full blur-xl animate-pulse" style={{ animationDelay: '4s' }}></div>
+          <div className="absolute bottom-10 right-1/3 w-48 h-48 bg-yellow-400/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '5s' }}></div>
         </div>
-      </section>
 
-      {/* Statistics Section - Clean Design */}
-      <section className="py-20 lg:py-28 relative overflow-hidden stats-display-section" style={{ border: '2px solid #bfdbfe', borderRadius: '16px', margin: '3rem 2rem', backgroundColor: 'white', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)' }}>
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-sky-50 to-indigo-50 z-0"></div>
-        
-        {/* Decorative Elements */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-indigo-400 to-blue-400 opacity-70"></div>
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-indigo-400 to-blue-400 opacity-70"></div>
-        <div className="absolute top-1/4 right-0 w-72 h-72 bg-gradient-to-br from-blue-200/30 to-indigo-200/30 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/3 left-0 w-80 h-80 bg-gradient-to-br from-sky-200/30 to-cyan-200/30 rounded-full blur-3xl"></div>
-        
+        {/* Decorative Grid Pattern */}
+        <div className="absolute inset-0 opacity-10" style={{ 
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.6'%3E%3Ccircle cx='7' cy='7' r='2'/%3E%3Ccircle cx='27' cy='7' r='2'/%3E%3Ccircle cx='47' cy='7' r='2'/%3E%3Ccircle cx='7' cy='27' r='2'/%3E%3Ccircle cx='27' cy='27' r='2'/%3E%3Ccircle cx='47' cy='27' r='2'/%3E%3Ccircle cx='7' cy='47' r='2'/%3E%3Ccircle cx='27' cy='47' r='2'/%3E%3Ccircle cx='47' cy='47' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` 
+        }}></div>        
         <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            {/* REMOVED Badge component */}
-            <Title level={2} className="!text-4xl md:!text-5xl !font-extrabold !text-gray-800 !mb-6 !leading-tight stats-section-title">
-              Những Con Số <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Biết Nói</span>
-            </Title>
-            {/* ADDED custom class stats-section-subtitle */}
-            <Paragraph className="text-lg text-gray-600 max-w-2xl mx-auto stats-section-subtitle">
-              Minh chứng cho sự tin tưởng và hiệu quả mà hệ thống đã mang lại cho hàng ngàn thí sinh trên cả nước.
-            </Paragraph>
-          </div>
-          
-          <div className="relative">
-            {/* Connecting lines between stats - kept for context, might need removal if cards are full width vertical */}
-            {/* <div className="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-blue-100 via-indigo-200 to-blue-100 hidden lg:block"></div> */}
+          <div className="max-w-4xl mx-auto text-center mb-20">
+            {/* Enhanced Badge */}
+            <div className="stats-enhanced-badge">
+              <span className="stats-badge-icon">📊</span>
+              <span className="stats-badge-text">THÀNH TÍCH ẤN TƯỢNG</span>
+              <span className="stats-badge-icon">✨</span>
+            </div>
             
-            {/* MODIFIED: Removed justify-center from Row */}
-            <Row gutter={[32, 48]} className="items-stretch relative z-10">
+            {/* Enhanced Title */}
+            <Title level={2} className="stats-enhanced-title">
+              <span className="stats-title-line1">Những Con Số</span>
+              <br />
+              <span className="stats-title-line2">Biết Nói</span>
+            </Title>
+            
+            {/* Enhanced Subtitle */}
+            <Paragraph className="stats-enhanced-subtitle">
+              <strong>Minh chứng rõ ràng</strong> cho sự tin tưởng và hiệu quả mà hệ thống đã mang lại cho 
+              <span className="stats-highlight-text"> hàng ngàn thí sinh</span> trên cả nước trong suốt những năm qua.
+            </Paragraph>
+          </div>            <div className="relative stats-cards-container">
+            {/* Enhanced Stats Cards Grid */}
+            <Row gutter={[32, 32]} className="items-stretch relative z-10" justify="center">
               {statsData.map((stat, index) => (
-                // MODIFIED: Col spans for full vertical stacking, removed flex justify-center
                 <Col xs={24} sm={12} md={12} lg={6} key={index}>
-                  <StatCard icon={stat.icon} title={stat.title} value={stat.value} />
+                  <div className="stats-enhanced-card">
+                    <div className="stats-card-inner">
+                      <div className="stats-card-decoration"></div>
+                      <div className="stats-card-icon">
+                        {stat.icon}
+                      </div>
+                      <div className="stats-card-content">
+                        <div className="stats-card-value">{stat.value}</div>
+                        <div className="stats-card-label">{stat.title}</div>
+                      </div>
+                    </div>
+                  </div>
                 </Col>
               ))}
             </Row>
+            
+            {/* Connecting Lines */}
+            <div className="stats-connecting-lines">
+              <div className="stats-connecting-line"></div>
+              <div className="stats-connecting-line"></div>
+              <div className="stats-connecting-line"></div>
+            </div>
           </div>
         </div>
-      </section>
-
-      {/* Ngành học phổ biến - Banner */}
+      </section>      {/* Ngành học phổ biến - Banner */}
       <section className="py-16 lg:py-24 relative overflow-hidden" style={{ margin: '3rem 2rem' }}>
-        <div className="container mx-auto px-6">
-          <div className="max-w-3xl mx-auto text-center mb-12">
-            <Badge count={<GraduationCap size={16} className="text-green-500" />} className="mb-6">
-              <span className="text-sm font-semibold text-green-600 uppercase tracking-wider px-4 py-2 bg-green-50 rounded-full">Khám phá ngành học</span>
-            </Badge>
-            <Title level={2} className="!text-4xl md:!text-5xl !font-extrabold !text-gray-800 !mb-6 !leading-tight">
-              Ngành Học <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-teal-600">Phổ Biến</span>
+        <div className="container mx-auto px-6">          <div className="trending-section-header">            {/* Enhanced tagline */}
+            <div className="trending-badge">
+              <span className="trending-badge-icon">🔥</span>
+              TRENDING NGÀNH HỌC
+            </div>
+              {/* Enhanced main title */}
+            <Title level={1} className="trending-nganh-hoc-title">
+              <span className="trending-title-line1">
+                Ngành Học
+              </span>
+              <br />
+              <span className="trending-title-line2">
+                Phổ Biến
+              </span>
             </Title>
-            <Paragraph className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Tìm hiểu về các ngành học hot nhất hiện nay và cơ hội nghề nghiệp tương lai
+            
+            {/* Enhanced subtitle */}
+            <Paragraph className="trending-nganh-hoc-subtitle">
+              Tìm hiểu về các <span className="trending-hot-text">ngành học hot nhất</span> hiện nay và 
+              <span className="trending-future-text"> cơ hội nghề nghiệp tương lai</span> đầy hứa hẹn
             </Paragraph>
+            
+            {/* Decorative elements */}
+            <div className="trending-decorative-line">
+              <div className="trending-line-left"></div>
+              <div className="trending-star">✨</div>
+              <div className="trending-line-right"></div>
+            </div>
           </div>
           
           {/* Banner style cards */}
@@ -971,70 +907,149 @@ const HomePage: React.FC = () => {
             </div>
           </div>
           
-          <div className="banner-container">
-            <div className="banner-slide" style={{ backgroundImage: `linear-gradient(to right, rgba(6, 95, 70, 0.9) 0%, rgba(4, 120, 87, 0.9) 100%), url(https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80)`, height: '400px' }}>
-              <div className="banner-decorative-circle banner-circle-1" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
-              <div className="banner-decorative-circle banner-circle-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
-              <div className="banner-decorative-circle banner-circle-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}></div>
-              
-              <div className="banner-content">
-                <div className="banner-text-container">
-                  <div className="banner-badge">
-                    <BookOpen size={14} className="banner-badge-icon" />
-                    100+ NGÀNH HỌC
-                  </div>
-                  <Title level={1} className="banner-title">Khám Phá Tất Cả Ngành Học</Title>
-                  <Paragraph className="banner-description">
-                    Tìm hiểu chi tiết về hơn 100+ ngành học tại các trường đại học hàng đầu Việt Nam. So sánh điểm chuẩn, chương trình đào tạo và cơ hội nghề nghiệp.
+          
+        </div>
+      </section>      {/* Call to Action Section - Enhanced Premium */}
+      <section className="cta-enhanced-section relative py-24 lg:py-40 overflow-hidden" style={{ margin: '4rem 2rem', borderRadius: '24px' }}>
+        {/* Enhanced Background with Multiple Layers */}
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600"></div>
+        <div className="absolute inset-0 bg-gradient-to-tr from-blue-800/80 via-transparent to-purple-800/80"></div>
+        
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 cta-bg-pattern opacity-20">
+          <div className="absolute -top-40 -left-40 w-96 h-96 bg-white/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-white/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-1/4 right-1/3 w-64 h-64 bg-yellow-300/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute bottom-1/3 left-1/4 w-80 h-80 bg-cyan-300/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '3s' }}></div>
+        </div>
+
+        {/* Decorative Grid Pattern */}
+        <div className="absolute inset-0 opacity-5" style={{ 
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.8'%3E%3Ccircle cx='7' cy='7' r='2'/%3E%3Ccircle cx='27' cy='7' r='2'/%3E%3Ccircle cx='47' cy='7' r='2'/%3E%3Ccircle cx='7' cy='27' r='2'/%3E%3Ccircle cx='27' cy='27' r='2'/%3E%3Ccircle cx='47' cy='27' r='2'/%3E%3Ccircle cx='7' cy='47' r='2'/%3E%3Ccircle cx='27' cy='47' r='2'/%3E%3Ccircle cx='47' cy='47' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` 
+        }}></div>
+
+        <div className="container mx-auto px-6 relative z-10">
+          <Row align="middle" gutter={[48, 48]}>
+            {/* Left Column - Content */}
+            <Col xs={24} lg={14}>
+              <div className="cta-content-container">
+                {/* Enhanced Badge */}
+                <div className="cta-enhanced-badge">
+                  <span className="cta-badge-icon">🎓</span>
+                  <span className="cta-badge-text">BƯỚC TIẾN MỚI TRONG GIÁO DỤC</span>
+                  <span className="cta-badge-icon">✨</span>
+                </div>
+
+                {/* Enhanced Title */}
+                <Title level={1} className="cta-enhanced-title">
+                  <span className="cta-title-line1">Sẵn Sàng Chinh Phục</span>
+                  <br />
+                  <span className="cta-title-line2">Giấc Mơ Đại Học?</span>
+                </Title>
+
+                {/* Enhanced Description */}
+                <div className="cta-description-container">
+                  <Paragraph className="cta-enhanced-description">
+                    <strong>Đừng để quy trình phức tạp cản bước bạn!</strong> Với hệ thống thông minh của chúng tôi, 
+                    cánh cửa đại học <span className="cta-highlight-text">rộng mở hơn bao giờ hết</span>. 
                   </Paragraph>
-                  <div className="banner-buttons">
-                    <Button 
-                      type="primary" 
-                      size="large"
-                      className="banner-button banner-button-primary"
-                      icon={<ArrowRightOutlined />}
-                      onClick={() => navigate('/nganh-hoc')}
-                    >
-                      Xem Tất Cả Ngành Học
-                    </Button>
-                    <Button 
-                      size="large"
-                      className="banner-button banner-button-secondary"
-                      onClick={() => navigate('/tu-van-chon-nganh')}
-                    >
-                      Tư vấn chọn ngành
-                    </Button>
+                  <Paragraph className="cta-enhanced-description">
+                    Hãy bắt đầu hành trình chinh phục ước mơ của bạn ngay hôm nay với 
+                    <span className="cta-highlight-text"> công nghệ hiện đại nhất</span>!
+                  </Paragraph>
+                </div>
+
+                {/* Enhanced Features List */}
+                <div className="cta-features-list">
+                  <div className="cta-feature-item">
+                    <div className="cta-feature-icon">⚡</div>
+                    <span>Nộp hồ sơ chỉ trong 5 phút</span>
+                  </div>
+                  <div className="cta-feature-item">
+                    <div className="cta-feature-icon">🎯</div>
+                    <span>AI tư vấn ngành học phù hợp</span>
+                  </div>
+                  <div className="cta-feature-item">
+                    <div className="cta-feature-icon">📊</div>
+                    <span>Theo dõi real-time 24/7</span>
+                  </div>
+                </div>
+
+                {/* Enhanced Buttons */}
+                <div className="cta-buttons-container">
+                  <Button 
+                    type="primary" 
+                    size="large" 
+                    className="cta-primary-button"
+                    icon={<Sparkles className="cta-button-icon"/>}
+                    onClick={handleNopHoSo}
+                  >
+                    <span className="cta-button-text">
+                      {isAuthenticated && user?.role === 'candidate' ? 'Hoàn Tất Hồ Sơ Ngay!' : 'Đăng Ký Miễn Phí!'}
+                    </span>
+                  </Button>
+                  <Button 
+                    size="large" 
+                    className="cta-secondary-button"
+                    icon={<ArrowRightOutlined className="cta-button-icon"/>}
+                    onClick={() => navigate('/universities')}
+                  >
+                    <span className="cta-button-text">Khám Phá Ngay</span>
+                  </Button>
+                </div>
+
+                {/* Trust Indicators */}
+                <div className="cta-trust-indicators">
+                  <div className="cta-trust-item">
+                    <strong>100K+</strong> thí sinh tin dùng
+                  </div>
+                  <div className="cta-trust-divider">•</div>
+                  <div className="cta-trust-item">
+                    <strong>200+</strong> trường đại học
+                  </div>
+                  <div className="cta-trust-divider">•</div>
+                  <div className="cta-trust-item">
+                    <strong>99%</strong> thành công
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
+            </Col>
 
-      {/* Call to Action Section - Premium */}
-      <section className="premium-section premium-gradient-blue premium-shadow-lg relative py-20 lg:py-32 overflow-hidden">
-        <div className="absolute inset-0 premium-bg-pattern">
-            <div className="absolute -top-20 -left-20 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute -bottom-20 -right-20 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
-        </div>
-        <div className="premium-container text-center relative z-10">
-          <Title level={2} className="premium-section-title !text-4xl lg:!text-5xl !font-bold !text-white !mb-8">
-            Sẵn Sàng Chinh Phục Giấc Mơ Đại Học?
-          </Title>
-          <Paragraph className="text-xl text-white/90 mb-12 max-w-2xl mx-auto leading-relaxed">
-            Đừng để quy trình phức tạp cản bước bạn! Với hệ thống của chúng tôi, cánh cửa đại học rộng mở hơn bao giờ hết. 
-            Hãy bắt đầu hành trình của bạn ngay hôm nay!
-          </Paragraph>
-          <Button 
-            type="primary" 
-            size="large" 
-            className="premium-button premium-button-primary !rounded-lg !px-8 !font-semibold !h-14 !text-lg flex items-center justify-center premium-shadow-md"
-            icon={<Sparkles className="mr-2"/>}
-            onClick={handleNopHoSo}
-          >
-            {isAuthenticated && user?.role === 'candidate' ? 'Hoàn Tất Hồ Sơ Ngay!' : 'Đăng Ký Miễn Phí!'}
-          </Button>
+            {/* Right Column - Image */}
+            <Col xs={24} lg={10}>
+              <div className="cta-image-container">
+                <div className="cta-image-wrapper">
+                  <img 
+                    src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                    alt="Sinh viên thành công" 
+                    className="cta-main-image"
+                  />
+                  {/* Floating Success Cards */}
+                  <div className="cta-floating-card cta-card-1">
+                    <div className="cta-card-icon">🎉</div>
+                    <div className="cta-card-content">
+                      <div className="cta-card-title">Hồ sơ đã nộp</div>
+                      <div className="cta-card-value">50,000+</div>
+                    </div>
+                  </div>
+                  <div className="cta-floating-card cta-card-2">
+                    <div className="cta-card-icon">⭐</div>
+                    <div className="cta-card-content">
+                      <div className="cta-card-title">Đánh giá</div>
+                      <div className="cta-card-value">4.9/5</div>
+                    </div>
+                  </div>
+                  <div className="cta-floating-card cta-card-3">
+                    <div className="cta-card-icon">🚀</div>
+                    <div className="cta-card-content">
+                      <div className="cta-card-title">Tỷ lệ thành công</div>
+                      <div className="cta-card-value">99%</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Col>
+          </Row>
         </div>
       </section>
 
