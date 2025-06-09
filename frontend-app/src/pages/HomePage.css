@@ -102,6 +102,191 @@ body {
   50% { opacity: 1; transform: scale(1) rotate(180deg); }
 }
 
+/* ===================================================================
+   WHY CHOOSE US SECTION - MODERN & BEAUTIFUL DESIGN
+   =================================================================== */
+
+/* Fade in up animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced pulse animation for background elements */
+@keyframes enhanced-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.15;
+  }
+}
+
+/* Icon hover animation */
+@keyframes icon-bounce {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.1) rotate(-2deg);
+  }
+  75% {
+    transform: scale(1.1) rotate(2deg);
+  }
+}
+
+/* Gradient animation for text */
+@keyframes gradient-text {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Modern card styling */
+.why-choose-modern-card {
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.why-choose-modern-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.why-choose-modern-card:hover::before {
+  left: 100%;
+}
+
+/* Icon container styling */
+.why-choose-icon-container {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.why-choose-icon-container::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(45deg, rgba(59, 130, 246, 0.3), rgba(147, 51, 234, 0.3));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.why-choose-modern-card:hover .why-choose-icon-container::after {
+  opacity: 1;
+}
+
+.why-choose-modern-card:hover .why-choose-icon-container {
+  animation: icon-bounce 0.6s ease-in-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .why-choose-modern-card {
+    padding: 1.5rem !important;
+  }
+  
+  .why-choose-icon-container {
+    width: 3.5rem !important;
+    height: 3.5rem !important;
+  }
+}
+
+/* Custom gradient backgrounds for icons */
+.bg-gradient-green {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.bg-gradient-blue {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.bg-gradient-purple {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+/* Enhanced section title styling */
+.section-title-gradient {
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899);
+  background-size: 300% 300%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-text 3s ease-in-out infinite;
+}
+
+/* Sparkle icon animation */
+.sparkle-icon {
+  animation: enhanced-pulse 2s ease-in-out infinite;
+}
+
+/* Button hover effects */
+.modern-link-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.modern-link-button::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  transition: width 0.3s ease;
+}
+
+.modern-link-button:hover::after {
+  width: 100%;
+}
+
+/* Floating animation for background elements */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.floating-bg-element {
+  animation: float 6s ease-in-out infinite;
+}
+
+.floating-bg-element:nth-child(2) {
+  animation-delay: 2s;
+}
+
+.floating-bg-element:nth-child(3) {
+  animation-delay: 4s;
+}
+
 /* --- 4. LAYOUT & SECTION STYLING --- */
 /* section { ... } */ /* Assuming this is correctly defined elsewhere if needed */
 
@@ -591,70 +776,178 @@ body {
 
 
 /* ===================================================================
-   WHY CHOOSE US CARDS - ENHANCED GLASS MORPHISM DESIGN
+   WHY CHOOSE US SECTION - ENHANCED BACKGROUND & LAYOUT
+   =================================================================== */
+
+/* Enhanced section background with subtle patterns */
+.why-choose-us-section {
+  position: relative !important;
+  background: linear-gradient(135deg, 
+    rgba(248, 250, 252, 0.8) 0%, 
+    rgba(241, 245, 249, 0.9) 50%, 
+    rgba(248, 250, 252, 0.8) 100%) !important;
+  background-attachment: fixed !important;
+  overflow: hidden !important;
+}
+
+.why-choose-us-section::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(147, 197, 253, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.02) 0%, transparent 70%) !important;
+  z-index: 0 !important;
+}
+
+.why-choose-us-section .container {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Enhanced section title and subtitle */
+.why-choose-us-section-title {
+  font-size: 3rem !important;
+  font-weight: 900 !important;
+  background: linear-gradient(135deg, #1e293b 0%, #3b82f6 50%, #1d4ed8 100%) !important;
+  background-size: 200% 200% !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  text-align: center !important;
+  margin-bottom: 1.5rem !important;
+  letter-spacing: -0.03em !important;
+  animation: gradient-shift 6s ease-in-out infinite !important;
+}
+
+.why-choose-us-section-subtitle {
+  font-size: 1.3rem !important;
+  color: #64748b !important;
+  text-align: center !important;
+  max-width: 800px !important;
+  margin: 0 auto 4rem auto !important;
+  line-height: 1.8 !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em !important;
+}
+
+@media (max-width: 768px) {
+  .why-choose-us-section-title {
+    font-size: 2.2rem !important;
+  }
+  
+  .why-choose-us-section-subtitle {
+    font-size: 1.1rem !important;
+    margin-bottom: 3rem !important;
+  }
+}
+
+/* ===================================================================
+   WHY CHOOSE US CARDS - MODERN PREMIUM DESIGN
    =================================================================== */
 
 /* Base styling for Why Choose Us Cards with high specificity */
 .why-choose-us-section .why-choose-us-card {
-  background: rgba(255, 255, 255, 0.92) !important;
-  backdrop-filter: blur(25px) !important;
-  -webkit-backdrop-filter: blur(25px) !important;
-  border: 1px solid rgba(59, 130, 246, 0.15) !important;
-  border-radius: 2.2rem !important;
-  padding: 2.8rem !important;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.88)) !important;
+  backdrop-filter: blur(32px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(180%) !important;
+  border: 2px solid transparent !important;
+  background-clip: padding-box !important;
+  border-radius: 2.5rem !important;
+  padding: 3rem 2.5rem !important;
   position: relative !important;
   overflow: hidden !important;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1) !important;
   height: 100% !important;
   display: flex !important;
   flex-direction: column !important;
-  box-shadow: 0 20px 40px rgba(59, 130, 246, 0.08), 0 10px 25px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.04),
+    0 12px 25px rgba(0, 0, 0, 0.08),
+    0 6px 12px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
 }
 
-/* Decorative floating elements */
+/* Floating gradient orbs for visual appeal */
 .why-choose-us-section .why-choose-us-card::before {
   content: '' !important;
   position: absolute !important;
-  top: -30px !important;
-  right: -30px !important;
-  width: 80px !important;
-  height: 80px !important;
-  background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(147, 197, 253, 0.15)) !important;
+  top: -50px !important;
+  right: -50px !important;
+  width: 120px !important;
+  height: 120px !important;
+  background: radial-gradient(circle at center, rgba(59, 130, 246, 0.15), rgba(147, 197, 253, 0.08), transparent 70%) !important;
   border-radius: 50% !important;
-  transition: all 0.5s ease !important;
+  transition: all 0.7s cubic-bezier(0.23, 1, 0.320, 1) !important;
   z-index: 1 !important;
+  animation: float-orb 6s ease-in-out infinite !important;
 }
 
 .why-choose-us-section .why-choose-us-card::after {
   content: '' !important;
   position: absolute !important;
-  bottom: -40px !important;
-  left: -40px !important;
-  width: 100px !important;
-  height: 100px !important;
-  background: linear-gradient(135deg, rgba(147, 197, 253, 0.08), rgba(59, 130, 246, 0.12)) !important;
+  bottom: -60px !important;
+  left: -60px !important;
+  width: 140px !important;
+  height: 140px !important;
+  background: radial-gradient(circle at center, rgba(147, 197, 253, 0.12), rgba(59, 130, 246, 0.06), transparent 70%) !important;
   border-radius: 50% !important;
-  transition: all 0.5s ease !important;
+  transition: all 0.7s cubic-bezier(0.23, 1, 0.320, 1) !important;
   z-index: 1 !important;
+  animation: float-orb-reverse 8s ease-in-out infinite !important;
 }
 
-/* Enhanced hover effects */
+/* Floating animation keyframes */
+@keyframes float-orb {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+    opacity: 1;
+  }
+}
+
+@keyframes float-orb-reverse {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(15px) rotate(-180deg);
+    opacity: 0.9;
+  }
+}
+
+/* Premium hover effects with smooth animations */
 .why-choose-us-section .why-choose-us-card:hover {
-  transform: translateY(-20px) scale(1.03) !important;
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(30px) !important;
-  border: 1px solid rgba(59, 130, 246, 0.25) !important;
-  box-shadow: 0 30px 60px rgba(59, 130, 246, 0.15), 0 15px 35px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+  transform: translateY(-25px) scale(1.04) !important;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.92)) !important;
+  backdrop-filter: blur(40px) saturate(200%) !important;
+  border: 2px solid rgba(59, 130, 246, 0.3) !important;
+  box-shadow: 
+    0 35px 70px rgba(59, 130, 246, 0.12),
+    0 20px 40px rgba(0, 0, 0, 0.1),
+    0 10px 20px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    0 0 0 1px rgba(59, 130, 246, 0.1) !important;
 }
 
 .why-choose-us-section .why-choose-us-card:hover::before {
-  transform: scale(1.2) rotate(45deg) !important;
-  background: linear-gradient(45deg, rgba(59, 130, 246, 0.2), rgba(147, 197, 253, 0.25)) !important;
+  transform: scale(1.4) rotate(90deg) !important;
+  background: radial-gradient(circle at center, rgba(59, 130, 246, 0.25), rgba(147, 197, 253, 0.15), transparent 70%) !important;
+  animation-play-state: paused !important;
 }
 
 .why-choose-us-section .why-choose-us-card:hover::after {
-  transform: scale(1.1) rotate(-45deg) !important;
-  background: linear-gradient(135deg, rgba(147, 197, 253, 0.15), rgba(59, 130, 246, 0.2)) !important;
+  transform: scale(1.3) rotate(-90deg) !important;
+  background: radial-gradient(circle at center, rgba(147, 197, 253, 0.2), rgba(59, 130, 246, 0.12), transparent 70%) !important;
+  animation-play-state: paused !important;
 }
 
 /* Card content wrapper */
@@ -666,93 +959,143 @@ body {
   height: 100% !important;
 }
 
-/* Enhanced icon styling */
+/* Premium icon styling with enhanced 3D effects */
 .why-choose-us-section .why-choose-us-card-icon {
-  width: 4.5rem !important;
-  height: 4.5rem !important;
-  border-radius: 1.5rem !important;
+  width: 5rem !important;
+  height: 5rem !important;
+  border-radius: 1.8rem !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  font-size: 2.5rem !important;
   color: white !important;
-  margin-bottom: 1.8rem !important;
+  margin-bottom: 2rem !important;
   position: relative !important;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: 0 15px 30px rgba(59, 130, 246, 0.25), 0 5px 15px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.320, 1) !important;
+  box-shadow: 
+    0 20px 40px rgba(59, 130, 246, 0.3),
+    0 10px 20px rgba(0, 0, 0, 0.15),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2) !important;
+  transform-style: preserve-3d !important;
+}
+
+/* Ensure SVG icons (Lucide React) display properly */
+.why-choose-us-section .why-choose-us-card-icon svg {
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  color: white !important;
+  stroke: white !important;
+  fill: none !important;
+  stroke-width: 2 !important;
 }
 
 /* Default gradient for icons without specific background */
 .why-choose-us-section .why-choose-us-card-icon:not([class*="bg-gradient"]) {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8, #1e40af) !important;
+  background: linear-gradient(145deg, #3b82f6 0%, #1d4ed8 50%, #1e40af 100%) !important;
 }
 
-/* Icon glow effect */
+/* Enhanced icon glow and ring effect */
 .why-choose-us-section .why-choose-us-card-icon::before {
   content: '' !important;
   position: absolute !important;
-  top: -5px !important;
-  left: -5px !important;
-  right: -5px !important;
-  bottom: -5px !important;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(29, 78, 216, 0.4)) !important;
-  border-radius: 1.8rem !important;
+  top: -8px !important;
+  left: -8px !important;
+  right: -8px !important;
+  bottom: -8px !important;
+  background: linear-gradient(145deg, rgba(59, 130, 246, 0.4), rgba(29, 78, 216, 0.3), rgba(147, 197, 253, 0.2)) !important;
+  border-radius: 2.2rem !important;
   z-index: -1 !important;
   opacity: 0 !important;
-  transition: opacity 0.4s ease !important;
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.320, 1) !important;
+  filter: blur(8px) !important;
+}
+
+/* Icon pulse animation */
+@keyframes icon-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
 }
 
 .why-choose-us-section .why-choose-us-card:hover .why-choose-us-card-icon {
-  transform: scale(1.1) rotate(-5deg) !important;
-  box-shadow: 0 20px 40px rgba(59, 130, 246, 0.35), 0 8px 20px rgba(0, 0, 0, 0.15) !important;
+  transform: scale(1.15) rotateY(15deg) rotateX(5deg) !important;
+  box-shadow: 
+    0 25px 50px rgba(59, 130, 246, 0.4),
+    0 15px 30px rgba(0, 0, 0, 0.2),
+    inset 0 3px 6px rgba(255, 255, 255, 0.3) !important;
+  animation: icon-pulse 2s ease-in-out infinite !important;
 }
 
 .why-choose-us-section .why-choose-us-card:hover .why-choose-us-card-icon::before {
   opacity: 1 !important;
+  transform: scale(1.1) !important;
 }
 
-/* Enhanced typography */
+/* Premium typography with gradient text effects */
 .why-choose-us-section .why-choose-us-card-title {
-  font-family: 'Inter', '-apple-system', 'BlinkMacSystemFont', sans-serif !important;
-  font-size: 1.5rem !important;
-  font-weight: 700 !important;
-  line-height: 1.3 !important;
-  margin-bottom: 1rem !important;
-  color: #1e293b !important;
-  background: linear-gradient(135deg, #1e293b, #3b82f6) !important;
+  font-family: 'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', sans-serif !important;
+  font-size: 1.75rem !important;
+  font-weight: 800 !important;
+  line-height: 1.2 !important;
+  margin-bottom: 1.2rem !important;
+  background: linear-gradient(135deg, #1e293b 0%, #3b82f6 50%, #1d4ed8 100%) !important;
+  background-size: 200% 200% !important;
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
-  transition: all 0.3s ease !important;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1) !important;
+  animation: gradient-shift 4s ease-in-out infinite !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* Gradient animation for title */
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 .why-choose-us-section .why-choose-us-card:hover .why-choose-us-card-title {
-  transform: translateY(-2px) !important;
-  background: linear-gradient(135deg, #1e293b, #1d4ed8) !important;
+  transform: translateY(-3px) !important;
+  background: linear-gradient(135deg, #1e293b 0%, #1d4ed8 50%, #3b82f6 100%) !important;
+  background-size: 200% 200% !important;
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
+  animation-play-state: paused !important;
+  background-position: 100% 50% !important;
 }
 
 .why-choose-us-section .why-choose-us-card-description {
-  font-size: 1rem !important;
-  line-height: 1.7 !important;
+  font-family: 'Inter', 'system-ui', sans-serif !important;
+  font-size: 1.1rem !important;
+  line-height: 1.8 !important;
   color: #64748b !important;
-  margin-bottom: 2rem !important;
+  margin-bottom: 2.5rem !important;
   flex-grow: 1 !important;
-  transition: all 0.3s ease !important;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1) !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.01em !important;
 }
 
 .why-choose-us-section .why-choose-us-card:hover .why-choose-us-card-description {
   color: #475569 !important;
-  transform: translateY(-1px) !important;
+  transform: translateY(-2px) !important;
+  letter-spacing: 0.02em !important;
 }
 
-/* Enhanced footer and link styling for Why Choose Us Cards */
+/* Premium footer and link styling for Why Choose Us Cards */
 .why-choose-us-section .why-choose-us-card-footer {
   margin-top: auto !important;
-  padding-top: 1.5rem !important;
-  border-top: 1px solid rgba(59, 130, 246, 0.1) !important;
+  padding-top: 2rem !important;
+  border-top: 1px solid rgba(59, 130, 246, 0.12) !important;
   position: relative !important;
   z-index: 10 !important;
 }
@@ -761,17 +1104,20 @@ body {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  padding: 1rem 1.5rem !important;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(147, 197, 253, 0.06)) !important;
-  border: 1px solid rgba(59, 130, 246, 0.15) !important;
-  border-radius: 1rem !important;
-  font-weight: 600 !important;
+  padding: 1.2rem 1.8rem !important;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 197, 253, 0.08)) !important;
+  border: 2px solid rgba(59, 130, 246, 0.2) !important;
+  border-radius: 1.2rem !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
   color: #3b82f6 !important;
   text-decoration: none !important;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.320, 1) !important;
   position: relative !important;
   overflow: hidden !important;
   cursor: pointer !important;
+  backdrop-filter: blur(10px) !important;
+  letter-spacing: 0.01em !important;
 }
 
 .why-choose-us-section .why-choose-us-card-link::before {
@@ -787,52 +1133,72 @@ body {
 
 .why-choose-us-section .why-choose-us-card:hover .why-choose-us-card-link {
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(147, 197, 253, 0.12)) !important;
-  border-color: rgba(59, 130, 246, 0.25) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+  color: #1d4ed8 !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 10px 20px rgba(59, 130, 246, 0.15) !important;
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2) !important;
 }
 
 .why-choose-us-section .why-choose-us-card:hover .why-choose-us-card-link::before {
   left: 100% !important;
 }
 
-.why-choose-us-section .card-link-icon {
-  transition: transform 0.3s ease !important;
-  color: #3b82f6 !important;
+/* Arrow icon animation */
+.why-choose-us-section .why-choose-us-card-link .card-link-icon {
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1) !important;
+  position: relative !important;
+  z-index: 2 !important;
 }
 
-.why-choose-us-section .why-choose-us-card:hover .card-link-icon {
+.why-choose-us-section .why-choose-us-card:hover .why-choose-us-card-link .card-link-icon {
   transform: translateX(4px) !important;
 }
 
-/* Responsive adjustments for Why Choose Us cards */
+/* Responsive adjustments for cards */
 @media (max-width: 768px) {
   .why-choose-us-section .why-choose-us-card {
-    padding: 2rem !important;
-    border-radius: 1.5rem !important;
+    padding: 2.5rem 2rem !important;
   }
   
   .why-choose-us-section .why-choose-us-card-icon {
-    width: 3.5rem !important;
-    height: 3.5rem !important;
-    font-size: 2rem !important;
-    margin-bottom: 1.5rem !important;
+    width: 4rem !important;
+    height: 4rem !important;
+    font-size: 2.2rem !important;
   }
   
   .why-choose-us-section .why-choose-us-card-title {
-    font-size: 1.25rem !important;
+    font-size: 1.5rem !important;
   }
   
   .why-choose-us-section .why-choose-us-card-description {
-    font-size: 0.9rem !important;
-    margin-bottom: 1.5rem !important;
-  }
-  
-  .why-choose-us-section .why-choose-us-card-link {
-    padding: 0.8rem 1.2rem !important;
-    font-size: 0.9rem !important;
+    font-size: 1rem !important;
   }
 }
+
+/* Add staggered animation entrance */
+.why-choose-us-section .ant-col:nth-child(1) .why-choose-us-card {
+  animation: slideInUp 0.8s ease-out 0.1s both !important;
+}
+
+.why-choose-us-section .ant-col:nth-child(2) .why-choose-us-card {
+  animation: slideInUp 0.8s ease-out 0.3s both !important;
+}
+
+.why-choose-us-section .ant-col:nth-child(3) .why-choose-us-card {
+  animation: slideInUp 0.8s ease-out 0.5s both !important;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ===================================================================
    TRENDING NGÀNH HỌC SECTION - CUSTOM CSS
    =================================================================== */
@@ -1808,7 +2174,7 @@ body {
 @keyframes glow {
   0% { 
     box-shadow: 
-      0 8px 32px rgba(0, 0, 0, 0.3),
+      0 8px 32px rgba(0, 0, 0, 0.1),
       inset 0 1px 0 rgba(255, 255, 255, 0.3),
       0 0 0 rgba(59, 130, 246, 0.4);
   }
@@ -2078,5 +2444,491 @@ body {
   
   .stats-connecting-lines {
     display: none;
+  }
+}
+
+/* ===================================================================
+   WHY CHOOSE US SECTION - ULTRA MODERN & PREMIUM DESIGN
+   =================================================================== */
+
+/* Main Section Styling */
+.why-choose-ultra-modern-section {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 120px 0;
+}
+
+/* Complex Background System */
+.why-choose-bg-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.why-choose-bg-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    #667eea 0%,
+    #764ba2 25%,
+    #f093fb 50%,
+    #f5576c 75%,
+    #4facfe 100%
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+.why-choose-bg-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 2px, transparent 2px),
+    radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.1) 2px, transparent 2px);
+  background-size: 60px 60px;
+  opacity: 0.6;
+}
+
+/* Floating Orbs Animation */
+.why-choose-floating-orbs {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.floating-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(2px);
+  animation: floatUpDown 8s ease-in-out infinite;
+}
+
+.orb-1 {
+  width: 200px;
+  height: 200px;
+  top: 10%;
+  left: 10%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+  animation-delay: 0s;
+}
+
+.orb-2 {
+  width: 150px;
+  height: 150px;
+  top: 70%;
+  right: 15%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 70%);
+  animation-delay: 2s;
+}
+
+.orb-3 {
+  width: 100px;
+  height: 100px;
+  top: 30%;
+  right: 30%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  animation-delay: 4s;
+}
+
+.orb-4 {
+  width: 80px;
+  height: 80px;
+  bottom: 20%;
+  left: 25%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+  animation-delay: 6s;
+}
+
+/* Container */
+.why-choose-container {
+  position: relative;
+  z-index: 10;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+/* Premium Header Styling */
+.why-choose-header {
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.why-choose-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 32px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 30px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  animation: badgeGlow 3s ease-in-out infinite;
+}
+
+.sparkle-icon {
+  width: 16px;
+  height: 16px;
+  animation: sparkleRotate 2s linear infinite;
+}
+
+.why-choose-title {
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 24px;
+  color: white;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.title-gradient {
+  background: linear-gradient(45deg, #ffd700, #ffea00, #fff700);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: titleGradientShift 3s ease-in-out infinite;
+}
+
+.why-choose-subtitle {
+  font-size: 1.3rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 700px;
+  margin: 0 auto;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Cards Grid */
+.why-choose-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Premium Card Styling */
+.why-choose-premium-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  padding: 40px;
+  min-height: 420px;
+  cursor: pointer;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+  animation: cardSlideUp 0.8s ease-out both;
+  overflow: hidden;
+}
+
+.why-choose-premium-card:hover {
+  transform: translateY(-20px) scale(1.02);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 40px 80px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Card Background Effects */
+.card-bg-effect {
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.why-choose-premium-card:hover .card-bg-effect {
+  opacity: 1;
+}
+
+.card-glow-effect {
+  position: absolute;
+  inset: -2px;
+  border-radius: 26px;
+  background: linear-gradient(45deg, 
+    transparent 30%, 
+    rgba(255, 255, 255, 0.1) 50%, 
+    transparent 70%);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.why-choose-premium-card:hover .card-glow-effect {
+  opacity: 1;
+}
+
+/* Card Content */
+.card-content-wrapper {
+  position: relative;
+  z-index: 10;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Premium Icon Styling */
+.card-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  position: relative;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.icon-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.icon-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.icon-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+
+.icon-inner {
+  font-size: 2.5rem;
+  color: white;
+  transition: all 0.6s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.icon-glow {
+  position: absolute;
+  inset: -4px;
+  border-radius: 24px;
+  background: inherit;
+  filter: blur(12px);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.why-choose-premium-card:hover .card-icon-wrapper {
+  transform: scale(1.1) rotate(-5deg);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.why-choose-premium-card:hover .icon-glow {
+  opacity: 0.6;
+}
+
+.why-choose-premium-card:hover .icon-inner {
+  transform: scale(1.1);
+}
+
+/* Text Content */
+.card-text-content {
+  flex-grow: 1;
+  margin-bottom: 30px;
+}
+
+.card-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 16px;
+  line-height: 1.3;
+  transition: all 0.3s ease;
+}
+
+.why-choose-premium-card:hover .card-title {
+  color: #ffd700;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.card-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
+  transition: color 0.3s ease;
+}
+
+.why-choose-premium-card:hover .card-description {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* Premium Action Link */
+.card-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  transition: all 0.4s ease;
+  margin-top: auto;
+}
+
+.why-choose-premium-card:hover .card-action {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.action-text {
+  font-weight: 600;
+  color: white;
+  font-size: 1rem;
+}
+
+.action-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.why-choose-premium-card:hover .action-icon {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateX(4px);
+}
+
+/* Decorative Elements */
+.card-decoration-1 {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  transition: all 0.6s ease;
+}
+
+.card-decoration-2 {
+  position: absolute;
+  bottom: -15px;
+  left: -15px;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  transition: all 0.6s ease;
+}
+
+.why-choose-premium-card:hover .card-decoration-1 {
+  transform: scale(1.5) rotate(45deg);
+  opacity: 0.8;
+}
+
+.why-choose-premium-card:hover .card-decoration-2 {
+  transform: scale(1.3) rotate(-45deg);
+  opacity: 0.8;
+}
+
+.card-shine-effect {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.2), 
+    transparent);
+  transition: left 0.8s ease;
+}
+
+.why-choose-premium-card:hover .card-shine-effect {
+  left: 100%;
+}
+
+/* Animations */
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes floatUpDown {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-30px) rotate(180deg); }
+}
+
+@keyframes badgeGlow {
+  0%, 100% { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); }
+  50% { box-shadow: 0 8px 32px rgba(255, 255, 255, 0.2); }
+}
+
+@keyframes sparkleRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes titleGradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes cardSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .why-choose-cards-grid {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+  }
+  
+  .why-choose-container {
+    padding: 0 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .why-choose-ultra-modern-section {
+    padding: 80px 0;
+  }
+  
+  .why-choose-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+  
+  .why-choose-container {
+    padding: 0 20px;
+  }
+  
+  .why-choose-premium-card {
+    padding: 30px;
+    min-height: 360px;
+  }
+  
+  .why-choose-title {
+    font-size: 2.5rem;
+  }
+  
+  .why-choose-subtitle {
+    font-size: 1.1rem;
   }
 }

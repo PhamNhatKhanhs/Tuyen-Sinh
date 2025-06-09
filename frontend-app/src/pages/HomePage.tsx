@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Button, Row, Col, Space, Badge, Avatar } from 'antd'; // Added Avatar
+import { Typography, Button, Row, Col, Space, Avatar } from 'antd';
 import './HomePage.css';
 import './BorderStyles.css';
 import './HeroSection.css';
@@ -9,9 +9,6 @@ import {
     ArrowRightOutlined, FormOutlined, 
     BookOutlined, 
     BankOutlined, SolutionOutlined, 
-    CalendarOutlined, 
-    EnvironmentOutlined,
-    GlobalOutlined,
     StarFilled
 } from '@ant-design/icons';
 import { useAppSelector } from '../store/hooks';
@@ -21,70 +18,13 @@ import {
     MessageSquare, 
     Heart,         
     ThumbsUp,      
-    BookOpen, ShieldCheck, Zap, Award, TrendingUp, 
-    ChevronRight, Sparkles, Star, Users, Crown, GraduationCap, Briefcase // Added Briefcase, GraduationCap
-} from 'lucide-react'; 
+    BookOpen, Zap, Award, TrendingUp, 
+    Sparkles, Star, Users, Briefcase
+} from 'lucide-react';
 import Banner from '../components/banner/Banner';
-import classNames from 'classnames'; // Re-added classNames import
+import classNames from 'classnames';
 
 const { Title, Paragraph, Text } = Typography;
-
-// Super Enhanced BenefitCard với nhiều màu sắc và hiệu ứng
-interface BenefitCardProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  colorClass?: string;
-  accentColor?: string;
-}
-const BenefitCard: React.FC<BenefitCardProps> = ({ icon, title, description, colorClass, accentColor = 'from-pink-500 to-rose-500' }) => (
-  <div className="group relative overflow-hidden rounded-xl h-full">
-    {/* Enhanced background gradient with better opacity transitions */}
-    <div className={`absolute inset-0 bg-gradient-to-br ${accentColor} opacity-5 group-hover:opacity-15 transition-all duration-700`}></div>
-    
-    {/* Main card with glass morphism effect */}
-    <div className="relative bg-white/90 backdrop-blur-sm p-8 rounded-xl h-full flex flex-col border border-white/80 shadow-xl transition-all duration-500 group-hover:shadow-2xl">
-      {/* Sparkle effects on hover with improved positioning */}
-      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-700 transform rotate-0 group-hover:rotate-45">
-        <Sparkles className="text-pink-400 w-6 h-6 animate-pulse" />
-      </div>
-      <div className="absolute bottom-4 left-4 opacity-0 group-hover:opacity-100 transition-all duration-700 delay-300"> 
-        <Sparkles className="text-purple-400 w-4 h-4 animate-bounce" />
-      </div>
-      
-      {/* Enhanced glow effect on hover */}
-      <div className="absolute -inset-1 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-3xl opacity-0 group-hover:opacity-30 blur-xl transition-all duration-700"></div>
-      
-      {/* Icon container with improved visual effects */}
-      <div className="relative z-10 mx-auto mb-8">
-        <div className={`w-28 h-28 rounded-2xl flex items-center justify-center text-white shadow-2xl ${colorClass || 'bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500'} group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 relative overflow-hidden`}>
-          {/* Inner glow effect */}
-          <div className="absolute inset-0 bg-white/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          
-          {/* Icon with enhanced size */}
-          <div className="text-5xl relative z-10 transform transition-transform duration-500 group-hover:scale-110">{icon}</div>
-          
-          {/* Shine effect animation */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-        </div>
-      </div>
-      
-      {/* Content with improved typography and spacing */}
-      <div className="relative z-10 text-center flex-grow">
-        <Title level={4} className="!text-2xl !font-bold !mb-4 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-pink-500 group-hover:to-purple-500 group-hover:bg-clip-text transition-all duration-500">
-          {title}
-        </Title>
-        <Paragraph className="text-gray-600 text-base leading-relaxed group-hover:text-gray-700">
-          {description}
-        </Paragraph>
-      </div>
-      
-      {/* Enhanced decorative elements with better positioning and animations */}
-      <div className="absolute -top-8 -right-8 w-24 h-24 bg-gradient-to-br from-pink-200/40 to-purple-200/40 rounded-full group-hover:scale-[2] group-hover:rotate-180 transition-all duration-1000"></div>
-      <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-gradient-to-br from-blue-200/40 to-indigo-200/40 rounded-full group-hover:scale-[1.75] group-hover:-rotate-90 transition-all duration-1000 delay-200"></div>
-    </div>
-  </div>
-);
 
 // Enhanced TestimonialCard với nhiều màu sắc
 interface TestimonialCardProps {
@@ -125,54 +65,6 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({ quote, name, role, av
   );
 };
 
-// WhyChooseUsCard với thiết kế dựa trên testimonials pattern
-interface WhyChooseUsCardProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  bgColor?: string;
-  linkTo?: string;
-  linkText?: string;
-}
-
-const WhyChooseUsCard: React.FC<WhyChooseUsCardProps> = ({ icon, title, description, bgColor, linkTo, linkText }) => {
-  const navigate = useNavigate();
-  
-  const handleCardClick = () => {
-    if (linkTo) {
-      navigate(linkTo);
-    }
-  };  return (
-    <div 
-      className={classNames("why-choose-us-card", linkTo ? "cursor-pointer" : "")} 
-      onClick={handleCardClick}
-    >
-      <div className="why-choose-us-card-content">
-        {/* Icon wrapper */}
-        <div className={classNames("why-choose-us-card-icon", bgColor)}>
-          {icon}
-        </div>
-        
-        {/* Title */}
-        <Text strong className="why-choose-us-card-title">{title}</Text>
-        
-        {/* Description */}
-        <Paragraph className="why-choose-us-card-description">{description}</Paragraph>
-        
-        {/* Footer with link */}
-        {linkTo && (
-          <div className="why-choose-us-card-footer">
-            <div className="why-choose-us-card-link">
-              <span>{linkText || 'Tìm hiểu thêm'}</span>
-              <ChevronRight className="card-link-icon" size={18} />
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
 const testimonialsData: TestimonialCardProps[] = [
   {
     quote: "Hệ thống rất dễ sử dụng và giúp tôi tiết kiệm rất nhiều thời gian trong việc nộp hồ sơ. Giao diện thân thiện và quy trình rõ ràng.",
@@ -204,94 +96,6 @@ const testimonialsData: TestimonialCardProps[] = [
     bgColor: "bg-gradient-to-br from-amber-400 via-orange-500 to-red-500",
     icon: <Heart size={24} />
   }
-];
-
-// Enhanced FeatureCard
-const FeatureCard: React.FC<{
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  linkTo?: string;
-  linkText?: string;
-  onClick?: () => void;
-}> = ({ icon, title, description, linkTo, linkText, onClick }) => {
-  const navigate = useNavigate();
-  const handleClick = () => {
-    if (onClick) onClick();
-    else if (linkTo) navigate(linkTo);
-  };
-  return (
-    <div 
-      className="feature-card"
-      onClick={handleClick} 
-      role={linkTo || onClick ? "button" : undefined} 
-      tabIndex={linkTo || onClick ? 0 : undefined}
-      onKeyDown={(e) => { if (e.key === 'Enter' && (linkTo || onClick)) handleClick();}}
-    >
-      <div className="card-content">
-        <div className="card-icon-wrapper">
-          <div className="card-icon">{icon}</div>
-        </div>
-        <div className="card-body">
-          <Title level={4} className="card-title">
-            {title}
-          </Title>
-          <Paragraph className="card-description">
-            {description}
-          </Paragraph>
-        </div>
-        {(linkTo || onClick) && (
-          <div className="card-footer">
-            <div className="card-link">
-              <span>{linkText || 'Tìm hiểu thêm'}</span>
-              <ChevronRight className="card-link-icon" size={18} />
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-// Colorful StatCard - Rewritten for Custom CSS
-interface StatCardProps {
-  icon: React.ReactNode;
-  title: string;
-  value: string;
-}
-
-const StatCard: React.FC<StatCardProps> = ({ icon, title, value }) => (
-  <div className="custom-stat-card">
-    <div className="custom-stat-card-icon-wrapper">
-      {icon}
-    </div>
-    <Text className="custom-stat-card-value">{value}</Text>
-    <Paragraph className="custom-stat-card-title">{title}</Paragraph>
-  </div>
-);
-
-// Placeholder for SectionTitle component
-interface SectionTitleProps {
-  title: string;
-  subtitle?: string;
-  className?: string;
-}
-
-const SectionTitle: React.FC<SectionTitleProps> = ({ title, subtitle, className }) => (
-  <div className={classNames("section-title-wrapper", className)}> {/* Changed class for clarity */}
-    <Title level={2} className="section-title-main-heading"> {/* Added specific class */}
-      {title}
-    </Title>
-    {subtitle && <Paragraph className="section-title-subheading">{subtitle}</Paragraph>} {/* Changed to a more specific class */}
-  </div>
-);
-
-// Placeholder for benefitsData
-const benefitsData: BenefitCardProps[] = [
-  { icon: <Zap />, title: "Lợi ích 1", description: "Mô tả lợi ích 1", colorClass: "bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600" },
-  { icon: <BookOpen />, title: "Lợi ích 2", description: "Mô tả lợi ích 2", colorClass: "bg-gradient-to-br from-blue-400 via-indigo-500 to-purple-600" },
-  { icon: <TrendingUp />, title: "Lợi ích 3", description: "Mô tả lợi ích 3", colorClass: "bg-gradient-to-br from-purple-400 via-violet-500 to-pink-600" },
-  { icon: <ShieldCheck />, title: "Lợi ích 4", description: "Mô tả lợi ích 4", colorClass: "bg-gradient-to-br from-teal-400 via-cyan-500 to-blue-600" },
 ];
 
 const HomePage: React.FC = () => {
@@ -376,8 +180,7 @@ const HomePage: React.FC = () => {
     { title: 'Ngành Tuyển Sinh', value: "1,500+", icon: <SolutionOutlined /> },
     { title: 'Hồ Sơ Đã Nộp', value: "50K+", icon: <FormOutlined /> },
     { title: 'Thí Sinh Tin Dùng', value: "100K+", icon: <Users /> }, // Users is LucideUsers
-  ];
-  const whyChooseUsFeatures = [
+  ];  const whyChooseUsFeatures = [
     { icon: <Zap />, title: "Nộp Hồ Sơ Nhanh Chóng", description: "Quy trình trực tuyến tinh gọn, tiết kiệm thời gian tối đa cho thí sinh và phụ huynh với giao diện thân thiện.", colorClass: "bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600", accentColor: "from-green-400 to-emerald-500", linkTo: !isAuthenticated ? "/auth/register" : (user?.role === 'candidate' ? "/candidate/submit-application" : undefined), linkText: "Nộp hồ sơ ngay" },
     { icon: <BookOpen />, title: "Thông Tin Đa Dạng", description: "Cập nhật liên tục thông tin tuyển sinh, chỉ tiêu, điểm chuẩn từ hàng trăm trường đại học uy tín trên cả nước.", colorClass: "bg-gradient-to-br from-blue-400 via-indigo-500 to-purple-600", accentColor: "from-blue-400 to-indigo-500", linkTo: "/universities", linkText: "Khám phá các trường" },
     { icon: <TrendingUp />, title: "Theo Dõi Trực Quan", description: "Dễ dàng theo dõi trạng thái xử lý hồ sơ và nhận thông báo kết quả nhanh nhất qua hệ thống thông minh.", colorClass: "bg-gradient-to-br from-purple-400 via-violet-500 to-pink-600", accentColor: "from-purple-400 to-violet-500", linkTo: isAuthenticated && user?.role === 'candidate' ? "/candidate/my-applications" : "/auth/login", linkText: "Kiểm tra hồ sơ" },
@@ -449,38 +252,92 @@ const HomePage: React.FC = () => {
             </Col>
           </Row>
         </div>
-      </section>      {/* Why Choose Us Section - Using Testimonials Design Pattern */}
-      <section className="py-12 md:py-20 why-choose-us-section"> {/* Matching testimonials section spacing */}
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12 md:mb-16">
-            <Paragraph className="why-choose-us-section-tagline">
-              {/* LỢI ÍCH VƯỢT TRỘI */}
-            </Paragraph>
-            <Title level={2} className="why-choose-us-section-title">
-              Tại Sao Chọn Hệ Thống Của Chúng Tôi?
-            </Title>
-            <Paragraph className="why-choose-us-section-subtitle">
-              Trải nghiệm tuyển sinh trực tuyến toàn diện, dễ dàng tiếp cận cơ hội học tập tại các trường đại học hàng đầu với những ưu điểm vượt trội.
-            </Paragraph>
-          </div>          <Row gutter={[24, 24]} justify="center">
-            {whyChooseUsFeatures.map((item, index) => (
-              <Col xs={24} sm={24} md={12} lg={8} key={index}>
-                <WhyChooseUsCard
-                  icon={item.icon}
-                  title={item.title}
-                  description={item.description}
-                  bgColor={item.accentColor ? `bg-gradient-to-br ${item.accentColor}` : 'bg-gradient-to-br from-blue-400 to-indigo-500'}
-                  linkTo={item.linkTo}
-                  linkText={item.linkText}
-                />
-              </Col>
-            ))}
-          </Row>
-          <div className="text-center mt-12">
-            {/* Optional: Add a CTA button here */}
+      </section>      {/* Why Choose Us Section - Ultra Modern & Beautiful */}
+      <section className="why-choose-ultra-modern-section">
+        {/* Complex Background */}
+        <div className="why-choose-bg-wrapper">
+          <div className="why-choose-bg-gradient"></div>
+          <div className="why-choose-bg-pattern"></div>
+          <div className="why-choose-floating-orbs">
+            <div className="floating-orb orb-1"></div>
+            <div className="floating-orb orb-2"></div>
+            <div className="floating-orb orb-3"></div>
+            <div className="floating-orb orb-4"></div>
           </div>
         </div>
-      </section>      {/* Featured Universities Section - Enhanced Premium */}
+
+        <div className="why-choose-container">
+          {/* Premium Section Header */}
+          <div className="why-choose-header">
+            <div className="why-choose-badge">
+              <Sparkles className="sparkle-icon" />
+              <span>Lợi Ích Vượt Trội</span>
+              <Sparkles className="sparkle-icon" />
+            </div>
+            
+            <h2 className="why-choose-title">
+              Tại Sao Chọn{' '}
+              <span className="title-gradient">
+                Hệ Thống Của Chúng Tôi?
+              </span>
+            </h2>
+            
+            <p className="why-choose-subtitle">
+              Trải nghiệm tuyển sinh trực tuyến toàn diện với những ưu điểm vượt trội được hàng ngàn thí sinh tin tưởng
+            </p>
+          </div>
+
+          {/* Premium Feature Cards */}
+          <div className="why-choose-cards-grid">
+            {whyChooseUsFeatures.map((item, index) => (
+              <div 
+                key={index}
+                className={`why-choose-premium-card card-${index + 1}`}
+                style={{ 
+                  animationDelay: `${index * 0.2}s`
+                }}
+                onClick={() => item.linkTo && navigate(item.linkTo)}
+              >
+                {/* Card Background Effects */}
+                <div className="card-bg-effect"></div>
+                <div className="card-glow-effect"></div>
+                
+                {/* Card Content */}
+                <div className="card-content-wrapper">
+                  {/* Premium Icon */}
+                  <div className={`card-icon-wrapper icon-${index + 1}`}>
+                    <div className="icon-inner">
+                      {item.icon}
+                    </div>
+                    <div className="icon-glow"></div>
+                  </div>
+                  
+                  {/* Text Content */}
+                  <div className="card-text-content">
+                    <h3 className="card-title">{item.title}</h3>
+                    <p className="card-description">{item.description}</p>
+                  </div>
+                  
+                  {/* Premium Action Link */}
+                  {item.linkTo && (
+                    <div className="card-action">
+                      <span className="action-text">{item.linkText}</span>
+                      <div className="action-icon">
+                        <ArrowRightOutlined />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Decorative Elements */}
+                <div className="card-decoration-1"></div>
+                <div className="card-decoration-2"></div>
+                <div className="card-shine-effect"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>{/* Featured Universities Section - Enhanced Premium */}
       <section className="universities-enhanced-section relative py-24 lg:py-40 overflow-hidden" style={{ margin: '4rem 2rem', borderRadius: '24px' }}>
         {/* Enhanced Background with Multiple Layers */}
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600"></div>
