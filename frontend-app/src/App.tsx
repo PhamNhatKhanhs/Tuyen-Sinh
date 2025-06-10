@@ -30,6 +30,7 @@ const AdminManageAdmissionMethods = lazy(() => import('./features/admin/pages/Ad
 const AdminManageApplications = lazy(() => import('./features/admin/pages/AdminManageApplications'));
 const AdminManageSubjectGroups = lazy(() => import('./features/admin/pages/AdminManageSubjectGroups'));
 const AdminManageAdmissionLinks = lazy(() => import('./features/admin/pages/AdminManageAdmissionLinks'));
+const AdminManageMajorSubjectGroups = lazy(() => import('./features/admin/pages/AdminManageMajorSubjectGroups'));
 const AdminStatsPage = lazy(() => import('./features/admin/pages/AdminStatsPage'));
 const AdminManageUsers = lazy(() => import('./features/admin/pages/AdminManageUsers'));
 
@@ -128,10 +129,10 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
           <Route path="/admin/universities" element={<AdminManageUniversities />} />
           <Route path="/admin/majors" element={<AdminManageMajors />} />
-          <Route path="/admin/admission-methods" element={<AdminManageAdmissionMethods />} />
-          <Route path="/admin/applications" element={<AdminManageApplications />} />
+          <Route path="/admin/admission-methods" element={<AdminManageAdmissionMethods />} />          <Route path="/admin/applications" element={<AdminManageApplications />} />
           <Route path="/admin/subject-groups" element={<AdminManageSubjectGroups />} />
           <Route path="/admin/admission-links" element={<AdminManageAdmissionLinks />} />
+          <Route path="/admin/major-subject-groups" element={<AdminManageMajorSubjectGroups />} />
           <Route path="/admin/stats" element={<AdminStatsPage />} />
           <Route path="/admin/users" element={<AdminManageUsers />} />
         </Route>

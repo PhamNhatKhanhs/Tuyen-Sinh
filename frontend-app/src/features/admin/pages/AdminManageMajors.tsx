@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Typography, Table, Button, Modal, Form, Input, Space, Tooltip, Popconfirm, message, Switch, InputNumber, Tag, Row, Col, Card, Avatar } from 'antd';
+import { Typography, Table, Button, Modal, Form, Input, Space, Tooltip, Popconfirm, message, Switch, InputNumber, Tag, Row, Col, Card, Avatar, Select } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, ReloadOutlined, BookOutlined, BankOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 import type { TableProps } from 'antd';
 import majorAdminService from '../services/majorAdminService';
 import { MajorFE } from '../../major/types';
 
 const { Title, Paragraph } = Typography;
+const { Option } = Select;
 
 // Modern color palette
 const COLORS = {
@@ -32,6 +33,7 @@ const COLORS = {
 interface MajorFormData {
   name: string;
   code: string;
+  universityId: string;
   description?: string;
   admissionQuota?: number;
   isActive?: boolean;
@@ -43,8 +45,10 @@ const AdminManageMajors: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingMajor, setEditingMajor] = useState<MajorFE | null>(null);
   const [form] = Form.useForm<MajorFormData>();
+  const [universities, setUniversities] = useState<{ id: string; name: string; code: string }[]>([]);
   
-  const [searchText, setSearchText] = useState('');const [pagination, setPagination] = useState({
+  const [searchText, setSearchText] = useState('');
+  const [universitiesLoading, setUniversitiesLoading] = useState(true);const [pagination, setPagination] = useState({
     current: 1, 
     pageSize: 5, 
     total: 0, 
@@ -96,22 +100,66 @@ const AdminManageMajors: React.FC = () => {
     finally { setLoading(false); }
   }, [searchText, pagination.current, pagination.pageSize]);  useEffect(() => {
     fetchMajors(1, pagination.pageSize, '');
-  }, []);
+    loadUniversities();
+  }, []);  const loadUniversities = async () => {
+    try {
+      setUniversitiesLoading(true);
+      console.log('Loading universities...');
+      const response = await majorAdminService.getUniversitiesForSelect();
+      console.log('Universities response:', response);
+      
+      if (response.success && response.data) {
+        // Filter out invalid universities and ensure unique IDs
+        const validUniversities = response.data.filter(university => 
+          university && university.id && university.name
+        );
+        console.log('Valid universities:', validUniversities);
+        setUniversities(validUniversities);
+      } else {
+        console.error('Failed to load universities:', response.message);
+        message.error(response.message || 'Lỗi khi tải danh sách trường đại học');
+      }
+    } catch (error) {
+      console.error('Error loading universities:', error);
+      message.error('Lỗi khi tải danh sách trường đại học');
+    } finally {
+      setUniversitiesLoading(false);
+    }
+  };
   const handleTableChange: TableProps<MajorFE>['onChange'] = (newPagination) => {
     fetchMajors(newPagination.current, newPagination.pageSize, searchText);
-  };
-
-  const handleAdd = () => {
+  };  const handleAdd = () => {
+    console.log('Opening add modal...');
     setEditingMajor(null);
     form.resetFields();
-    form.setFieldsValue({ isActive: true, admissionQuota: 0 });
+    
+    // Set default values explicitly
+    const defaultValues = { 
+      isActive: true, 
+      admissionQuota: 0,
+      universityId: undefined,
+      name: '',
+      code: '',
+      description: ''
+    };
+    
+    console.log('Setting default form values:', defaultValues);
+    form.setFieldsValue(defaultValues);
+    
+    // Double check after setting
+    setTimeout(() => {
+      console.log('Form values after reset:', form.getFieldsValue());
+    }, 100);
+    
     setIsModalVisible(true);
   };
+  
   const handleEdit = (record: MajorFE) => {
     setEditingMajor(record);
     form.setFieldsValue({
         name: record.name,
         code: record.code,
+        universityId: record.universityId,
         description: record.description,
         admissionQuota: record.admissionQuota,
         isActive: record.isActive
@@ -144,40 +192,54 @@ const AdminManageMajors: React.FC = () => {
       setLoading(false);
     }  };  const handleModalOk = async () => {
     try {
+      console.log('Starting form validation...');
+      console.log('Current form values before validation:', form.getFieldsValue());
+      console.log('Universities available:', universities);
+      
       const values = await form.validateFields();
       setLoading(true);
       
-      // TODO: Cần thêm lại chọn trường đại học hoặc có cách khác để lấy universityId
-      console.log('Form values:', values); // Để tránh warning về unused variable
-      message.warning('Chức năng thêm/sửa ngành đã bị tắt vì thiếu thông tin trường đại học');
-      setIsModalVisible(false);
-      return;
-
-      /*
+      console.log('Form validation passed! Values:', values);
+      
       let response;
       if (editingMajor) {
-        response = await majorAdminService.update(editingMajor.id, values);
+        // Update major - exclude universityId from update data
+        const { universityId, ...updateData } = values;
+        console.log('Updating major with data:', updateData);
+        response = await majorAdminService.update(editingMajor.id, updateData);
       } else {
-        response = await majorAdminService.create(values);
+        // Create new major - ensure universityId is correctly mapped
+        const createData = {
+          name: values.name,
+          code: values.code,
+          description: values.description,
+          admissionQuota: values.admissionQuota || 0,
+          isActive: values.isActive !== false, // Default to true if not specified
+          university: values.universityId // Map universityId to university field
+        };
+        console.log('Creating major with data:', createData);
+        response = await majorAdminService.create(createData);
       }
 
       if (response.success) {
         message.success(editingMajor ? 'Cập nhật ngành thành công!' : 'Thêm ngành thành công!');
         setIsModalVisible(false);
+        form.resetFields();
         // Refresh the data after successful create/update
         await fetchMajors(pagination.current, pagination.pageSize, searchText);
       } else { 
+        console.error('Service error:', response);
         message.error(response.message || (editingMajor ? 'Cập nhật thất bại.' : 'Thêm mới thất bại.')); 
       }
-      */
     } catch (info) { 
       console.log('Validate Failed:', info); 
+      console.log('Form fields with errors:', info.errorFields);
       message.error('Vui lòng kiểm tra lại thông tin.'); 
     } 
     finally { 
       setLoading(false); 
     }
-  };  const handleSearch = (value: string) => { 
+  };const handleSearch = (value: string) => { 
     setSearchText(value); 
     fetchMajors(1, pagination.pageSize, value); 
   };
@@ -549,14 +611,17 @@ const AdminManageMajors: React.FC = () => {
                 <SafetyCertificateOutlined style={{ color: COLORS.primary }} />
                 {editingMajor ? "Chỉnh Sửa Ngành Học" : "Thêm Ngành Học Mới"}
               </div>
-            }
-            open={isModalVisible}
+            }            open={isModalVisible}
             onOk={handleModalOk}
-            onCancel={() => setIsModalVisible(false)}
+            onCancel={() => {
+              setIsModalVisible(false);
+              form.resetFields();
+              setEditingMajor(null);
+            }}
             confirmLoading={loading}
             okText={editingMajor ? "Cập Nhật" : "Thêm Mới"}
             cancelText="Hủy"
-            destroyOnClose
+            destroyOnClose={true}
             width={680}
             okButtonProps={{
               style: {
@@ -573,18 +638,52 @@ const AdminManageMajors: React.FC = () => {
                 height: '40px'
               }
             }}
-          >
-            <Form 
+          >            <Form 
               form={form} 
               layout="vertical" 
               name="majorFormAdmin"
               style={{ marginTop: '24px' }}            >
               <Row gutter={16}>
-                <Col span={12}>
+                <Col span={24}>
+                  <Form.Item
+                    name="universityId"
+                    label={<span style={{ fontWeight: '600', color: COLORS.text }}>Trường Đại Học</span>}
+                    rules={[{ required: true, message: 'Vui lòng chọn trường đại học!' }]}
+                  >                    <Select 
+                      size="large" 
+                      placeholder={universitiesLoading ? "Đang tải..." : "Chọn trường đại học"}
+                      showSearch
+                      allowClear
+                      loading={universitiesLoading}
+                      value={form.getFieldValue('universityId')}
+                      onChange={(value) => {
+                        console.log('University selected:', value);
+                        form.setFieldsValue({ universityId: value });
+                        // Trigger validation for this field
+                        form.validateFields(['universityId']);
+                      }}
+                      filterOption={(input, option) =>
+                        (option?.children?.toString().toLowerCase() ?? '').includes(input.toLowerCase())
+                      }
+                      disabled={!!editingMajor || universitiesLoading} // Disable khi edit hoặc đang load
+                    >
+                      {universities.map(university => (
+                        <Option key={university.id} value={university.id}>
+                          {university.name} ({university.code})
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>                <Col span={12}>
                   <Form.Item
                     name="name"
                     label={<span style={{ fontWeight: '600', color: COLORS.text }}>Tên Ngành</span>}
-                    rules={[{ required: true, message: 'Vui lòng nhập tên ngành!' }]}
+                    rules={[
+                      { required: true, message: 'Vui lòng nhập tên ngành!' },
+                      { min: 2, message: 'Tên ngành phải có ít nhất 2 ký tự!' }
+                    ]}
                   >
                     <Input size="large" placeholder="Nhập tên ngành học" />
                   </Form.Item>
@@ -593,9 +692,21 @@ const AdminManageMajors: React.FC = () => {
                   <Form.Item
                     name="code"
                     label={<span style={{ fontWeight: '600', color: COLORS.text }}>Mã Ngành</span>}
-                    rules={[{ required: true, message: 'Vui lòng nhập mã ngành!' }]}
+                    rules={[
+                      { required: true, message: 'Vui lòng nhập mã ngành!' },
+                      { min: 2, message: 'Mã ngành phải có ít nhất 2 ký tự!' },
+                      { max: 10, message: 'Mã ngành không được quá 10 ký tự!' }
+                    ]}
                   >
-                    <Input size="large" placeholder="Nhập mã ngành" />
+                    <Input 
+                      size="large" 
+                      placeholder="Nhập mã ngành" 
+                      style={{ textTransform: 'uppercase' }}
+                      onChange={(e) => {
+                        const value = e.target.value.toUpperCase();
+                        form.setFieldsValue({ code: value });
+                      }}
+                    />
                   </Form.Item>
                 </Col>
               </Row>

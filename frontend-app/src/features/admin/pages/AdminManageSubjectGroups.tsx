@@ -143,25 +143,59 @@ const AdminManageSubjectGroups: React.FC = () => {
       setLoading(false);
     }
   };
-
   const handleModalOk = async () => {
     try {
+      console.log('🔧 FORM_SUBMIT: Starting form validation...');
       const values = await form.validateFields();
+      
+      console.log('📝 FORM_SUBMIT: Raw form values:', {
+        values,
+        valuesType: typeof values,
+        subjects: values.subjects,
+        subjectsType: typeof values.subjects,
+        subjectsIsArray: Array.isArray(values.subjects),
+        subjectsLength: values.subjects?.length
+      });
+
       // Đảm bảo subjects là mảng các string, không có giá trị rỗng hoặc trùng lặp
       const processedSubjects = Array.from(new Set(values.subjects.map(s => s.trim()).filter(s => s)));
+      
+      console.log('🧹 FORM_SUBMIT: Processed subjects:', {
+        originalSubjects: values.subjects,
+        processedSubjects,
+        lengthBefore: values.subjects?.length,
+        lengthAfter: processedSubjects.length
+      });
+
       if (processedSubjects.length === 0) {
+        console.warn('⚠️ FORM_SUBMIT: No subjects after processing');
         message.error('Tổ hợp môn phải có ít nhất một môn học.');
         return;
       }
+      
       const dataToSubmit = { ...values, subjects: processedSubjects };
+      console.log('📤 FORM_SUBMIT: Final data to submit:', {
+        dataToSubmit,
+        editingMode: !!editingSubjectGroup,
+        editingId: editingSubjectGroup?.id
+      });
 
       setLoading(true);
       let response;
       if (editingSubjectGroup) {
+        console.log('📝 FORM_SUBMIT: Updating existing subject group...');
         response = await subjectGroupAdminService.update(editingSubjectGroup.id, dataToSubmit);
       } else {
+        console.log('🆕 FORM_SUBMIT: Creating new subject group...');
         response = await subjectGroupAdminService.create(dataToSubmit);
       }
+
+      console.log('📬 FORM_SUBMIT: Service response:', {
+        response,
+        success: response.success,
+        message: response.message,
+        data: response.data
+      });
 
       if (response.success) {
         message.success(editingSubjectGroup ? 'Cập nhật tổ hợp môn thành công!' : 'Thêm tổ hợp môn mới thành công!');
@@ -169,10 +203,16 @@ const AdminManageSubjectGroups: React.FC = () => {
         // Refresh current page data
         await fetchSubjectGroups(pagination.current, pagination.pageSize, searchText);
       } else {
+        console.error('❌ FORM_SUBMIT: Service returned error:', response.message);
         message.error(response.message || (editingSubjectGroup ? 'Cập nhật thất bại.' : 'Thêm mới thất bại.'));
       }
     } catch (info) {
-      console.log('Validate Failed:', info);
+      console.error('💥 FORM_SUBMIT: Exception caught:', {
+        error: info,
+        type: typeof info,
+        message: info?.message,
+        stack: info?.stack
+      });
       message.error('Vui lòng kiểm tra lại thông tin đã nhập.');
     } finally {
       setLoading(false);

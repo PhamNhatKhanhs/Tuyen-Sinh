@@ -18,6 +18,7 @@ const menuItems = [
   { key: 'majors', icon: <SolutionOutlined />, label: 'QL Ngành Học', path: '/admin/majors' },
   { key: 'admission-methods', icon: <UnorderedListOutlined />, label: 'QL Phương Thức XT', path: '/admin/admission-methods' },
   { key: 'subject-groups', icon: <AppstoreAddOutlined />, label: 'QL Tổ Hợp Môn', path: '/admin/subject-groups' },
+  { key: 'major-subject-groups', icon: <AppstoreAddOutlined />, label: 'QL Ngành-Tổ Hợp', path: '/admin/major-subject-groups' },
   { key: 'applications', icon: <FileSearchOutlined />, label: 'QL Hồ Sơ', path: '/admin/applications' },
   { key: 'users', icon: <TeamOutlined />, label: 'QL Người Dùng', path: '/admin/users' },
   { key: 'stats', icon: <BarChartOutlined />, label: 'Thống Kê', path: '/admin/stats' },

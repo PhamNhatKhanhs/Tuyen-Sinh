@@ -44,16 +44,39 @@ const subjectGroupAdminService = {
       return { success: false, message: error.response?.data?.message || error.message };
     }
   },
-
   create: async (groupData: Omit<SubjectGroupFE, 'id'>): Promise<AdminSubjectGroupResponse> => {
     try {
+      console.log('🚀 SUBJECT_GROUP_CREATE: Starting creation with data:', {
+        originalData: groupData,
+        dataType: typeof groupData,
+        subjectsArray: groupData.subjects,
+        subjectsType: typeof groupData.subjects,
+        subjectsLength: Array.isArray(groupData.subjects) ? groupData.subjects.length : 'Not an array'
+      });
+
       const response = await axiosInstance.post<AdminSubjectGroupResponse>('/admin/subject-groups', groupData);
+      
+      console.log('✅ SUBJECT_GROUP_CREATE: Response received:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers,
+        data: response.data
+      });
+
       if (response.data.success && response.data.data) {
         const groupBE = response.data.data as SubjectGroupBE;
         return { ...response.data, data: { ...groupBE, id: groupBE._id } };
       }
       return response.data;
     } catch (error: any) {
+      console.error('❌ SUBJECT_GROUP_CREATE: Creation failed:', {
+        error: error,
+        message: error.message,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        responseData: error.response?.data,
+        config: error.config
+      });
       return { success: false, message: error.response?.data?.message || error.message };
     }
   },
