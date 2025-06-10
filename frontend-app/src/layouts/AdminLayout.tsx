@@ -13,7 +13,7 @@ import { selectUser, logout } from '../features/auth/store/authSlice';
 const { Sider, Content } = Layout;
 
 const menuItems = [
-  { key: 'dashboard', icon: <DashboardOutlined />, label: 'Dashboard', path: '/admin/dashboard' },
+  { key: 'dashboard', icon: <DashboardOutlined />, label: 'Bảng Quản Trị', path: '/admin/dashboard' },
   { key: 'universities', icon: <BankOutlined />, label: 'QL Trường ĐH', path: '/admin/universities' },
   { key: 'majors', icon: <SolutionOutlined />, label: 'QL Ngành Học', path: '/admin/majors' },
   { key: 'admission-methods', icon: <UnorderedListOutlined />, label: 'QL Phương Thức XT', path: '/admin/admission-methods' },

@@ -126,7 +126,7 @@ const CandidateViewApplicationsPage: React.FC = () => {
         Theo dõi trạng thái và quản lý các hồ sơ xét tuyển của bạn tại đây.
       </Paragraph>
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
-        <Button icon={<ReloadOutlined />} onClick={fetchApplications} loading={loading} className={styles.actionBtn + ' ' + styles.actionBtnPrimary}>Tải lại</Button>
+        <Button icon={<ReloadOutlined />} onClick={fetchApplications} loading={loading} className={styles.actionBtn + ' ' + styles.actionBtnPrimary}></Button>
       </div>
       {error && !loading && <Alert message={error} type="error" showIcon style={{ marginBottom: 16 }} />}
       {!loading && applications.length === 0 && !error && (

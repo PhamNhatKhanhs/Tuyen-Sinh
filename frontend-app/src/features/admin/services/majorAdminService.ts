@@ -28,22 +28,21 @@ const majorAdminService = {
       return { success: false, message: "Lỗi khi tải danh sách trường." };
     }
   },
+
   getAll: async (params?: { universityId?: string; search?: string; page?: number; limit?: number; sortBy?: string, sortOrder?: 'asc'|'desc' }): Promise<{ success: boolean; data?: MajorFE[]; total?: number; message?: string }> => {
     try {
       const response = await axiosInstance.get<AdminGetAllMajorsResponse>('/admin/majors', { params });
       if (response.data.success && response.data.data) {
-        const majorsFE: MajorFE[] = response.data.data
-          .filter(major => major && major._id) // Filter out null/undefined entries
-          .map(major => ({
-            id: major._id,
-            name: major.name || '',
-            code: major.code || '',
-            universityId: typeof major.university === 'string' ? major.university : major.university?._id || '',
-            universityName: typeof major.university === 'object' && major.university ? major.university.name : undefined,
-            description: major.description,
-            admissionQuota: major.admissionQuota || 0,
-            isActive: major.isActive !== undefined ? major.isActive : true,
-          }));
+        const majorsFE: MajorFE[] = response.data.data.map(major => ({
+          id: major._id,
+          name: major.name,
+          code: major.code,
+          universityId: typeof major.university === 'string' ? major.university : major.university._id,
+          universityName: typeof major.university === 'object' ? major.university.name : undefined,
+          description: major.description,
+          admissionQuota: major.admissionQuota,
+          isActive: major.isActive,
+        }));
         return { success: true, data: majorsFE, total: response.data.total };
       }
       return { success: false, message: response.data.message || "Không thể tải danh sách ngành (Admin)." };

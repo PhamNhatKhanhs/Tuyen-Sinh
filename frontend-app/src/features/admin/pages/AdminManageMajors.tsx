@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Typography, Table, Button, Modal, Form, Input, Space, Tooltip, Popconfirm, message, Switch, InputNumber, Select, Tag, Row, Col, Card, Avatar } from 'antd';
+import { Typography, Table, Button, Modal, Form, Input, Space, Tooltip, Popconfirm, message, Switch, InputNumber, Tag, Row, Col, Card, Avatar } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, ReloadOutlined, BookOutlined, BankOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 import type { TableProps } from 'antd';
 import majorAdminService from '../services/majorAdminService';
 import { MajorFE } from '../../major/types';
-import { UniversityFE } from '../../university/types';
 
 const { Title, Paragraph } = Typography;
-const { Option } = Select;
 
 // Modern color palette
 const COLORS = {
@@ -34,7 +32,6 @@ const COLORS = {
 interface MajorFormData {
   name: string;
   code: string;
-  university: string; // Sẽ là universityId
   description?: string;
   admissionQuota?: number;
   isActive?: boolean;
@@ -42,39 +39,34 @@ interface MajorFormData {
 
 const AdminManageMajors: React.FC = () => {
   const [majors, setMajors] = useState<MajorFE[]>([]);
-  const [universitiesForFilter, setUniversitiesForFilter] = useState<Pick<UniversityFE, 'id' | 'name' | 'code'>[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingMajor, setEditingMajor] = useState<MajorFE | null>(null);
   const [form] = Form.useForm<MajorFormData>();
   
-  const [filterUniversityId, setFilterUniversityId] = useState<string | undefined>(undefined);
-  const [searchText, setSearchText] = useState('');  const [pagination, setPagination] = useState({
+  const [searchText, setSearchText] = useState('');const [pagination, setPagination] = useState({
     current: 1, 
     pageSize: 5, 
     total: 0, 
     showSizeChanger: true, 
     pageSizeOptions: ['5', '10', '20']
-  });  const fetchMajors = useCallback(async (page?: number, size?: number, search?: string, uniId?: string) => {
+  });  const fetchMajors = useCallback(async (page?: number, size?: number, search?: string) => {
     setLoading(true);
     try {
       const currentPage = page || pagination.current;
       const currentSize = size || pagination.pageSize;
       const currentSearch = search !== undefined ? search : searchText;
-      const currentUniId = uniId !== undefined ? uniId : filterUniversityId;
       
       console.log('Fetching majors with params:', { 
         page: currentPage, 
         limit: currentSize, 
-        search: currentSearch, 
-        universityId: currentUniId 
+        search: currentSearch
       });
       
       const response = await majorAdminService.getAll({ 
         page: currentPage, 
         limit: currentSize, 
-        search: currentSearch, 
-        universityId: currentUniId 
+        search: currentSearch
       });
       
       console.log('Response from service:', response);
@@ -102,20 +94,11 @@ const AdminManageMajors: React.FC = () => {
       message.error('Lỗi khi tải dữ liệu ngành.'); 
     } 
     finally { setLoading(false); }
-  }, [searchText, filterUniversityId, pagination.current, pagination.pageSize]);  useEffect(() => {
-    // Fetch universities for filter dropdown
-    const fetchUniversitiesForFilter = async () => {
-        const res = await majorAdminService.getUniversitiesForSelect();
-        if (res.success && res.data) {
-            setUniversitiesForFilter(res.data);
-        }
-    };
-    fetchUniversitiesForFilter();
-    fetchMajors(1, pagination.pageSize, '', undefined);
-  }, []); // Empty dependency array to run only once
-
+  }, [searchText, pagination.current, pagination.pageSize]);  useEffect(() => {
+    fetchMajors(1, pagination.pageSize, '');
+  }, []);
   const handleTableChange: TableProps<MajorFE>['onChange'] = (newPagination) => {
-    fetchMajors(newPagination.current, newPagination.pageSize, searchText, filterUniversityId);
+    fetchMajors(newPagination.current, newPagination.pageSize, searchText);
   };
 
   const handleAdd = () => {
@@ -124,15 +107,17 @@ const AdminManageMajors: React.FC = () => {
     form.setFieldsValue({ isActive: true, admissionQuota: 0 });
     setIsModalVisible(true);
   };
-
   const handleEdit = (record: MajorFE) => {
     setEditingMajor(record);
     form.setFieldsValue({
-        ...record,
-        university: record.universityId, // form field là 'university', data là 'universityId'
+        name: record.name,
+        code: record.code,
+        description: record.description,
+        admissionQuota: record.admissionQuota,
+        isActive: record.isActive
     });
     setIsModalVisible(true);
-  };  const handleDelete = async (id: string) => {
+  };const handleDelete = async (id: string) => {
     try {
       setLoading(true);
       console.log('Deleting major with ID:', id);
@@ -146,9 +131,8 @@ const AdminManageMajors: React.FC = () => {
         const newTotal = Math.max(0, (pagination.total || 0) - 1);
         const maxPage = Math.ceil(newTotal / pagination.pageSize) || 1;
         const targetPage = pagination.current > maxPage ? maxPage : pagination.current;
-        
-        // Refresh the data
-        await fetchMajors(targetPage, pagination.pageSize, searchText, filterUniversityId);
+          // Refresh the data
+        await fetchMajors(targetPage, pagination.pageSize, searchText);
       } else { 
         console.error('Delete failed:', response.message);
         message.error(response.message || 'Xóa ngành thất bại.'); 
@@ -158,46 +142,44 @@ const AdminManageMajors: React.FC = () => {
       message.error('Lỗi khi xóa ngành.'); 
     } finally {
       setLoading(false);
-    }
-  };
-  const handleModalOk = async () => {
+    }  };  const handleModalOk = async () => {
     try {
       const values = await form.validateFields();
       setLoading(true);
-      let response;
+      
+      // TODO: Cần thêm lại chọn trường đại học hoặc có cách khác để lấy universityId
+      console.log('Form values:', values); // Để tránh warning về unused variable
+      message.warning('Chức năng thêm/sửa ngành đã bị tắt vì thiếu thông tin trường đại học');
+      setIsModalVisible(false);
+      return;
 
+      /*
+      let response;
       if (editingMajor) {
-        // Không gửi universityId khi update vì BE không cho phép thay đổi trường của ngành
-        const { university, ...updateData } = values;
-        response = await majorAdminService.update(editingMajor.id, updateData);      } else {
-        // Tạo object phù hợp với interface của create method
-        const createData = {
-          name: values.name,
-          code: values.code,
-          universityId: values.university, // universityId từ MajorFE interface
-          university: values.university, // university field mong đợi bởi create method
-          description: values.description,
-          admissionQuota: values.admissionQuota,
-          isActive: values.isActive
-        };
-        response = await majorAdminService.create(createData);
-      }      if (response.success) {
+        response = await majorAdminService.update(editingMajor.id, values);
+      } else {
+        response = await majorAdminService.create(values);
+      }
+
+      if (response.success) {
         message.success(editingMajor ? 'Cập nhật ngành thành công!' : 'Thêm ngành thành công!');
         setIsModalVisible(false);
         // Refresh the data after successful create/update
-        await fetchMajors(pagination.current, pagination.pageSize, searchText, filterUniversityId);
-      } else { message.error(response.message || (editingMajor ? 'Cập nhật thất bại.' : 'Thêm mới thất bại.')); }
-    } catch (info) { console.log('Validate Failed:', info); message.error('Vui lòng kiểm tra lại thông tin.'); } 
-    finally { setLoading(false); }
-  };
-    const handleSearch = (value: string) => { 
+        await fetchMajors(pagination.current, pagination.pageSize, searchText);
+      } else { 
+        message.error(response.message || (editingMajor ? 'Cập nhật thất bại.' : 'Thêm mới thất bại.')); 
+      }
+      */
+    } catch (info) { 
+      console.log('Validate Failed:', info); 
+      message.error('Vui lòng kiểm tra lại thông tin.'); 
+    } 
+    finally { 
+      setLoading(false); 
+    }
+  };  const handleSearch = (value: string) => { 
     setSearchText(value); 
-    fetchMajors(1, pagination.pageSize, value, filterUniversityId); 
-  };
-  
-  const handleFilterUniversity = (value: string | undefined) => { 
-    setFilterUniversityId(value); 
-    fetchMajors(1, pagination.pageSize, searchText, value); 
+    fetchMajors(1, pagination.pageSize, value); 
   };
 
   const columns: TableProps<MajorFE>['columns'] = [
@@ -469,9 +451,8 @@ const AdminManageMajors: React.FC = () => {
             </div>
           </div>
 
-          {/* Filters and Actions */}
-          <Row gutter={[24, 16]} style={{ marginBottom: '32px' }}>
-            <Col xs={24} sm={12} md={8}>              <Input.Search
+          {/* Filters and Actions */}          <Row gutter={[24, 16]} style={{ marginBottom: '32px' }}>
+            <Col xs={24} sm={12} md={16}><Input.Search
                 placeholder="Tìm kiếm theo tên hoặc mã ngành..."
                 onSearch={handleSearch}
                 enterButton={
@@ -488,39 +469,14 @@ const AdminManageMajors: React.FC = () => {
                 allowClear
                 loading={loading && !!searchText}
                 size="large"
-              />
-            </Col>
-            <Col xs={24} sm={12} md={8}>
-              <Select
-                showSearch
-                placeholder="Lọc theo trường đại học"
-                onChange={handleFilterUniversity}
-                style={{ width: '100%' }}
-                allowClear
-                loading={universitiesForFilter.length === 0 && loading}
-                filterOption={(input, option) => {
-                  if (!option) return false;
-                  const label = option.label?.toString().toLowerCase() || '';
-                  const value = option.value?.toString().toLowerCase() || '';
-                  return label.includes(input.toLowerCase()) || value.includes(input.toLowerCase());
-                }}
-                value={filterUniversityId}
-                size="large"
-              >
-                {universitiesForFilter.map(uni => (
-                  <Option key={uni.id} value={uni.id} label={`${uni.name} (${uni.code})`}>
-                    {uni.name} ({uni.code})
-                  </Option>
-                ))}
-              </Select>
-            </Col>
+              />            </Col>
             <Col xs={24} sm={24} md={8}>
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>                <Button
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                <Button
                   icon={<ReloadOutlined />}
                   onClick={() => {
                     setSearchText('');
-                    setFilterUniversityId(undefined);
-                    fetchMajors(1, pagination.pageSize, '', undefined);
+                    fetchMajors(1, pagination.pageSize, '');
                   }}
                   loading={loading}
                   size="large"
@@ -622,34 +578,7 @@ const AdminManageMajors: React.FC = () => {
               form={form} 
               layout="vertical" 
               name="majorFormAdmin"
-              style={{ marginTop: '24px' }}
-            >
-              <Form.Item
-                name="university"
-                label={<span style={{ fontWeight: '600', color: COLORS.text }}>Trường Đại Học</span>}
-                rules={[{ required: true, message: 'Vui lòng chọn trường đại học!' }]}
-              >
-                <Select
-                  placeholder="Chọn trường đại học"
-                  showSearch
-                  filterOption={(input, option) => {
-                    if (!option) return false;
-                    const label = option.label?.toString().toLowerCase() || '';
-                    const value = option.value?.toString().toLowerCase() || '';
-                    return label.includes(input.toLowerCase()) || value.includes(input.toLowerCase());
-                  }}
-                  disabled={!!editingMajor}
-                  size="large"
-                  style={{ borderRadius: '8px' }}
-                >
-                  {universitiesForFilter.map(uni => (
-                    <Option key={uni.id} value={uni.id} label={`${uni.name} (${uni.code})`}>
-                      {uni.name} ({uni.code})
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-
+              style={{ marginTop: '24px' }}            >
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item

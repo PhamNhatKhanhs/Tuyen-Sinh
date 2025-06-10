@@ -128,16 +128,15 @@ exports.deleteMajor = async (req, res, next) => {
         if (!major) {
             return res.status(404).json({ success: false, message: 'Không tìm thấy ngành học.' });
         }
-        
         // TODO: Kiểm tra xem ngành có đang được sử dụng trong hồ sơ không trước khi xóa cứng
         // Hoặc soft delete:
         // major.isActive = false;
         // major.updatedBy = req.user.id;
         // await major.save();
         // return res.status(200).json({ success: true, message: 'Đã ẩn ngành học.'});
-        
+
         await major.deleteOne();
-        res.status(200).json({ success: true, message: 'Xóa ngành học thành công!' });
+        res.status(204).json({ success: true, data: null });
     } catch (error) {
         next(error);
     }
