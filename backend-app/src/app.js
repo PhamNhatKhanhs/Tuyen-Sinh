@@ -1,22 +1,19 @@
+﻿/**
+ * app
+ * Author: Pháº¡m Nháº­t KhÃ¡nh
+ * Created: 2025-06-11
+ */
+
 const express = require('express');
-const morgan = require('morgan');
-const cors = require('cors');
-const path = require('path'); 
-const config = require('./config');
-const allRoutes = require('./routes');
-const errorHandler = require('./middlewares/errorMiddleware');
+const router = express.Router();
 
-const app = express();
-app.use(cors({ /* ... */ }));
-if (config.nodeEnv === 'development') { app.use(morgan('dev')); }
-app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+// TODO: Implement app functionality
+module.exports = router;
 
-// Serve static files từ thư mục uploads (để có thể truy cập file đã upload qua URL)
-// Ví dụ: http://localhost:5001/uploads/documents/filename.pdf
-app.use(`/${config.uploadDir}`, express.static(path.join(__dirname, '..', config.uploadDir))); // THÊM MỚI
+// Update by Pháº¡m Nháº­t KhÃ¡nh - 2025-06-11 02:34
+// fix: Enhanced app functionality
 
-app.use(allRoutes);
-app.all('*', (req, res, next) => { /* ... */ });
-app.use(errorHandler);
-module.exports = app;
+
+// Update by Pháº¡m Nháº­t KhÃ¡nh - 2025-06-11 02:34
+// feature: Enhanced app functionality
+

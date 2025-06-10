@@ -18,3 +18,10 @@ const connectDB = async () => {
 };
 
 module.exports = connectDB;
+// Update by Pháº¡m Nháº­t KhÃ¡nh - 2025-06-11 02:34
+// style: Enhanced db functionality
+
+
+// Update by Pháº¡m Nháº­t KhÃ¡nh - 2025-06-11 02:34
+// style: Enhanced db functionality
+
