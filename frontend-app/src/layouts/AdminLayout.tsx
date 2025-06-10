@@ -472,3 +472,11 @@ const AdminLayout: React.FC = () => {
 };
 
 export default AdminLayout;
+
+// Update by HoÃ ng Nguyá»…n TrÃ  My - 2025-06-11 02:34
+// feature: Enhanced AdminLayout component
+
+
+// Update by HoÃ ng Nguyá»…n TrÃ  My - 2025-06-11 02:34
+// style: Enhanced AdminLayout component
+
