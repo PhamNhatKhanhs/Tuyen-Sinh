@@ -1,7 +1,53 @@
 {
+  "name": "university-admission-system",
+  "version": "1.0.0",
+  "description": "University Admission Management System - A comprehensive online platform for managing university admissions",
+  "private": true,
+  "workspaces": [
+    "backend-app",
+    "frontend-app"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend-app && npm run dev",
+    "dev:frontend": "cd frontend-app && npm run dev",
+    "install:all": "npm install && cd backend-app && npm install && cd ../frontend-app && npm install",
+    "build": "cd frontend-app && npm run build",
+    "start": "cd backend-app && npm start",
+    "seed": "cd backend-app && npm run seed",
+    "test": "concurrently \"npm run test:backend\" \"npm run test:frontend\"",
+    "test:backend": "cd backend-app && npm test",
+    "test:frontend": "cd frontend-app && npm test",
+    "lint": "concurrently \"npm run lint:backend\" \"npm run lint:frontend\"",
+    "lint:backend": "cd backend-app && npm run lint",
+    "lint:frontend": "cd frontend-app && npm run lint"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
     "antd": "^5.25.4",
     "lucide-react": "^0.513.0"
-  }
+  },
+  "keywords": [
+    "university",
+    "admission",
+    "management",
+    "education",
+    "react",
+    "nodejs",
+    "mongodb",
+    "typescript"
+  ],
+  "author": "University Admission System Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/university-admission-system.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/university-admission-system/issues"
+  },
+  "homepage": "https://github.com/your-username/university-admission-system#readme"
 }
