@@ -1,23 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { 
   Table, Button, Spin, message, 
-  Input, Tag, Card, Row, Col, Avatar, Typography, Space, Empty, Statistic
+  Input, Tag
 } from 'antd';
 import { 
   BankOutlined, SolutionOutlined, TeamOutlined, FileSearchOutlined,
-  ArrowUpOutlined, ArrowDownOutlined,
+  ArrowUpOutlined,
   CalendarOutlined, ReloadOutlined,
   DashboardOutlined, CheckCircleOutlined, ClockCircleOutlined,
-  ExclamationCircleOutlined, CloseCircleOutlined, SearchOutlined,
-  TrophyOutlined, BookOutlined, UserOutlined, FolderOpenOutlined,
-  RiseOutlined, FallOutlined, LineChartOutlined, BarChartOutlined
+  ExclamationCircleOutlined, CloseCircleOutlined
 } from '@ant-design/icons';
 import universityAdminService from '../services/universityAdminService';
 import majorAdminService from '../services/majorAdminService';
 import applicationAdminService from '../services/applicationAdminService';
 import userAdminService from '../services/userAdminService';
-
-const { Title, Paragraph, Text } = Typography;
 
 // Modern color palette
 const COLORS = {
@@ -51,29 +47,8 @@ const STATUS_COLORS: Record<string, { color: string; text: string; icon: React.R
   approved: { color: COLORS.green500, text: 'Đã duyệt', icon: <CheckCircleOutlined /> },
   processing: { color: COLORS.warning, text: 'Đang xử lý', icon: <ClockCircleOutlined /> },
   pending: { color: COLORS.orange500, text: 'Chờ duyệt', icon: <ExclamationCircleOutlined /> },
-  rejected: { color: COLORS.danger, text: 'Từ chối', icon: <CloseCircleOutlined /> },
-  cancelled: { color: COLORS.textLight, text: 'Đã hủy', icon: <CloseCircleOutlined /> },
+  rejected: { color: COLORS.danger, text: 'Từ chối', icon: <CloseCircleOutlined /> },  cancelled: { color: COLORS.textLight, text: 'Đã hủy', icon: <CloseCircleOutlined /> },
   additional_required: { color: COLORS.blue500, text: 'Bổ sung', icon: <ExclamationCircleOutlined /> },
-};
-
-// Get status tag with modern styling
-const getStatusTag = (status: string) => {
-  const statusInfo = STATUS_COLORS[status] || STATUS_COLORS.pending;
-  return (
-    <Tag 
-      color={statusInfo.color} 
-      icon={statusInfo.icon}
-      style={{
-        borderRadius: '20px',
-        padding: '4px 12px',
-        fontWeight: 500,
-        fontSize: '12px',
-        border: 'none'
-      }}
-    >
-      {statusInfo.text.toUpperCase()}
-    </Tag>
-  );
 };
 const customStyles = `
   /* Dashboard Container */
@@ -382,10 +357,31 @@ const customStyles = `
       padding: 20px;
     }
   }
-
-  /* Smooth animations */
-  * {
+  /* Smooth animations - exclude dropdown elements */
+  :not(.ant-dropdown):not(.ant-dropdown *) {
     transition: all 0.2s ease;
+  }
+
+  /* Dropdown fixes */
+  .ant-dropdown {
+    z-index: 9999 !important;
+  }
+
+  .ant-dropdown-menu {
+    z-index: 9999 !important;
+    box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.08), 0 9px 28px 0 rgba(0, 0, 0, 0.05), 0 3px 6px -4px rgba(0, 0, 0, 0.12) !important;
+    border-radius: 8px !important;
+    padding: 8px !important;
+  }
+
+  .ant-dropdown-menu-item {
+    border-radius: 6px !important;
+    margin: 2px 0 !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .ant-dropdown-menu-item:hover {
+    background-color: #f0f0f0 !important;
   }
 
   .ant-table-wrapper {

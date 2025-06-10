@@ -147,9 +147,11 @@ const AdminManageApplications: React.FC = () => {
         dateTo: filters.dateRange?.[1]?.endOf('day').toISOString(),
         sortBy: 'submissionDate', sortOrder: 'desc' as 'asc' | 'desc' | undefined,
       };
-      const response = await applicationAdminService.getAll(params);
-      if (response.success && response.data) {
-        setApplications(response.data);
+      const response = await applicationAdminService.getAll(params);      if (response.success && response.data) {
+        console.log('Applications data received:', response.data);
+        // Add defensive filtering to ensure no null/undefined items
+        const validApplications = response.data.filter(app => app && app.id);
+        setApplications(validApplications);
         setPagination(prev => ({ ...prev, total: response.total || 0, current: page, pageSize: size }));
       } else { 
         message.error(response.message || 'Không thể tải danh sách hồ sơ.'); 
@@ -217,8 +219,11 @@ const AdminManageApplications: React.FC = () => {
     // fetchApplications(1, pagination.pageSize); // Sẽ được trigger bởi useEffect của fetchApplications khi filters thay đổi
   };
 
-
   const handleViewDetails = async (applicationId: string) => {
+    if (!applicationId) {
+      message.error("ID hồ sơ không hợp lệ.");
+      return;
+    }
     setLoadingDetail(true);
     setSelectedApplicationDetail(null); 
     setIsDetailModalVisible(true);
@@ -239,6 +244,10 @@ const AdminManageApplications: React.FC = () => {
   };
 
   const handleOpenStatusModal = (application: ApplicationAdminListItemFE) => {
+    if (!application || !application.id) {
+      message.error("Thông tin hồ sơ không hợp lệ.");
+      return;
+    }
     setProcessingApplication(application);
     // Lấy adminNotes từ selectedApplicationDetail nếu nó đang hiển thị chi tiết của hồ sơ này
     const currentDetailIsThisApp = selectedApplicationDetail && selectedApplicationDetail._id === application.id;
@@ -272,84 +281,88 @@ const AdminManageApplications: React.FC = () => {
     } finally {
         setLoading(false);
     }
-  };
-  const columns: TableProps<ApplicationAdminListItemFE>['columns'] = [
+  };  const columns: TableProps<ApplicationAdminListItemFE>['columns'] = [
     {
       title: 'Thông Tin Hồ Sơ',
       key: 'application_info',
-      render: (_, record) => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Avatar
-            size={48}
-            style={{
-              backgroundColor: COLORS.primary,
-              fontSize: '16px',
-              fontWeight: 'bold'
-            }}
-            icon={<FolderOpenOutlined />}
-          >
-            HS
-          </Avatar>
+      render: (_, record) => {
+        if (!record) return <div>N/A</div>;
+        return (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Avatar
+              size={48}
+              style={{
+                backgroundColor: COLORS.primary,
+                fontSize: '16px',
+                fontWeight: 'bold'
+              }}
+              icon={<FolderOpenOutlined />}
+            >
+              HS
+            </Avatar>
+            <div>
+              <div style={{ 
+                fontWeight: 600, 
+                fontSize: '14px', 
+                color: COLORS.dark,
+                marginBottom: '4px'
+              }}>
+                {record?.candidateName || 'N/A'}
+              </div>
+              <div style={{ 
+                fontSize: '12px', 
+                color: COLORS.textLight,
+                marginBottom: '4px'
+              }}>
+                Mã: <Text copyable style={{ fontSize: '11px' }}>{record?.id || 'N/A'}</Text>
+              </div>
+              <div style={{ 
+                fontSize: '11px', 
+                color: COLORS.textLight
+              }}>
+                {record?.candidateEmail || 'N/A'}
+              </div>
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      title: 'Nguyện Vọng',
+      key: 'application_choice',
+      render: (_, record) => {
+        if (!record) return <div>N/A</div>;
+        return (
           <div>
             <div style={{ 
-              fontWeight: 600, 
-              fontSize: '14px', 
+              fontWeight: 500, 
+              fontSize: '13px', 
               color: COLORS.dark,
               marginBottom: '4px'
             }}>
-              {record.candidateName || 'N/A'}
+              {record?.universityName || 'N/A'}
             </div>
             <div style={{ 
               fontSize: '12px', 
               color: COLORS.textLight,
               marginBottom: '4px'
             }}>
-              Mã: <Text copyable style={{ fontSize: '11px' }}>{record.id}</Text>
+              {record?.majorName || 'N/A'}
             </div>
-            <div style={{ 
-              fontSize: '11px', 
-              color: COLORS.textLight
-            }}>
-              {record.candidateEmail || 'N/A'}
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: 'Nguyện Vọng',
-      key: 'application_choice',
-      render: (_, record) => (
-        <div>
-          <div style={{ 
-            fontWeight: 500, 
-            fontSize: '13px', 
-            color: COLORS.dark,
-            marginBottom: '4px'
-          }}>
-            {record.universityName || 'N/A'}
-          </div>
-          <div style={{ 
-            fontSize: '12px', 
-            color: COLORS.textLight,
-            marginBottom: '4px'
-          }}>
-            {record.majorName || 'N/A'}
-          </div>
-          <Tag 
-            style={{
-              backgroundColor: COLORS.blue50,
-              color: COLORS.blue500,
-              border: `1px solid ${COLORS.blue500}20`,
-              borderRadius: '6px',
-              fontSize: '10px',
-              padding: '2px 6px'
-            }}
-          >
-            Năm {record.year}
-          </Tag>
-        </div>
-      ),
+            <Tag 
+              style={{
+                backgroundColor: COLORS.blue50,
+                color: COLORS.blue500,
+                border: `1px solid ${COLORS.blue500}20`,
+                borderRadius: '6px',
+                fontSize: '10px',
+                padding: '2px 6px'
+              }}
+            >
+              Năm {record?.year || 'N/A'}
+            </Tag>          </div>
+        );
+      },
     },
     {
       title: 'Ngày Nộp',
@@ -362,7 +375,12 @@ const AdminManageApplications: React.FC = () => {
           {date}
         </div>
       ),
-      sorter: (a,b) => new Date(a.submissionDate.split('/').reverse().join('-')).getTime() - new Date(b.submissionDate.split('/').reverse().join('-')).getTime()
+      sorter: (a, b) => {
+        if (!a?.submissionDate || !b?.submissionDate) return 0;
+        const dateA = new Date(a.submissionDate.split('/').reverse().join('-')).getTime();
+        const dateB = new Date(b.submissionDate.split('/').reverse().join('-')).getTime();
+        return dateA - dateB;
+      }
     },
     {
       title: 'Trạng Thái',
@@ -377,36 +395,38 @@ const AdminManageApplications: React.FC = () => {
       title: 'Thao Tác',
       key: 'action',
       width: 140,
-      align: 'center',
-      render: (_, record) => (
-        <Space size="small">
-          <Tooltip title="Xem chi tiết">
-            <Button
-              type="primary"
-              shape="circle"
-              icon={<EyeOutlined style={{ color: '#ffffff' }} />}
-              onClick={() => handleViewDetails(record.id)}
-              style={{
-                backgroundColor: COLORS.primary,
-                borderColor: COLORS.primary,
-                boxShadow: `0 2px 4px ${COLORS.primary}30`
-              }}
-            />
-          </Tooltip>
-          <Tooltip title="Cập nhật trạng thái">
-            <Button
-              shape="circle"
-              icon={<EditOutlined style={{ color: '#ffffff' }} />}
-              onClick={() => handleOpenStatusModal(record)}
-              style={{
-                backgroundColor: COLORS.accent,
-                borderColor: COLORS.accent,
-                boxShadow: `0 2px 4px ${COLORS.accent}30`
-              }}
-            />
-          </Tooltip>
-        </Space>
-      ),
+      align: 'center',      render: (_, record) => {
+        if (!record) return <div>N/A</div>;
+        return (
+          <Space size="small">
+            <Tooltip title="Xem chi tiết">
+              <Button
+                type="primary"
+                shape="circle"
+                icon={<EyeOutlined style={{ color: '#ffffff' }} />}
+                onClick={() => handleViewDetails(record?.id || '')}
+                style={{
+                  backgroundColor: COLORS.primary,
+                  borderColor: COLORS.primary,
+                  boxShadow: `0 2px 4px ${COLORS.primary}30`
+                }}
+              />
+            </Tooltip>
+            <Tooltip title="Cập nhật trạng thái">
+              <Button
+                shape="circle"
+                icon={<EditOutlined style={{ color: '#ffffff' }} />}
+                onClick={() => handleOpenStatusModal(record)}
+                style={{
+                  backgroundColor: COLORS.accent,
+                  borderColor: COLORS.accent,
+                  boxShadow: `0 2px 4px ${COLORS.accent}30`
+                }}
+              />
+            </Tooltip>
+          </Space>
+        );
+      },
     },
   ];
   return (
@@ -620,9 +640,9 @@ const AdminManageApplications: React.FC = () => {
                     value={filters.dateRange} 
                     onChange={handleDateRangeChange} 
                   />
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={12} md={8} lg={4}>
+                </Form.Item>              </Col>
+              {/* Commented out Filter and Reset buttons as requested */}
+              {/* <Col xs={24} sm={12} md={8} lg={4}>
                 <Button 
                   icon={<FilterOutlined />} 
                   onClick={onApplyFilters} 
@@ -654,7 +674,7 @@ const AdminManageApplications: React.FC = () => {
                 >
                   Reset
                 </Button>
-              </Col>
+              </Col> */}
             </Row>
           </Card>
 
@@ -671,10 +691,9 @@ const AdminManageApplications: React.FC = () => {
             />
           )}
           
-          {/* Table Section */}
-          <Table 
+          {/* Table Section */}          <Table 
             columns={columns} 
-            dataSource={applications} 
+            dataSource={applications?.filter(app => app && app.id) || []} 
             rowKey="id" 
             loading={loading}
             pagination={{

@@ -471,11 +471,20 @@ const AdminManageMajors: React.FC = () => {
 
           {/* Filters and Actions */}
           <Row gutter={[24, 16]} style={{ marginBottom: '32px' }}>
-            <Col xs={24} sm={12} md={8}>
-              <Input.Search
+            <Col xs={24} sm={12} md={8}>              <Input.Search
                 placeholder="Tìm kiếm theo tên hoặc mã ngành..."
                 onSearch={handleSearch}
-                enterButton={<SearchOutlined />}
+                enterButton={
+                  <Button 
+                    type="primary" 
+                    icon={<SearchOutlined />}
+                    style={{
+                      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                      border: 'none',
+                      color: '#ffffff'
+                    }}
+                  />
+                }
                 allowClear
                 loading={loading && !!searchText}
                 size="large"

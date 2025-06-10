@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Typography, Table, Button, Space, Tooltip, Popconfirm, message, Switch, Select, Input, Row, Col, Card, Tag, Form, Empty, Alert, Avatar, Modal } from 'antd';
-import { EditOutlined, ReloadOutlined, SearchOutlined, FilterOutlined, UserSwitchOutlined, CheckCircleOutlined, CloseCircleOutlined, UserOutlined, TeamOutlined, DeleteOutlined, SwapOutlined } from '@ant-design/icons';
+import { EditOutlined, ReloadOutlined, SearchOutlined, UserSwitchOutlined, CheckCircleOutlined, CloseCircleOutlined, UserOutlined, TeamOutlined, DeleteOutlined, SwapOutlined } from '@ant-design/icons';
 import type { TableProps, PaginationProps } from 'antd';
 import userAdminService from '../services/userAdminService';
 import type { User } from '../../auth/types';
@@ -52,19 +52,15 @@ const AdminManageUsers: React.FC = () => {
   const [roleModalLoading, setRoleModalLoading] = useState(false); // Loading riêng cho modal
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null); // Loading cho delete với userId
   const [statusLoading, setStatusLoading] = useState<string | null>(null); // Loading cho toggle status
-  
-  const [filters, setFilters] = useState<{
+    const [filters, setFilters] = useState<{
     search: string;
-    role?: 'candidate' | 'admin';
   }>({
     search: '',
-    role: undefined,
   });
 
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1, pageSize: 10, total: 0, showSizeChanger: true, pageSizeOptions: ['10', '20', '50']
   });
-
   const fetchUsers = useCallback(async (
     page = pagination.current,
     size = pagination.pageSize,
@@ -73,9 +69,9 @@ const AdminManageUsers: React.FC = () => {
     setLoading(true); setError(null);
     try {
       const params: any = {
-        ...filters,
-        page: pagination.current,
-        limit: pagination.pageSize,
+        search: filters.search,
+        page,
+        limit: size,
       };
       if (sorter && sorter.field && sorter.order) {
         params.sortBy = sorter.field;
@@ -94,7 +90,7 @@ const AdminManageUsers: React.FC = () => {
         setError(err.message || 'Lỗi khi tải dữ liệu người dùng.');
     } 
     finally { setLoading(false); }
-  }, [pagination.current, pagination.pageSize, filters]);
+  }, [pagination.current, pagination.pageSize, filters.search]);
 
   useEffect(() => {
     fetchUsers();
@@ -102,22 +98,10 @@ const AdminManageUsers: React.FC = () => {
 
   const handleTableChange: TableProps<User>['onChange'] = (newPagination, _filters, sorter) => {
     fetchUsers(newPagination.current, newPagination.pageSize, sorter as any);
-  };
-
-  const handleFilterInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  };  const handleFilterInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFilters(prev => ({ ...prev, [name]: value }));
-  };
-  const handleFilterSelectChange = (name: string, value: any) => {
-    setFilters(prev => ({ ...prev, [name]: value }));
-  };
-  const onApplyFilters = () => {
-      fetchUsers(1, pagination.pageSize); 
-  };
-   const onResetFilters = () => {
-    setFilters({ search: '', role: undefined });
-    // fetchUsers(1, pagination.pageSize); // Sẽ được trigger bởi useEffect của fetchUsers
-  };  const handleToggleUserStatus = async (userId: string, currentIsActive?: boolean) => {
+  };const handleToggleUserStatus = async (userId: string, currentIsActive?: boolean) => {
     if (typeof currentIsActive === 'undefined') return;
     const newIsActive = !currentIsActive;
     try {
@@ -457,16 +441,8 @@ const AdminManageUsers: React.FC = () => {
                 </Paragraph>
               </div>
             </div>
-          </div>
-
-          {/* Filters Section */}
+          </div>          {/* Search Section */}
           <Card 
-            title={
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <FilterOutlined style={{ color: COLORS.primary }} />
-                <span style={{ color: COLORS.dark, fontWeight: 600 }}>Bộ lọc người dùng</span>
-              </div>
-            }
             style={{
               marginBottom: '32px',
               borderRadius: '16px',
@@ -475,72 +451,32 @@ const AdminManageUsers: React.FC = () => {
             }}
             size="small"
           >
-            <Row gutter={[16,16]} align="bottom">
-              <Col xs={24} sm={12} md={10} lg={8}>
-                <Form.Item label={<span style={{ fontWeight: 600, color: COLORS.dark }}>Tìm kiếm Email/Họ tên</span>} className="!mb-0">
-                  <Input
-                    name="search"
-                    prefix={<SearchOutlined />}
-                    placeholder="Nhập email hoặc họ tên..."
-                    value={filters.search}
-                    onChange={handleFilterInputChange}
-                    allowClear
-                    style={{ height: '42px' }}
-                  />
-                </Form.Item>
+            <Row gutter={[16,16]} align="middle">
+              <Col xs={24} sm={18} md={20} lg={22}>                <Input
+                  name="search"
+                  prefix={<SearchOutlined />}
+                  placeholder="Tìm kiếm theo email hoặc họ tên..."
+                  value={filters.search}
+                  onChange={handleFilterInputChange}
+                  onPressEnter={() => fetchUsers(1, pagination.pageSize)}
+                  allowClear
+                  style={{ height: '42px' }}
+                />
               </Col>
-              <Col xs={24} sm={12} md={8} lg={6}>
-                <Form.Item label={<span style={{ fontWeight: 600, color: COLORS.dark }}>Vai trò</span>} className="!mb-0">
-                  <Select
-                    placeholder="Tất cả vai trò"
-                    style={{ width: '100%', height: '42px' }}
-                    allowClear
-                    value={filters.role}
-                    onChange={value => handleFilterSelectChange('role', value)}
-                  >
-                    {USER_ROLES.map(role => (
-                      <Option key={role.value} value={role.value}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          {role.icon}
-                          {role.label}
-                        </div>
-                      </Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={12} md={3} lg={3}>
-                <Button 
-                  icon={<FilterOutlined />} 
-                  onClick={onApplyFilters} 
-                  loading={loading} 
-                  type="primary" 
-                  block
-                  style={{
-                    height: '42px',
-                    background: `linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.primaryDark} 100%)`,
-                    border: 'none',
-                    fontWeight: 600,
-                    boxShadow: `0 4px 12px ${COLORS.primary}30`
-                  }}
-                >
-                  Lọc
-                </Button>
-              </Col>
-              <Col xs={24} sm={12} md={3} lg={3}>
+              <Col xs={24} sm={6} md={4} lg={2}>
                 <Button 
                   icon={<ReloadOutlined />} 
-                  onClick={onResetFilters} 
+                  onClick={() => fetchUsers()} 
                   loading={loading} 
                   block
                   style={{
                     height: '42px',
-                    border: `2px solid ${COLORS.gray200}`,
-                    color: COLORS.text,
+                    border: `2px solid ${COLORS.primary}`,
+                    color: COLORS.primary,
                     fontWeight: 500
                   }}
                 >
-                  Reset
+                  Tải lại
                 </Button>
               </Col>
             </Row>

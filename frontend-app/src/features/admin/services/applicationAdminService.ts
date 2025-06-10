@@ -31,20 +31,21 @@ const applicationAdminService = {
     sortBy?: string; sortOrder?: 'asc'|'desc'; 
   }): Promise<{ success: boolean; data?: ApplicationAdminListItemFE[]; total?: number; message?: string }> => {
     try {
-      const response = await axiosInstance.get<GetAllApplicationsAdminResponse>('/admin/applications', { params });
-      if (response.data.success && response.data.data) {
-        const applicationsFE: ApplicationAdminListItemFE[] = response.data.data.map(app => ({
-          id: app._id,
-          candidateName: typeof app.candidate === 'object' ? app.candidate.fullName || app.candidate.email : 'N/A',
-          candidateEmail: typeof app.candidate === 'object' ? app.candidate.email : 'N/A',
-          universityName: typeof app.university === 'object' ? app.university.name : 'N/A',
-          universityCode: typeof app.university === 'object' ? app.university.code : undefined,
-          majorName: typeof app.major === 'object' ? app.major.name : 'N/A',
-          majorCode: typeof app.major === 'object' ? app.major.code : undefined,
-          submissionDate: new Date(app.submissionDate).toLocaleDateString('vi-VN'),
-          status: app.status,
-          year: app.year,
-        }));
+      const response = await axiosInstance.get<GetAllApplicationsAdminResponse>('/admin/applications', { params });      if (response.data.success && response.data.data) {
+        const applicationsFE: ApplicationAdminListItemFE[] = response.data.data
+          .filter(app => app && app._id) // Filter out null/undefined items
+          .map(app => ({
+            id: app._id,
+            candidateName: (typeof app.candidate === 'object' && app.candidate) ? (app.candidate.fullName || app.candidate.email || 'N/A') : 'N/A',
+            candidateEmail: (typeof app.candidate === 'object' && app.candidate) ? (app.candidate.email || 'N/A') : 'N/A',
+            universityName: (typeof app.university === 'object' && app.university) ? (app.university.name || 'N/A') : 'N/A',
+            universityCode: (typeof app.university === 'object' && app.university) ? app.university.code : undefined,
+            majorName: (typeof app.major === 'object' && app.major) ? (app.major.name || 'N/A') : 'N/A',
+            majorCode: (typeof app.major === 'object' && app.major) ? app.major.code : undefined,
+            submissionDate: app.submissionDate ? new Date(app.submissionDate).toLocaleDateString('vi-VN') : 'N/A',
+            status: app.status || 'pending',
+            year: app.year || new Date().getFullYear(),
+          }));
         return { success: true, data: applicationsFE, total: response.data.total };
       }
       return { success: false, message: response.data.message || "Không thể tải danh sách hồ sơ (Admin)." };

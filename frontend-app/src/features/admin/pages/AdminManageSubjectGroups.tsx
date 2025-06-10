@@ -435,16 +435,16 @@ const AdminManageSubjectGroups: React.FC = () => {
             <Col xs={24} sm={12} md={10}>
               <Input.Search
                 placeholder="Tìm kiếm theo tên hoặc mã tổ hợp môn..."
-                onSearch={handleSearch}
-                enterButton={
+                onSearch={handleSearch}                enterButton={
                   <Button 
                     type="primary" 
                     icon={<SearchOutlined />}
                     style={{
-                      background: `linear-gradient(135deg, ${COLORS.danger} 0%, #dc2626 100%)`,
+                      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                       border: 'none',
                       height: '42px',
-                      fontWeight: 600
+                      fontWeight: 600,
+                      color: '#ffffff'
                     }}
                   >
                     Tìm kiếm

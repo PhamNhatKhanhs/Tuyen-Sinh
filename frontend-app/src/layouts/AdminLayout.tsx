@@ -42,6 +42,7 @@ const COLORS = {
   gray50: '#f8fafc',
   gray100: '#f1f5f9',
   gray200: '#e2e8f0',
+  red50: '#fef2f2',
 };
 
 const AdminLayout: React.FC = () => {
@@ -232,13 +233,14 @@ const AdminLayout: React.FC = () => {
           color: ${COLORS.text};
           margin: 0;
         }
-        
-        .header-right {
+          .header-right {
           display: flex !important;
           align-items: center !important;
           gap: 16px !important;
+          position: relative !important;
         }
-            .user-dropdown {
+        
+        .user-dropdown {
           display: flex !important;
           align-items: center !important;
           gap: 12px !important;
@@ -248,6 +250,7 @@ const AdminLayout: React.FC = () => {
           transition: all 0.2s ease !important;
           border: 1px solid transparent !important;
           background: transparent !important;
+          position: relative !important;
         }
         
         .user-dropdown:hover {
@@ -268,6 +271,42 @@ const AdminLayout: React.FC = () => {
           color: ${COLORS.textLight} !important;
           margin: 0 !important;
           line-height: 1.2 !important;
+        }
+        
+        /* Dropdown Menu Enhancements */
+        .ant-dropdown {
+          z-index: 2000 !important;
+        }
+        
+        .ant-dropdown-menu {
+          z-index: 2000 !important;
+          box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.08), 0 9px 28px 0 rgba(0, 0, 0, 0.05), 0 3px 6px -4px rgba(0, 0, 0, 0.12) !important;
+          border-radius: 12px !important;
+          padding: 8px !important;
+          min-width: 160px !important;
+          border: 1px solid ${COLORS.gray200} !important;
+        }
+        
+        .ant-dropdown-menu-item {
+          border-radius: 8px !important;
+          margin: 2px 0 !important;
+          padding: 8px 12px !important;
+          transition: all 0.2s ease !important;
+          font-weight: 500 !important;
+        }
+        
+        .ant-dropdown-menu-item:hover {
+          background-color: ${COLORS.gray50} !important;
+        }
+        
+        .ant-dropdown-menu-item-danger:hover {
+          background-color: ${COLORS.red50} !important;
+          color: ${COLORS.danger} !important;
+        }
+        
+        .ant-dropdown-menu-divider {
+          margin: 8px 0 !important;
+          background-color: ${COLORS.gray200} !important;
         }
           .modern-content {
           background: ${COLORS.gray50} !important;
@@ -386,6 +425,21 @@ const AdminLayout: React.FC = () => {
                 placement="bottomRight" 
                 trigger={['click']}
                 getPopupContainer={(trigger) => trigger.parentElement || document.body}
+                overlayStyle={{
+                  zIndex: 2000,
+                  position: 'fixed'
+                }}
+                dropdownRender={(menu) => (
+                  <div style={{ 
+                    background: 'white', 
+                    borderRadius: '12px',
+                    boxShadow: '0 6px 16px -8px rgba(0, 0, 0, 0.08), 0 9px 28px 0 rgba(0, 0, 0, 0.05), 0 3px 6px -4px rgba(0, 0, 0, 0.12)',
+                    border: `1px solid ${COLORS.gray200}`,
+                    overflow: 'hidden'
+                  }}>
+                    {menu}
+                  </div>
+                )}
               >
                 <div className="user-dropdown">
                   <Avatar 
