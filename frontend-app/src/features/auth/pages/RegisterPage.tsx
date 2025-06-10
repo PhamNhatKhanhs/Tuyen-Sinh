@@ -4,9 +4,10 @@ import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../../store/hooks';
 import { loginSuccess } from '../store/authSlice'; 
-import authService, { RegisterData } from '../services/authService'; 
+import authService, { RegisterData } from '../services/authService';
+import styles from './AuthPages.module.css';
 
-const { Title } = Typography;
+const { Text } = Typography;
 const { Option } = Select;
 
 const RegisterPage: React.FC = () => {
@@ -26,13 +27,11 @@ const RegisterPage: React.FC = () => {
       if (values.password !== values.confirmPassword) {
         setError("Mật khẩu xác nhận không khớp!");
         return;
-      }
-
-      const registerData: RegisterData = {
+      }      const registerData: RegisterData = {
         email: values.email,
         password: values.password,
         fullName: values.fullName,
-        role: values.role,
+        role: 'candidate', // Mặc định là candidate
       };
 
       const response = await authService.register(registerData);
@@ -43,14 +42,9 @@ const RegisterPage: React.FC = () => {
         
         dispatch(loginSuccess({ user: response.user, token: response.token }));
         
-        setSuccessMessage("Đăng ký thành công! Bạn sẽ được chuyển hướng...");
-        
-        setTimeout(() => {
-          if (response.user.role === 'admin') {
-            navigate('/admin/dashboard', { replace: true });
-          } else {
-            navigate('/candidate/dashboard', { replace: true });
-          }
+        setSuccessMessage("Đăng ký thành công! Bạn sẽ được chuyển hướng...");        setTimeout(() => {
+          // Luôn chuyển về candidate dashboard vì chỉ có role candidate
+          navigate('/candidate/dashboard', { replace: true });
         }, 2000);
       } else {
         setError(response.message || "Đăng ký thất bại. Vui lòng thử lại.");
@@ -61,33 +55,33 @@ const RegisterPage: React.FC = () => {
       setIsLoading(false);
     }
   };
-
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <Spin size="large" tip="Đang xử lý..." />
+      <div className={styles.loadingContainer}>
+        <Spin size="large" tip="Đang tạo tài khoản..." />
       </div>
     );
   }
 
   return (
-    <div className="w-full">
-      <Title level={3} className="text-center mb-6">Tạo Tài Khoản Mới</Title>
+    <div className={styles.authForm}>
       {error && (
         <Alert 
-          message={error} 
+          message="Đăng ký thất bại" 
+          description={error}
           type="error" 
           showIcon 
-          className="mb-4" 
+          className="mb-6" 
           closable
         />
       )}
       {successMessage && (
         <Alert 
-          message={successMessage} 
+          message="Đăng ký thành công!" 
+          description={successMessage}
           type="success" 
           showIcon 
-          className="mb-4" 
+          className="mb-6" 
         />
       )}
       <Form
@@ -100,53 +94,54 @@ const RegisterPage: React.FC = () => {
       >
         <Form.Item
           name="fullName"
-          label="Họ và Tên"
-          rules={[{ required: true, message: 'Vui lòng nhập họ tên!' }]}
+          label="👤 Họ và Tên đầy đủ"
+          rules={[
+            { required: true, message: 'Vui lòng nhập họ tên đầy đủ!' },
+            { min: 2, message: 'Họ tên phải có ít nhất 2 ký tự!' }
+          ]}
         >
           <Input 
-            prefix={<UserOutlined className="text-gray-400" />} 
-            placeholder="Họ và Tên" 
-            size="large"
+            prefix={<UserOutlined />} 
+            placeholder="Nhập họ và tên đầy đủ của bạn" 
             autoComplete="name"
           />
         </Form.Item>
 
         <Form.Item
           name="email"
-          label="Email"
+          label="📧 Địa chỉ Email"
           rules={[
             { required: true, message: 'Vui lòng nhập email!' },
-            { type: 'email', message: 'Email không hợp lệ!' }
+            { type: 'email', message: 'Định dạng email không hợp lệ!' }
           ]}
         >
           <Input 
-            prefix={<MailOutlined className="text-gray-400" />} 
-            placeholder="Email" 
-            size="large"
+            prefix={<MailOutlined />} 
+            placeholder="Nhập địa chỉ email của bạn" 
             autoComplete="email"
           />
         </Form.Item>
 
         <Form.Item
           name="password"
-          label="Mật khẩu"
+          label="🔒 Mật khẩu"
           rules={[
             { required: true, message: 'Vui lòng nhập mật khẩu!' },
-            { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự!' }
+            { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự!' },
+            { pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, message: 'Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường và 1 số!' }
           ]}
           hasFeedback
         >
           <Input.Password 
-            prefix={<LockOutlined className="text-gray-400" />} 
-            placeholder="Mật khẩu" 
-            size="large"
+            prefix={<LockOutlined />} 
+            placeholder="Tạo mật khẩu mạnh (tối thiểu 6 ký tự)" 
             autoComplete="new-password"
           />
         </Form.Item>
 
         <Form.Item
           name="confirmPassword"
-          label="Xác nhận mật khẩu"
+          label="🔐 Xác nhận mật khẩu"
           dependencies={['password']}
           hasFeedback
           rules={[
@@ -162,53 +157,30 @@ const RegisterPage: React.FC = () => {
           ]}
         >
           <Input.Password 
-            prefix={<LockOutlined className="text-gray-400" />} 
-            placeholder="Xác nhận mật khẩu" 
-            size="large"
+            prefix={<LockOutlined />} 
+            placeholder="Nhập lại mật khẩu để xác nhận" 
             autoComplete="new-password"
           />
         </Form.Item>
 
-        <Form.Item
-          name="role"
-          label="Bạn là?"
-          initialValue="candidate"
-          rules={[{ required: true, message: 'Vui lòng chọn vai trò!' }]}
-        >
-          <Select placeholder="Chọn vai trò của bạn" size="large">
-            <Option value="candidate">Thí sinh</Option>
-            <Option value="admin">Quản trị viên (Yêu cầu quyền)</Option>
-          </Select>
-        </Form.Item>
-
-        {form.getFieldValue('role') === 'admin' && (
-          <Alert 
-            message="Lưu ý: Vai trò Quản trị viên cần được tạo bởi một admin khác hoặc có mã mời đặc biệt." 
-            type="info" 
-            showIcon 
-            className="mb-4 text-sm"
-          />
-        )}
-
-        <Form.Item>
+        <Form.Item className="mb-6">
           <Button 
             type="primary" 
             htmlType="submit" 
             loading={isLoading} 
             block 
-            size="large" 
-            className="bg-indigo-600 hover:bg-indigo-700 h-12 text-base"
+            className={styles.primaryButton}
+            disabled={isLoading}
           >
-            {isLoading ? 'Đang xử lý...' : 'Đăng Ký'}
+            {isLoading ? 'Đang tạo tài khoản...' : '✨ Tạo Tài Khoản'}
           </Button>
         </Form.Item>
-      </Form>
-      <div className="text-center mt-4">
-        <Typography.Text className="text-gray-600">Đã có tài khoản? </Typography.Text>
+      </Form>      <div className={styles.authFooter}>
+        <Text className={styles.footerText}>Đã có tài khoản? </Text>
         <Button 
           type="link" 
           onClick={() => navigate('/login')} 
-          className="p-0 text-indigo-600 hover:text-indigo-500"
+          className={styles.linkButton}
         >
           Đăng nhập ngay
         </Button>

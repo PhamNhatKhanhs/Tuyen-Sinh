@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
-  Typography, Form, Input, Button, Select, DatePicker, Upload, Alert, Steps, Card, Row, Col, message, InputNumber, Modal
+  Typography, Form, Input, Button, Select, DatePicker, Upload, Alert, Steps, Card, Row, Col, message, InputNumber, Modal, Badge, Divider
 } from 'antd';
 import {
     InboxOutlined, UserOutlined, IdcardOutlined, BookOutlined, PhoneOutlined, MailOutlined,
     GlobalOutlined, TeamOutlined, FileTextOutlined, CheckCircleOutlined, EditOutlined, SendOutlined,
-    StarOutlined
+    StarOutlined, TrophyOutlined, SafetyOutlined, CalendarOutlined,
+    HomeOutlined, CrownOutlined, CheckOutlined, EyeOutlined, UploadOutlined
 } from '@ant-design/icons';
 import type { RcFile, UploadFile, UploadProps } from 'antd/es/upload/interface';
 import dayjs from 'dayjs';
@@ -999,292 +1000,841 @@ const CandidateSubmitApplicationPage: React.FC = () => {
             });
         }
         setCurrentStep(currentStep - 1); 
-    };    // JSX Components for each step - FIXED DUPLICATE INPUT ISSUE v3.0
+    };    // JSX Components for each step - ENHANCED MODERN DESIGN v4.0
     const personalInfoStepContent = (
-        <Card title="Bước 1: Thông Tin Cá Nhân" className="shadow-none">
-            <Row gutter={24}>
-                <Col xs={24} md={12}>
-                    <Form.Item name={["personalInfo", "fullName"]} label="Họ và tên khai sinh" rules={[{ required: true, message: 'Vui lòng nhập họ tên!' }, { pattern: /^[a-zA-Z\sÀ-ỹ]+$/, message: 'Họ tên không hợp lệ!' }]}>
-                        <Input prefix={<UserOutlined />} placeholder="Nguyễn Văn A" />
-                    </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                    <Form.Item name={["personalInfo", "dob"]} label="Ngày sinh" rules={[{ required: true, message: 'Vui lòng chọn ngày sinh!' }]}>
-                        <DatePicker style={{ width: '100%' }} placeholder="Chọn ngày" format="DD/MM/YYYY"/>
-                    </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                    <Form.Item name={["personalInfo", "gender"]} label="Giới tính" rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}>
-                        <Select placeholder="Chọn giới tính">
-                            <AntOption value="male">Nam</AntOption>
-                            <AntOption value="female">Nữ</AntOption>
-                            <AntOption value="other">Khác</AntOption>
+        <div className={styles.stepContainer}>
+            {/* Beautiful Step Header */}
+            <div className={styles.stepHeader}>
+                <div className={styles.stepHeaderIcon}>
+                    <UserOutlined />
+                </div>
+                <div className={styles.stepHeaderContent}>
+                    <h3 className={styles.stepHeaderTitle}>Thông Tin Cá Nhân</h3>
+                    <p className={styles.stepHeaderDesc}>Cung cấp thông tin chính xác để hoàn tất hồ sơ xét tuyển</p>
+                </div>
+                <div className={styles.stepHeaderBadge}>
+                    <Badge count="1" style={{ backgroundColor: '#52c41a' }} />
+                </div>
+            </div>
+            
+            {/* Enhanced Form Card */}
+            <Card className={styles.modernFormCard} bordered={false}>
+                {/* Personal Identity Section */}
+                <div className={styles.sectionGroup}>
+                    <div className={styles.sectionGroupHeader}>
+                        <IdcardOutlined className={styles.sectionIcon} />
+                        <span className={styles.sectionTitle}>Thông tin cá nhân</span>
+                        <Divider style={{ flex: 1, marginLeft: '16px' }} />
+                    </div>
+                    
+                    <Row gutter={[24, 16]}>
+                        <Col xs={24} md={12}>
+                            <Form.Item name={["personalInfo", "fullName"]} label="Họ và tên khai sinh" 
+                                rules={[{ required: true, message: 'Vui lòng nhập họ tên!' }, { pattern: /^[a-zA-Z\sÀ-ỹ]+$/, message: 'Họ tên không hợp lệ!' }]}>
+                                <Input 
+                                    prefix={<UserOutlined className={styles.inputIcon} />} 
+                                    placeholder="Nguyễn Văn A" 
+                                    className={styles.modernInput}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                            <Form.Item name={["personalInfo", "dob"]} label="Ngày sinh" 
+                                rules={[{ required: true, message: 'Vui lòng chọn ngày sinh!' }]}>
+                                <DatePicker 
+                                    style={{ width: '100%' }} 
+                                    placeholder="Chọn ngày sinh" 
+                                    format="DD/MM/YYYY"
+                                    className={styles.modernInput}
+                                    suffixIcon={<CalendarOutlined className={styles.inputIcon} />}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                            <Form.Item name={["personalInfo", "gender"]} label="Giới tính" 
+                                rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}>
+                                <Select placeholder="Chọn giới tính" className={styles.modernSelect}>
+                                    <AntOption value="male">👨 Nam</AntOption>
+                                    <AntOption value="female">👩 Nữ</AntOption>
+                                    <AntOption value="other">🏳️‍⚧️ Khác</AntOption>
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                            <Form.Item name={["personalInfo", "idNumber"]} label="Số CCCD/CMND" 
+                                rules={[{ required: true, message: 'Vui lòng nhập số CCCD/CMND!' }, { pattern: /^[0-9]{9,12}$/, message: 'Số CCCD/CMND không hợp lệ (9-12 số)!' }]}>
+                                <Input 
+                                    prefix={<IdcardOutlined className={styles.inputIcon} />} 
+                                    placeholder="0123456789" 
+                                    className={styles.modernInput}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                            <Form.Item name={["personalInfo", "idIssueDate"]} label="Ngày cấp CCCD/CMND" 
+                                rules={[{ required: true, message: 'Vui lòng chọn ngày cấp!' }]}>
+                                <DatePicker 
+                                    style={{ width: '100%' }} 
+                                    placeholder="Chọn ngày cấp" 
+                                    format="DD/MM/YYYY"
+                                    className={styles.modernInput}
+                                    suffixIcon={<CalendarOutlined className={styles.inputIcon} />}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                            <Form.Item name={["personalInfo", "idIssuePlace"]} label="Nơi cấp CCCD/CMND" 
+                                rules={[{ required: true, message: 'Vui lòng nhập nơi cấp!' }]}>
+                                <Input 
+                                    placeholder="Ví dụ: Cục CSQLHC về TTXH" 
+                                    className={styles.modernInput}
+                                    prefix={<SafetyOutlined className={styles.inputIcon} />}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                            <Form.Item name={["personalInfo", "ethnic"]} label="Dân tộc" 
+                                rules={[{ required: true, message: 'Vui lòng nhập dân tộc!' }]}>
+                                <Input 
+                                    prefix={<TeamOutlined className={styles.inputIcon} />} 
+                                    placeholder="Kinh" 
+                                    className={styles.modernInput}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                            <Form.Item name={["personalInfo", "nationality"]} label="Quốc tịch" 
+                                rules={[{ required: true, message: 'Vui lòng nhập quốc tịch!' }]}>
+                                <Input 
+                                    prefix={<GlobalOutlined className={styles.inputIcon} />} 
+                                    placeholder="Việt Nam" 
+                                    className={styles.modernInput}
+                                />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                </div>
+
+                {/* Address Section */}
+                <div className={styles.sectionGroup}>
+                    <div className={styles.sectionGroupHeader}>
+                        <HomeOutlined className={styles.sectionIcon} />
+                        <span className={styles.sectionTitle}>Thông tin địa chỉ</span>
+                        <Divider style={{ flex: 1, marginLeft: '16px' }} />
+                    </div>
+                    
+                    <Row gutter={[24, 16]}>
+                        <Col xs={24}>
+                            <Form.Item name={["personalInfo", "permanentAddress"]} label="Địa chỉ thường trú (theo HKTT)" 
+                                rules={[{ required: true, message: 'Vui lòng nhập địa chỉ thường trú!' }]}>
+                                <Input.TextArea 
+                                    rows={3} 
+                                    placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố" 
+                                    className={styles.modernTextArea}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24}>
+                            <Form.Item name={["personalInfo", "contactAddress"]} label="Địa chỉ liên hệ (nếu khác HKTT)">
+                                <Input.TextArea 
+                                    rows={3} 
+                                    placeholder="Địa chỉ nhận thư báo nếu khác HKTT" 
+                                    className={styles.modernTextArea}
+                                />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                </div>
+
+                {/* Contact Section */}
+                <div className={styles.sectionGroup}>
+                    <div className={styles.sectionGroupHeader}>
+                        <PhoneOutlined className={styles.sectionIcon} />
+                        <span className={styles.sectionTitle}>Thông tin liên hệ</span>
+                        <Divider style={{ flex: 1, marginLeft: '16px' }} />
+                    </div>
+                    
+                    <Row gutter={[24, 16]}>
+                        <Col xs={24} md={12}>
+                            <Form.Item name={["personalInfo", "phoneNumber"]} label="Số điện thoại" 
+                                rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }, { pattern: /^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/, message: 'Số điện thoại không hợp lệ!'}]}>
+                                <Input 
+                                    prefix={<PhoneOutlined className={styles.inputIcon} />} 
+                                    placeholder="09xxxxxxxx" 
+                                    className={styles.modernInput}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                            <Form.Item name={["personalInfo", "email"]} label="Email" 
+                                rules={[{ required: true, message: 'Vui lòng nhập email!' }, { type: 'email', message: 'Email không hợp lệ!' }]}>
+                                <Input 
+                                    prefix={<MailOutlined className={styles.inputIcon} />} 
+                                    placeholder="example@email.com" 
+                                    className={styles.modernInput}
+                                />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                </div>
+
+                {/* Priority Section */}
+                <div className={styles.sectionGroup}>
+                    <div className={styles.sectionGroupHeader}>
+                        <TrophyOutlined className={styles.sectionIcon} />
+                        <span className={styles.sectionTitle}>Ưu tiên xét tuyển</span>
+                        <Divider style={{ flex: 1, marginLeft: '16px' }} />
+                    </div>
+                    
+                    <Row gutter={[24, 16]}>
+                        <Col xs={24} md={12}>
+                            <Form.Item name={["personalInfo", "priorityArea"]} label="Khu vực ưu tiên (nếu có)">
+                                <Select 
+                                    placeholder="Chọn khu vực ưu tiên" 
+                                    options={priorityAreas} 
+                                    allowClear
+                                    className={styles.modernSelect}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                            <Form.Item name={["personalInfo", "priorityObject"]} label="Đối tượng ưu tiên (nếu có)">
+                                <Select 
+                                    mode="multiple" 
+                                    placeholder="Chọn đối tượng ưu tiên" 
+                                    options={priorityObjects} 
+                                    allowClear
+                                    className={styles.modernSelect}
+                                />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                </div>
+            </Card>
+        </div>
+    );const academicAndChoiceStepContent = (
+        <div className={styles.stepContainer}>
+            {/* Beautiful Step Header */}
+            <div className={styles.stepHeader}>
+                <div className={styles.stepHeaderIcon}>
+                    <BookOutlined />
+                </div>
+                <div className={styles.stepHeaderContent}>
+                    <h3 className={styles.stepHeaderTitle}>Học Vấn & Nguyện Vọng</h3>
+                    <p className={styles.stepHeaderDesc}>Thông tin học tập và nguyện vọng xét tuyển đại học</p>
+                </div>
+                <div className={styles.stepHeaderBadge}>
+                    <Badge count="2" style={{ backgroundColor: '#1890ff' }} />
+                </div>
+            </div>
+            
+            {/* Enhanced Form Card */}
+            <Card className={styles.modernFormCard} bordered={false}>
+                {/* Academic Info Section */}
+                <div className={styles.sectionGroup}>
+                    <div className={styles.sectionGroupHeader}>
+                        <BookOutlined className={styles.sectionIcon} />
+                        <span className={styles.sectionTitle}>Thông tin THPT</span>
+                        <Divider style={{ flex: 1, marginLeft: '16px' }} />
+                    </div>
+                    
+                    <Row gutter={[24, 16]}>
+                        <Col xs={24} md={12}>
+                            <Form.Item name={["academicInfo", "highSchoolName"]} label="Tên trường THPT Lớp 12" 
+                                rules={[{ required: true, message: 'Vui lòng nhập tên trường!' }]}>
+                                <Input 
+                                    prefix={<BookOutlined className={styles.inputIcon} />} 
+                                    placeholder="Trường THPT Chuyên XYZ" 
+                                    className={styles.modernInput}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                            <Form.Item name={["academicInfo", "graduationYear"]} label="Năm tốt nghiệp THPT" 
+                                rules={[{ required: true, message: 'Vui lòng chọn năm tốt nghiệp!' }]}>
+                                <Select placeholder="Chọn năm tốt nghiệp" className={styles.modernSelect}>
+                                    {highSchoolGraduationYears.map(year => 
+                                        <AntOption key={year} value={year}>🎓 {year}</AntOption>
+                                    )}
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                    </Row>
+
+                    {/* GPA Section */}
+                    <div className={styles.subSectionTitle}>
+                        <TrophyOutlined className={styles.subSectionIcon} />
+                        Điểm trung bình các lớp
+                    </div>
+                    <Row gutter={[24, 16]}>
+                        <Col xs={24} md={8}>
+                            <Form.Item name={["academicInfo", "gpa10"]} label="Điểm TB lớp 10" 
+                                rules={[{ required: true, type: 'number', min:0, max:10, message: 'Điểm không hợp lệ (0-10)!' }]}>
+                                <InputNumber 
+                                    style={{width: '100%'}} 
+                                    step="0.01" 
+                                    placeholder="Ví dụ: 8.5" 
+                                    className={styles.modernInput}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} md={8}>
+                            <Form.Item name={["academicInfo", "gpa11"]} label="Điểm TB lớp 11" 
+                                rules={[{ required: true, type: 'number', min:0, max:10, message: 'Điểm không hợp lệ (0-10)!' }]}>
+                                <InputNumber 
+                                    style={{width: '100%'}} 
+                                    step="0.01" 
+                                    placeholder="Ví dụ: 8.7" 
+                                    className={styles.modernInput}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} md={8}>
+                            <Form.Item name={["academicInfo", "gpa12"]} label="Điểm TB lớp 12" 
+                                rules={[{ required: true, type: 'number', min:0, max:10, message: 'Điểm không hợp lệ (0-10)!' }]}>
+                                <InputNumber 
+                                    style={{width: '100%'}} 
+                                    step="0.01" 
+                                    placeholder="Ví dụ: 9.0" 
+                                    className={styles.modernInput}
+                                />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+
+                    {/* Conduct Section */}
+                    <div className={styles.subSectionTitle}>
+                        <StarOutlined className={styles.subSectionIcon} />
+                        Hạnh kiểm các lớp
+                    </div>
+                    <Row gutter={[24, 16]}>
+                        <Col xs={24} md={8}>
+                            <Form.Item name={["academicInfo", "conduct10"]} label="Hạnh kiểm lớp 10" 
+                                rules={[{ required: true, message: 'Chọn hạnh kiểm!' }]}>
+                                <Select placeholder="Hạnh kiểm lớp 10" className={styles.modernSelect}>
+                                    <AntOption value="Tốt">⭐ Tốt</AntOption>
+                                    <AntOption value="Khá">👍 Khá</AntOption>
+                                    <AntOption value="Trung bình">📝 Trung bình</AntOption>
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} md={8}>
+                            <Form.Item name={["academicInfo", "conduct11"]} label="Hạnh kiểm lớp 11" 
+                                rules={[{ required: true, message: 'Chọn hạnh kiểm!' }]}>
+                                <Select placeholder="Hạnh kiểm lớp 11" className={styles.modernSelect}>
+                                    <AntOption value="Tốt">⭐ Tốt</AntOption>
+                                    <AntOption value="Khá">👍 Khá</AntOption>
+                                    <AntOption value="Trung bình">📝 Trung bình</AntOption>
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} md={8}>
+                            <Form.Item name={["academicInfo", "conduct12"]} label="Hạnh kiểm lớp 12" 
+                                rules={[{ required: true, message: 'Chọn hạnh kiểm!' }]}>
+                                <Select placeholder="Hạnh kiểm lớp 12" className={styles.modernSelect}>
+                                    <AntOption value="Tốt">⭐ Tốt</AntOption>
+                                    <AntOption value="Khá">👍 Khá</AntOption>
+                                    <AntOption value="Trung bình">📝 Trung bình</AntOption>
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                </div>
+
+                {/* Application Choice Section */}
+                <div className={styles.sectionGroup}>
+                    <div className={styles.sectionGroupHeader}>
+                        <CrownOutlined className={styles.sectionIcon} />
+                        <span className={styles.sectionTitle}>Thông Tin Nguyện Vọng</span>
+                        <Divider style={{ flex: 1, marginLeft: '16px' }} />
+                    </div>
+                    
+                    <Row gutter={[24, 16]}>
+                        <Col xs={24} md={12}>
+                            <Form.Item name={["applicationChoice", "year"]} label="Năm tuyển sinh" 
+                                rules={[{required: true, message: "Vui lòng chọn năm tuyển sinh"}]}>
+                                <Select 
+                                    placeholder="Chọn năm tuyển sinh" 
+                                    options={admissionYears} 
+                                    className={styles.modernSelect}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                            <Form.Item name={["applicationChoice", "universityId"]} label="Trường Đại học" 
+                                rules={[{ required: true, message: 'Vui lòng chọn trường!' }]}>
+                                <Select 
+                                    placeholder="🏛️ Chọn trường Đại học" 
+                                    loading={loadingUniversities} 
+                                    allowClear 
+                                    showSearch 
+                                    filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())}
+                                    className={styles.modernSelect}
+                                >
+                                    {universities.map(uni => 
+                                        <AntOption key={uni.id} value={uni.id} label={uni.name}>
+                                            🏛️ {uni.name} ({uni.code})
+                                        </AntOption>
+                                    )}
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                            <Form.Item name={["applicationChoice", "majorId"]} label="Ngành đăng ký" 
+                                rules={[{ required: true, message: 'Vui lòng chọn ngành!' }]}>
+                                <Select 
+                                    placeholder="📚 Chọn ngành học" 
+                                    loading={loadingMajors} 
+                                    disabled={!watchedUniversityId || majors.length === 0} 
+                                    allowClear 
+                                    showSearch 
+                                    filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())}
+                                    className={styles.modernSelect}
+                                >
+                                    {majors.map(major => 
+                                        <AntOption key={major.id} value={major.id} label={major.name}>
+                                            📚 {major.name} ({major.code})
+                                        </AntOption>
+                                    )}
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                            <Form.Item name={["applicationChoice", "admissionMethodId"]} label="Phương thức xét tuyển" 
+                                rules={[{ required: true, message: 'Vui lòng chọn phương thức!' }]}>
+                                <Select 
+                                    placeholder="🎯 Chọn phương thức" 
+                                    loading={loadingAdmissionInfo} 
+                                    disabled={!watchedMajorId || admissionMethods.length === 0} 
+                                    allowClear 
+                                    showSearch 
+                                    filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())}
+                                    className={styles.modernSelect}
+                                >
+                                    {admissionMethods.map(method => 
+                                        <AntOption key={method.id} value={method.id} label={method.name}>
+                                            🎯 {method.name}
+                                        </AntOption>
+                                    )}
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                    </Row>
+
+                    {/* Subject Group Selection */}
+                    {(() => {
+                        const selectedMethod = admissionMethods.find(m => m.id === watchedAdmissionMethodId);
+                        const isThptMethod = selectedMethod && (
+                            selectedMethod.name?.includes('Tốt nghiệp THPT') || 
+                            selectedMethod.name?.includes('THPTQG') ||
+                            selectedMethod.name?.includes('thi THPT') ||
+                            selectedMethod.code === 'THPTQG'
+                        );
+                        return isThptMethod && subjectGroups.length > 0 && (
+                            <Row gutter={[24, 16]}>
+                                <Col xs={24} md={12}>
+                                    <Form.Item name={["applicationChoice", "subjectGroupId"]} label="Tổ hợp xét tuyển" 
+                                        rules={[{ required: true, message: 'Vui lòng chọn tổ hợp!' }]}>
+                                        <Select 
+                                            placeholder="📝 Chọn tổ hợp môn" 
+                                            loading={loadingAdmissionInfo} 
+                                            disabled={!watchedAdmissionMethodId || subjectGroups.length === 0} 
+                                            allowClear 
+                                            showSearch 
+                                            filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())}
+                                            className={styles.modernSelect}
+                                        >
+                                            {subjectGroups.map(group => 
+                                                <AntOption key={group.id} value={group.id} label={`${group.name} (${group.code})`}>
+                                                    📝 {group.name} ({group.code})
+                                                </AntOption>
+                                            )}
+                                        </Select>
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                        );
+                    })()}
+                </div>
+
+                {/* Exam Scores Section */}
+                {(() => {
+                    const selectedMethod = admissionMethods.find(m => m.id === watchedAdmissionMethodId);
+                    
+                    const isThptMethod = selectedMethod && (
+                        selectedMethod.name?.includes('Tốt nghiệp THPT') || 
+                        selectedMethod.name?.includes('THPTQG') ||
+                        selectedMethod.name?.includes('thi THPT') ||
+                        selectedMethod.code === 'THPTQG'
+                    );
+                    
+                    const isHocBaMethod = selectedMethod && (
+                        selectedMethod.name?.toLowerCase().includes('học bạ') ||
+                        selectedMethod.name?.toLowerCase().includes('hoc ba') ||
+                        selectedMethod.code === 'HOCBA'
+                    );
+                    
+                    const isDgnlMethod = selectedMethod && (
+                        selectedMethod.name?.includes('Đánh giá năng lực') ||
+                        selectedMethod.name?.includes('ĐGNL') ||
+                        selectedMethod.name?.includes('năng lực') ||
+                        selectedMethod.code?.includes('DGNL')
+                    );
+                    
+                    const isSatMethod = selectedMethod && (
+                        selectedMethod.name?.includes('SAT') ||
+                        selectedMethod.code === 'SAT'
+                    );
+                    
+                    const isActMethod = selectedMethod && (
+                        selectedMethod.name?.includes('ACT') ||
+                        selectedMethod.code === 'ACT'
+                    );
+                    
+                    const isIeltsMethod = selectedMethod && (
+                        selectedMethod.name?.includes('IELTS') ||
+                        selectedMethod.code === 'IELTS'
+                    );
+                    
+                    const isTuyenThangMethod = selectedMethod && (
+                        selectedMethod.name?.toLowerCase().includes('tuyển thẳng') ||
+                        selectedMethod.name?.toLowerCase().includes('học sinh giỏi') ||
+                        selectedMethod.code?.includes('XTTHSG')
+                    );
+
+                    if (isThptMethod && currentSubjectsForScores.length > 0) {
+                        return (
+                            <div className={styles.sectionGroup}>
+                                <div className={styles.sectionGroupHeader}>
+                                    <CheckOutlined className={styles.sectionIcon} />
+                                    <span className={styles.sectionTitle}>
+                                        Điểm thi THPT theo tổ hợp{' '}
+                                        <span className={styles.subjectGroupBadge}>
+                                            {subjectGroups.find(g=>g.id === watchedSubjectGroupId)?.name}
+                                        </span>
+                                    </span>
+                                    <Divider style={{ flex: 1, marginLeft: '16px' }} />
+                                </div>
+                                
+                                <Row gutter={[24, 16]}>
+                                    {currentSubjectsForScores.map(subject => ( 
+                                        <Col xs={24} sm={12} md={8} key={subject}>
+                                            <Form.Item 
+                                                name={["academicInfo", "examScores", subject]} 
+                                                label={`Điểm ${subject} (THPT)`} 
+                                                rules={[{ required: true, type: 'number', min:0, max:10, message: `Điểm ${subject} không hợp lệ (0-10)!` }]}
+                                            >
+                                                <InputNumber 
+                                                    style={{width: '100%'}} 
+                                                    step="0.01" 
+                                                    placeholder={`Điểm thi ${subject}`} 
+                                                    className={styles.modernInput}
+                                                />
+                                            </Form.Item>
+                                        </Col> 
+                                    ))}
+                                </Row>
+                            </div>
+                        );
+                    } else if (isHocBaMethod && watchedAdmissionMethodId) {
+                        return (
+                            <div className={styles.sectionGroup}>
+                                <div className={styles.sectionGroupHeader}>
+                                    <BookOutlined className={styles.sectionIcon} />
+                                    <span className={styles.sectionTitle}>Điểm học bạ THPT</span>
+                                    <Divider style={{ flex: 1, marginLeft: '16px' }} />
+                                </div>
+                                <Alert 
+                                    message="📚 Phương thức xét học bạ" 
+                                    description="Phương thức xét học bạ sử dụng điểm trung bình các lớp 10, 11, 12 đã nhập ở phần trên." 
+                                    type="info" 
+                                    showIcon 
+                                    className={styles.modernAlert}
+                                />
+                            </div>
+                        );
+                    } else if (isDgnlMethod && watchedAdmissionMethodId) {
+                        return (
+                            <div className={styles.sectionGroup}>
+                                <div className={styles.sectionGroupHeader}>
+                                    <TrophyOutlined className={styles.sectionIcon} />
+                                    <span className={styles.sectionTitle}>Điểm Đánh giá năng lực</span>
+                                    <Divider style={{ flex: 1, marginLeft: '16px' }} />
+                                </div>
+                                <Row gutter={[24, 16]}>
+                                    <Col xs={24} sm={12} md={8}>
+                                        <Form.Item 
+                                            name={["academicInfo", "examScores", "DGNL"]} 
+                                            label="Điểm ĐGNL" 
+                                            rules={[{ required: true, type: 'number', min:0, max:150, message: 'Điểm ĐGNL không hợp lệ (0-150)!' }]}
+                                        >
+                                            <InputNumber 
+                                                style={{width: '100%'}} 
+                                                step="0.01" 
+                                                placeholder="Điểm ĐGNL" 
+                                                className={styles.modernInput}
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                            </div>
+                        );
+                    } else if (isSatMethod && watchedAdmissionMethodId) {
+                        return (
+                            <div className={styles.sectionGroup}>
+                                <div className={styles.sectionGroupHeader}>
+                                    <GlobalOutlined className={styles.sectionIcon} />
+                                    <span className={styles.sectionTitle}>Điểm thi SAT</span>
+                                    <Divider style={{ flex: 1, marginLeft: '16px' }} />
+                                </div>
+                                <Row gutter={[24, 16]}>
+                                    <Col xs={24} sm={12} md={8}>
+                                        <Form.Item 
+                                            name={["academicInfo", "examScores", "SAT"]} 
+                                            label="Điểm SAT" 
+                                            rules={[{ required: true, type: 'number', min:400, max:1600, message: 'Điểm SAT không hợp lệ (400-1600)!' }]}
+                                        >
+                                            <InputNumber 
+                                                style={{width: '100%'}} 
+                                                step="1" 
+                                                placeholder="Điểm SAT" 
+                                                className={styles.modernInput}
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                            </div>
+                        );
+                    } else if (isActMethod && watchedAdmissionMethodId) {
+                        return (
+                            <div className={styles.sectionGroup}>
+                                <div className={styles.sectionGroupHeader}>
+                                    <GlobalOutlined className={styles.sectionIcon} />
+                                    <span className={styles.sectionTitle}>Điểm thi ACT</span>
+                                    <Divider style={{ flex: 1, marginLeft: '16px' }} />
+                                </div>
+                                <Row gutter={[24, 16]}>
+                                    <Col xs={24} sm={12} md={8}>
+                                        <Form.Item 
+                                            name={["academicInfo", "examScores", "ACT"]} 
+                                            label="Điểm ACT" 
+                                            rules={[{ required: true, type: 'number', min:1, max:36, message: 'Điểm ACT không hợp lệ (1-36)!' }]}
+                                        >
+                                            <InputNumber 
+                                                style={{width: '100%'}} 
+                                                step="0.1" 
+                                                placeholder="Điểm ACT" 
+                                                className={styles.modernInput}
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                            </div>
+                        );
+                    } else if (isIeltsMethod && watchedAdmissionMethodId) {
+                        return (
+                            <div className={styles.sectionGroup}>
+                                <div className={styles.sectionGroupHeader}>
+                                    <GlobalOutlined className={styles.sectionIcon} />
+                                    <span className={styles.sectionTitle}>Điểm IELTS</span>
+                                    <Divider style={{ flex: 1, marginLeft: '16px' }} />
+                                </div>
+                                <Row gutter={[24, 16]}>
+                                    <Col xs={24} sm={12} md={8}>
+                                        <Form.Item 
+                                            name={["academicInfo", "examScores", "IELTS"]} 
+                                            label="Điểm IELTS" 
+                                            rules={[{ required: true, type: 'number', min:0, max:9, message: 'Điểm IELTS không hợp lệ (0-9)!' }]}
+                                        >
+                                            <InputNumber 
+                                                style={{width: '100%'}} 
+                                                step="0.1" 
+                                                placeholder="Điểm IELTS" 
+                                                className={styles.modernInput}
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                            </div>
+                        );
+                    } else if (isTuyenThangMethod && watchedAdmissionMethodId) {
+                        return (
+                            <div className={styles.sectionGroup}>
+                                <div className={styles.sectionGroupHeader}>
+                                    <CrownOutlined className={styles.sectionIcon} />
+                                    <span className={styles.sectionTitle}>Xét tuyển thẳng</span>
+                                    <Divider style={{ flex: 1, marginLeft: '16px' }} />
+                                </div>
+                                <Alert 
+                                    message="👑 Xét tuyển thẳng" 
+                                    description="Phương thức tuyển thẳng không yêu cầu nhập điểm thi. Vui lòng tải lên giấy chứng nhận học sinh giỏi hoặc minh chứng tuyển thẳng ở phần tài liệu." 
+                                    type="success" 
+                                    showIcon 
+                                    className={styles.modernAlert}
+                                />
+                            </div>
+                        );
+                    } else if (watchedAdmissionMethodId && selectedMethod) {
+                        return (
+                            <div className={styles.sectionGroup}>
+                                <div className={styles.sectionGroupHeader}>
+                                    <CheckOutlined className={styles.sectionIcon} />
+                                    <span className={styles.sectionTitle}>Thông tin bổ sung: {selectedMethod.name}</span>
+                                    <Divider style={{ flex: 1, marginLeft: '16px' }} />
+                                </div>
+                                <Alert 
+                                    message={`🎯 Phương thức "${selectedMethod.name}"`} 
+                                    description={`Phương thức "${selectedMethod.name}" đã được chọn. Vui lòng kiểm tra yêu cầu cụ thể từ nhà trường và tải lên tài liệu minh chứng cần thiết.`} 
+                                    type="info" 
+                                    showIcon 
+                                    className={styles.modernAlert}
+                                />
+                            </div>
+                        );
+                    }
+                    
+                    return null;
+                })()}
+            </Card>
+        </div>
+    );    const documentsStepContent = (
+        <div className={styles.stepContainer}>
+            {/* Beautiful Step Header */}
+            <div className={styles.stepHeader}>
+                <div className={styles.stepHeaderIcon}>
+                    <FileTextOutlined />
+                </div>
+                <div className={styles.stepHeaderContent}>
+                    <h3 className={styles.stepHeaderTitle}>Tải Lên Minh Chứng</h3>
+                    <p className={styles.stepHeaderDesc}>Cung cấp các giấy tờ minh chứng cần thiết để hoàn tất hồ sơ</p>
+                </div>
+                <div className={styles.stepHeaderBadge}>
+                    <Badge count="3" style={{ backgroundColor: '#f59e0b' }} />
+                </div>
+            </div>
+            
+            {/* Enhanced Form Card */}
+            <Card className={styles.modernFormCard} bordered={false}>
+                {/* Document Upload Instructions */}
+                <div className={styles.uploadInstructions}>
+                    <div className={styles.uploadInstructionsIcon}>
+                        <UploadOutlined />
+                    </div>
+                    <div className={styles.uploadInstructionsContent}>
+                        <h4>Hướng dẫn tải lên tài liệu</h4>
+                        <ul>
+                            <li>📄 Các file phải rõ ràng, định dạng PDF, JPG, PNG</li>
+                            <li>💾 Dung lượng không quá 5MB mỗi file</li>
+                            <li>✅ Chọn đúng loại giấy tờ trước khi tải lên</li>
+                            <li>🔍 Đảm bảo thông tin trên giấy tờ rõ ràng, đầy đủ</li>
+                        </ul>
+                    </div>
+                </div>
+
+                {/* Document Type Selection */}
+                <div className={styles.sectionGroup}>
+                    <div className={styles.sectionGroupHeader}>
+                        <SafetyOutlined className={styles.sectionIcon} />
+                        <span className={styles.sectionTitle}>Chọn loại giấy tờ</span>
+                        <Divider style={{ flex: 1, marginLeft: '16px' }} />
+                    </div>
+                    
+                    <Form.Item 
+                        name="currentDocumentType" 
+                        label="Loại giấy tờ hiện tại" 
+                        rules={[{ required: true, message: 'Vui lòng chọn loại giấy tờ!'}]}
+                    >
+                        <Select placeholder="📁 Chọn loại giấy tờ" className={styles.modernSelect}>
+                            <AntOption value="hoc_ba">📚 Học bạ THPT</AntOption>
+                            <AntOption value="cccd">🆔 CCCD/CMND</AntOption>
+                            <AntOption value="giay_tot_nghiep_tam_thoi">🎓 Giấy CNSN Tạm thời</AntOption>
+                            <AntOption value="giay_uu_tien">🏆 Giấy tờ Ưu tiên</AntOption>
+                            <AntOption value="khac">📋 Minh chứng khác</AntOption>
                         </Select>
                     </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                    <Form.Item name={["personalInfo", "idNumber"]} label="Số CCCD/CMND" rules={[{ required: true, message: 'Vui lòng nhập số CCCD/CMND!' }, { pattern: /^[0-9]{9,12}$/, message: 'Số CCCD/CMND không hợp lệ (9-12 số)!' }]}>
-                        <Input prefix={<IdcardOutlined />} placeholder="0123456789" />
+                </div>
+
+                {/* Document Upload Area */}
+                <div className={styles.sectionGroup}>
+                    <div className={styles.sectionGroupHeader}>
+                        <UploadOutlined className={styles.sectionIcon} />
+                        <span className={styles.sectionTitle}>Tải lên tài liệu</span>
+                        <Divider style={{ flex: 1, marginLeft: '16px' }} />
+                    </div>
+                    
+                    <Form.Item label="Tải lên minh chứng">
+                        <div className={styles.uploadContainer}>
+                            <Upload.Dragger 
+                                name="documentFile" 
+                                multiple={true} 
+                                fileList={fileList} 
+                                customRequest={customUploadRequest} 
+                                onChange={handleFileUploadChange} 
+                                onRemove={handleRemoveFile} 
+                                beforeUpload={beforeUpload} 
+                                onPreview={handlePreview}
+                                className={styles.modernUploader}
+                            >
+                                <div className={styles.uploadContent}>
+                                    <div className={styles.uploadIcon}>
+                                        <InboxOutlined />
+                                    </div>
+                                    <div className={styles.uploadText}>
+                                        <h4>Nhấn hoặc kéo thả file vào đây</h4>
+                                        <p>Hỗ trợ định dạng: PDF, JPG, PNG • Tối đa 5MB/file</p>
+                                    </div>
+                                </div>
+                            </Upload.Dragger>
+                        </div>
                     </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                    <Form.Item name={["personalInfo", "idIssueDate"]} label="Ngày cấp CCCD/CMND" rules={[{ required: true, message: 'Vui lòng chọn ngày cấp!' }]}>
-                        <DatePicker style={{ width: '100%' }} placeholder="Chọn ngày" format="DD/MM/YYYY"/>
-                    </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                    <Form.Item name={["personalInfo", "idIssuePlace"]} label="Nơi cấp CCCD/CMND" rules={[{ required: true, message: 'Vui lòng nhập nơi cấp!' }]}>
-                        <Input placeholder="Ví dụ: Cục CSQLHC về TTXH" />
-                    </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                    <Form.Item name={["personalInfo", "ethnic"]} label="Dân tộc" rules={[{ required: true, message: 'Vui lòng nhập dân tộc!' }]}>
-                        <Input prefix={<TeamOutlined />} placeholder="Kinh" />
-                    </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                    <Form.Item name={["personalInfo", "nationality"]} label="Quốc tịch" rules={[{ required: true, message: 'Vui lòng nhập quốc tịch!' }]}>
-                        <Input prefix={<GlobalOutlined />} placeholder="Việt Nam" />
-                    </Form.Item>
-                </Col>
-                <Col xs={24}>
-                    <Form.Item name={["personalInfo", "permanentAddress"]} label="Địa chỉ thường trú (theo HKTT)" rules={[{ required: true, message: 'Vui lòng nhập địa chỉ thường trú!' }]}>
-                        <Input.TextArea rows={2} placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố" />
-                    </Form.Item>
-                </Col>
-                <Col xs={24}>
-                    <Form.Item name={["personalInfo", "contactAddress"]} label="Địa chỉ liên hệ (nếu khác HKTT)">
-                        <Input.TextArea rows={2} placeholder="Địa chỉ nhận thư báo nếu khác HKTT" />
-                    </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                    <Form.Item name={["personalInfo", "phoneNumber"]} label="Số điện thoại" rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }, { pattern: /^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/, message: 'Số điện thoại không hợp lệ!'}]}>
-                        <Input prefix={<PhoneOutlined />} placeholder="09xxxxxxxx" />
-                    </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                    <Form.Item name={["personalInfo", "email"]} label="Email" rules={[{ required: true, message: 'Vui lòng nhập email!' }, { type: 'email', message: 'Email không hợp lệ!' }]}>
-                        <Input prefix={<MailOutlined />} placeholder="example@email.com" />
-                    </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                    <Form.Item name={["personalInfo", "priorityArea"]} label="Khu vực ưu tiên (nếu có)">
-                        <Select placeholder="Chọn khu vực ưu tiên" options={priorityAreas} allowClear/>
-                    </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                    <Form.Item name={["personalInfo", "priorityObject"]} label="Đối tượng ưu tiên (nếu có)">
-                        <Select mode="multiple" placeholder="Chọn đối tượng ưu tiên" options={priorityObjects} allowClear/>
-                    </Form.Item>
-                </Col>
-            </Row>
-        </Card>    );const academicAndChoiceStepContent = (
-        <Card title="Bước 2: Thông Tin Học Vấn & Nguyện Vọng" className="shadow-none">
-            <AntTitle level={5} className="!mt-0 !mb-3 text-indigo-600">Thông tin THPT</AntTitle>
-            <Row gutter={24}>
-                <Col xs={24} md={12}><Form.Item name={["academicInfo", "highSchoolName"]} label="Tên trường THPT Lớp 12" rules={[{ required: true, message: 'Vui lòng nhập tên trường!' }]}><Input prefix={<BookOutlined />} placeholder="Trường THPT Chuyên XYZ" /></Form.Item></Col>
-                <Col xs={24} md={12}><Form.Item name={["academicInfo", "graduationYear"]} label="Năm tốt nghiệp THPT" rules={[{ required: true, message: 'Vui lòng chọn năm tốt nghiệp!' }]}><Select placeholder="Chọn năm">{highSchoolGraduationYears.map(year => <AntOption key={year} value={year}>{year}</AntOption>)}</Select></Form.Item></Col>
-                <Col xs={24} md={8}><Form.Item name={["academicInfo", "gpa10"]} label="Điểm TB lớp 10" rules={[{ required: true, type: 'number', min:0, max:10, message: 'Điểm không hợp lệ (0-10)!' }]}><InputNumber style={{width: '100%'}} step="0.01" placeholder="Ví dụ: 8.5" /></Form.Item></Col>
-                <Col xs={24} md={8}><Form.Item name={["academicInfo", "gpa11"]} label="Điểm TB lớp 11" rules={[{ required: true, type: 'number', min:0, max:10, message: 'Điểm không hợp lệ (0-10)!' }]}><InputNumber style={{width: '100%'}} step="0.01" placeholder="Ví dụ: 8.7" /></Form.Item></Col>
-                <Col xs={24} md={8}><Form.Item name={["academicInfo", "gpa12"]} label="Điểm TB lớp 12" rules={[{ required: true, type: 'number', min:0, max:10, message: 'Điểm không hợp lệ (0-10)!' }]}><InputNumber style={{width: '100%'}} step="0.01" placeholder="Ví dụ: 9.0" /></Form.Item></Col>
-                <Col xs={24} md={8}><Form.Item name={["academicInfo", "conduct10"]} label="Hạnh kiểm lớp 10" rules={[{ required: true, message: 'Chọn hạnh kiểm!' }]}><Select placeholder="Hạnh kiểm"><AntOption value="Tốt">Tốt</AntOption><AntOption value="Khá">Khá</AntOption><AntOption value="Trung bình">Trung bình</AntOption></Select></Form.Item></Col>
-                <Col xs={24} md={8}><Form.Item name={["academicInfo", "conduct11"]} label="Hạnh kiểm lớp 11" rules={[{ required: true, message: 'Chọn hạnh kiểm!' }]}><Select placeholder="Hạnh kiểm"><AntOption value="Tốt">Tốt</AntOption><AntOption value="Khá">Khá</AntOption><AntOption value="Trung bình">Trung bình</AntOption></Select></Form.Item></Col>
-                <Col xs={24} md={8}><Form.Item name={["academicInfo", "conduct12"]} label="Hạnh kiểm lớp 12" rules={[{ required: true, message: 'Chọn hạnh kiểm!' }]}><Select placeholder="Hạnh kiểm"><AntOption value="Tốt">Tốt</AntOption><AntOption value="Khá">Khá</AntOption><AntOption value="Trung bình">Trung bình</AntOption></Select></Form.Item></Col>
-            </Row>
-            <AntTitle level={5} className="!mt-6 !mb-3 text-indigo-600">Thông Tin Nguyện Vọng</AntTitle>
-            <Row gutter={24}>
-                 <Col xs={24} md={12}><Form.Item name={["applicationChoice", "year"]} label="Năm tuyển sinh" rules={[{required: true, message: "Vui lòng chọn năm tuyển sinh"}]}><Select placeholder="Chọn năm tuyển sinh" options={admissionYears} /></Form.Item></Col>                <Col xs={24} md={12}><Form.Item name={["applicationChoice", "universityId"]} label="Trường Đại học" rules={[{ required: true, message: 'Vui lòng chọn trường!' }]}><Select placeholder="Chọn trường Đại học" loading={loadingUniversities} allowClear showSearch filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())}>{universities.map(uni => <AntOption key={uni.id} value={uni.id} label={uni.name}>{uni.name} ({uni.code})</AntOption>)}</Select></Form.Item></Col>
-                <Col xs={24} md={12}><Form.Item name={["applicationChoice", "majorId"]} label="Ngành đăng ký" rules={[{ required: true, message: 'Vui lòng chọn ngành!' }]}><Select placeholder="Chọn ngành học" loading={loadingMajors} disabled={!watchedUniversityId || majors.length === 0} allowClear showSearch filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())}>{majors.map(major => <AntOption key={major.id} value={major.id} label={major.name}>{major.name} ({major.code})</AntOption>)}</Select></Form.Item></Col>                <Col xs={24} md={12}><Form.Item name={["applicationChoice", "admissionMethodId"]} label="Phương thức xét tuyển" rules={[{ required: true, message: 'Vui lòng chọn phương thức!' }]}><Select placeholder="Chọn phương thức" loading={loadingAdmissionInfo} disabled={!watchedMajorId || admissionMethods.length === 0} allowClear showSearch filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())}>{admissionMethods.map(method => <AntOption key={method.id} value={method.id} label={method.name}>{method.name}</AntOption>)}</Select></Form.Item></Col>
-                   {/* Hiển thị tổ hợp chỉ khi phương thức là THPT */}
-                 { (() => {
-                     const selectedMethod = admissionMethods.find(m => m.id === watchedAdmissionMethodId);
-                     // Improved method detection logic
-                     const isThptMethod = selectedMethod && (
-                         selectedMethod.name?.includes('Tốt nghiệp THPT') || 
-                         selectedMethod.name?.includes('THPTQG') ||
-                         selectedMethod.name?.includes('thi THPT') ||
-                         selectedMethod.code === 'THPTQG'
-                     );
-                     return isThptMethod && subjectGroups.length > 0 && (
-                         <Col xs={24} md={12}>
-                             <Form.Item name={["applicationChoice", "subjectGroupId"]} label="Tổ hợp xét tuyển" rules={[{ required: true, message: 'Vui lòng chọn tổ hợp!' }]}>
-                                 <Select placeholder="Chọn tổ hợp môn" loading={loadingAdmissionInfo} disabled={!watchedAdmissionMethodId || subjectGroups.length === 0} allowClear showSearch filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())}>
-                                     {subjectGroups.map(group => <AntOption key={group.id} value={group.id} label={`${group.name} (${group.code})`}>{group.name} ({group.code})</AntOption>)}
-                                 </Select>
-                             </Form.Item>
-                         </Col>
-                     );
-                 })() }
-            </Row>
-              {/* Hiển thị form nhập điểm dựa theo phương thức xét tuyển */}
-            {(() => {
-                const selectedMethod = admissionMethods.find(m => m.id === watchedAdmissionMethodId);
-                
-                // Improved method categorization logic
-                const isThptMethod = selectedMethod && (
-                    selectedMethod.name?.includes('Tốt nghiệp THPT') || 
-                    selectedMethod.name?.includes('THPTQG') ||
-                    selectedMethod.name?.includes('thi THPT') ||
-                    selectedMethod.code === 'THPTQG'
-                );
-                
-                const isHocBaMethod = selectedMethod && (
-                    selectedMethod.name?.toLowerCase().includes('học bạ') ||
-                    selectedMethod.name?.toLowerCase().includes('hoc ba') ||
-                    selectedMethod.code === 'HOCBA'
-                );
-                
-                const isDgnlMethod = selectedMethod && (
-                    selectedMethod.name?.includes('Đánh giá năng lực') ||
-                    selectedMethod.name?.includes('ĐGNL') ||
-                    selectedMethod.name?.includes('năng lực') ||
-                    selectedMethod.code?.includes('DGNL')
-                );
-                
-                const isSatMethod = selectedMethod && (
-                    selectedMethod.name?.includes('SAT') ||
-                    selectedMethod.code === 'SAT'
-                );
-                
-                const isActMethod = selectedMethod && (
-                    selectedMethod.name?.includes('ACT') ||
-                    selectedMethod.code === 'ACT'
-                );
-                
-                const isIeltsMethod = selectedMethod && (
-                    selectedMethod.name?.includes('IELTS') ||
-                    selectedMethod.code === 'IELTS'
-                );
-                
-                const isTuyenThangMethod = selectedMethod && (
-                    selectedMethod.name?.toLowerCase().includes('tuyển thẳng') ||
-                    selectedMethod.name?.toLowerCase().includes('học sinh giỏi') ||
-                    selectedMethod.code?.includes('XTTHSG')
-                );                
-                if (isThptMethod && currentSubjectsForScores.length > 0) {
-                    return (
-                        <>
-                            <AntTitle level={5} className="!mt-6 !mb-3 text-indigo-600">
-                                Điểm thi THPT theo tổ hợp <AntText type="secondary">({subjectGroups.find(g=>g.id === watchedSubjectGroupId)?.name})</AntText>
-                            </AntTitle>
-                            <Row gutter={24}>
-                                {currentSubjectsForScores.map(subject => ( 
-                                    <Col xs={24} sm={12} md={8} key={subject}>
-                                        <Form.Item name={["academicInfo", "examScores", subject]} label={`Điểm ${subject} (THPT)`} rules={[{ required: true, type: 'number', min:0, max:10, message: `Điểm ${subject} không hợp lệ (0-10)!` }]}>
-                                            <InputNumber style={{width: '100%'}} step="0.01" placeholder={`Điểm thi ${subject}`} />
-                                        </Form.Item>
-                                    </Col> 
-                                ))}
-                            </Row>
-                        </>
-                    );
-                } else if (isHocBaMethod && watchedAdmissionMethodId) {
-                    return (
-                        <>
-                            <AntTitle level={5} className="!mt-6 !mb-3 text-indigo-600">
-                                Điểm học bạ THPT (đã có ở trên)
-                            </AntTitle>
-                            <Alert message="Phương thức xét học bạ sử dụng điểm trung bình các lớp 10, 11, 12 đã nhập ở phần trên." type="info" showIcon />
-                        </>
-                    );
-                } else if (isDgnlMethod && watchedAdmissionMethodId) {
-                    return (
-                        <>
-                            <AntTitle level={5} className="!mt-6 !mb-3 text-indigo-600">
-                                Điểm Đánh giá năng lực
-                            </AntTitle>
-                            <Row gutter={24}>
-                                <Col xs={24} sm={12} md={8}>
-                                    <Form.Item name={["academicInfo", "examScores", "DGNL"]} label="Điểm ĐGNL" rules={[{ required: true, type: 'number', min:0, max:150, message: 'Điểm ĐGNL không hợp lệ (0-150)!' }]}>
-                                        <InputNumber style={{width: '100%'}} step="0.01" placeholder="Điểm ĐGNL" />
-                                    </Form.Item>
-                                </Col>
-                            </Row>
-                        </>
-                    );
-                } else if (isSatMethod && watchedAdmissionMethodId) {
-                    return (
-                        <>
-                            <AntTitle level={5} className="!mt-6 !mb-3 text-indigo-600">
-                                Điểm thi SAT
-                            </AntTitle>
-                            <Row gutter={24}>
-                                <Col xs={24} sm={12} md={8}>
-                                    <Form.Item name={["academicInfo", "examScores", "SAT"]} label="Điểm SAT" rules={[{ required: true, type: 'number', min:400, max:1600, message: 'Điểm SAT không hợp lệ (400-1600)!' }]}>
-                                        <InputNumber style={{width: '100%'}} step="1" placeholder="Điểm SAT" />
-                                    </Form.Item>
-                                </Col>
-                            </Row>
-                        </>
-                    );
-                } else if (isActMethod && watchedAdmissionMethodId) {
-                    return (
-                        <>
-                            <AntTitle level={5} className="!mt-6 !mb-3 text-indigo-600">
-                                Điểm thi ACT
-                            </AntTitle>
-                            <Row gutter={24}>
-                                <Col xs={24} sm={12} md={8}>
-                                    <Form.Item name={["academicInfo", "examScores", "ACT"]} label="Điểm ACT" rules={[{ required: true, type: 'number', min:1, max:36, message: 'Điểm ACT không hợp lệ (1-36)!' }]}>
-                                        <InputNumber style={{width: '100%'}} step="0.1" placeholder="Điểm ACT" />
-                                    </Form.Item>
-                                </Col>
-                            </Row>
-                        </>
-                    );
-                } else if (isIeltsMethod && watchedAdmissionMethodId) {
-                    return (
-                        <>
-                            <AntTitle level={5} className="!mt-6 !mb-3 text-indigo-600">
-                                Điểm IELTS
-                            </AntTitle>
-                            <Row gutter={24}>
-                                <Col xs={24} sm={12} md={8}>
-                                    <Form.Item name={["academicInfo", "examScores", "IELTS"]} label="Điểm IELTS" rules={[{ required: true, type: 'number', min:0, max:9, message: 'Điểm IELTS không hợp lệ (0-9)!' }]}>
-                                        <InputNumber style={{width: '100%'}} step="0.1" placeholder="Điểm IELTS" />
-                                    </Form.Item>
-                                </Col>
-                            </Row>
-                        </>
-                    );
-                } else if (isTuyenThangMethod && watchedAdmissionMethodId) {
-                    return (
-                        <>
-                            <AntTitle level={5} className="!mt-6 !mb-3 text-indigo-600">
-                                Xét tuyển thẳng
-                            </AntTitle>
-                            <Alert message="Phương thức tuyển thẳng không yêu cầu nhập điểm thi. Vui lòng tải lên giấy chứng nhận học sinh giỏi hoặc minh chứng tuyển thẳng ở phần tài liệu." type="info" showIcon />                        </>
-                    );
-                } else if (watchedAdmissionMethodId && selectedMethod) {
-                    // Fallback for other methods
-                    return (
-                        <>
-                            <AntTitle level={5} className="!mt-6 !mb-3 text-indigo-600">
-                                Thông tin bổ sung cho phương thức: {selectedMethod.name}
-                            </AntTitle>
-                            <Alert message={`Phương thức "${selectedMethod.name}" đã được chọn. Vui lòng kiểm tra yêu cầu cụ thể từ nhà trường và tải lên tài liệu minh chứng cần thiết.`} type="info" showIcon />
-                        </>
-                    );
-                }
-                
-                return null; // Return null if no method is selected or matched
-            })()}
-         </Card>
-    );    const documentsStepContent = ( 
-        <Card title="Bước 3: Tải Lên Minh Chứng" className="shadow-none">
-            <AntParagraph>Vui lòng tải lên các giấy tờ minh chứng cần thiết (Học bạ, CCCD, Giấy ưu tiên,...). Các file phải rõ ràng, định dạng PDF, JPG, PNG và dung lượng không quá 5MB mỗi file.</AntParagraph>
-            <Form.Item name="currentDocumentType" label="Loại giấy tờ hiện tại" rules={[{ required: true, message: 'Vui lòng chọn loại giấy tờ!'}]}><Select placeholder="Chọn loại giấy tờ"><AntOption value="hoc_ba">Học bạ THPT</AntOption><AntOption value="cccd">CCCD/CMND</AntOption><AntOption value="giay_tot_nghiep_tam_thoi">Giấy CNSN Tạm thời</AntOption><AntOption value="giay_uu_tien">Giấy tờ Ưu tiên</AntOption><AntOption value="khac">Minh chứng khác</AntOption></Select></Form.Item>
-            <Form.Item label="Tải lên minh chứng"><Upload.Dragger name="documentFile" multiple={true} fileList={fileList} customRequest={customUploadRequest} onChange={handleFileUploadChange} onRemove={handleRemoveFile} beforeUpload={beforeUpload} onPreview={handlePreview}><p className="ant-upload-drag-icon"><InboxOutlined /></p><p className="ant-upload-text">Nhấn hoặc kéo thả file vào đây để tải lên</p><p className="ant-upload-hint">Hỗ trợ PDF, JPG, PNG. Tối đa 5MB/file.</p></Upload.Dragger></Form.Item>
-            <Alert message="Lưu ý: Chọn đúng 'Loại giấy tờ hiện tại' trước khi nhấn hoặc kéo thả file để tải lên." type="info" showIcon className="!mt-4"/>
-            {previewVisible && ( <Modal open={previewVisible} title={previewTitle} footer={null} onCancel={() => setPreviewVisible(false)} destroyOnHidden><img alt="Xem trước" style={{ width: '100%' }} src={previewImage} /></Modal> )}
-         </Card>
+                </div>
+
+                {/* Important Notice */}
+                <div className={styles.uploadNotice}>
+                    <Alert 
+                        message="⚠️ Lưu ý quan trọng" 
+                        description="Chọn đúng 'Loại giấy tờ hiện tại' trước khi nhấn hoặc kéo thả file để tải lên. Điều này giúp hệ thống phân loại và xử lý tài liệu của bạn một cách chính xác." 
+                        type="warning" 
+                        showIcon 
+                        className={styles.modernAlert}
+                    />
+                </div>
+
+                {/* File Preview Modal */}
+                {previewVisible && (
+                    <Modal 
+                        open={previewVisible} 
+                        title={
+                            <div className={styles.modalHeader}>
+                                <EyeOutlined className={styles.modalIcon} />
+                                {previewTitle}
+                            </div>
+                        } 
+                        footer={null} 
+                        onCancel={() => setPreviewVisible(false)} 
+                        destroyOnHidden
+                        className={styles.previewModal}
+                        width={800}
+                    >
+                        <div className={styles.previewContainer}>
+                            <img 
+                                alt="Xem trước tài liệu" 
+                                style={{ width: '100%', maxHeight: '70vh', objectFit: 'contain' }} 
+                                src={previewImage} 
+                            />
+                        </div>
+                    </Modal>
+                )}
+            </Card>
+        </div>
     );    const steps = [
         { 
             title: 'Thông tin cá nhân', 
             content: personalInfoStepContent, 
             icon: <UserOutlined />,
             description: 'Cung cấp thông tin cá nhân của bạn'
-        },        { 
+        },        
+        { 
             title: 'Học vấn & Nguyện Vọng', 
             content: academicAndChoiceStepContent, 
             icon: <BookOutlined />,
@@ -1300,93 +1850,129 @@ const CandidateSubmitApplicationPage: React.FC = () => {
 
     return (
         <div className={styles.submitContainer}>
-            {/* Modern Header Section */}
-            <div className={styles.sectionTitle}>
-                <StarOutlined style={{ marginRight: '0.5rem', color: '#f59e0b' }} />
-                Nộp Hồ Sơ Xét Tuyển Trực Tuyến
+            {/* Enhanced Hero Header Section */}
+            <div className={styles.heroSection}>
+                <div className={styles.heroBackground}>
+                    <div className={styles.heroPattern}></div>
+                </div>
+                <div className={styles.heroContent}>
+                    <div className={styles.heroIcon}>
+                        <StarOutlined />
+                    </div>
+                    <h1 className={styles.heroTitle}>
+                        Nộp Hồ Sơ Xét Tuyển Trực Tuyến
+                    </h1>
+                    <p className={styles.heroSubtitle}>
+                        Hoàn tất hồ sơ xét tuyển đại học một cách nhanh chóng và thuận tiện
+                    </p>
+                    <div className={styles.heroStats}>
+                        <div className={styles.heroStat}>
+                            <span className={styles.heroStatNumber}>3</span>
+                            <span className={styles.heroStatLabel}>Bước đơn giản</span>
+                        </div>
+                        <div className={styles.heroStat}>
+                            <span className={styles.heroStatNumber}>5</span>
+                            <span className={styles.heroStatLabel}>Phút hoàn thành</span>
+                        </div>
+                        <div className={styles.heroStat}>
+                            <span className={styles.heroStatNumber}>100%</span>
+                            <span className={styles.heroStatLabel}>Trực tuyến</span>
+                        </div>
+                    </div>
+                </div>
             </div>
             
-            {/* Progress Steps */}
-            <div className={styles.formSteps}>
-                <Steps 
-                    current={currentStep} 
-                    responsive
-                    size="default"
-                    items={steps.map((step, index) => ({
-                        title: step.title,
-                        description: currentStep === index ? step.description : undefined,
-                        icon: currentStep > index ? <CheckCircleOutlined /> : step.icon,
-                        status: currentStep > index ? 'finish' : currentStep === index ? 'process' : 'wait'
-                    }))}
-                />
+            {/* Enhanced Progress Steps */}
+            <div className={styles.progressSection}>
+                <div className={styles.progressContainer}>
+                    <Steps 
+                        current={currentStep} 
+                        responsive
+                        size="default"
+                        className={styles.modernSteps}
+                        items={steps.map((step, index) => ({
+                            title: step.title,
+                            description: currentStep === index ? step.description : undefined,
+                            icon: currentStep > index ? 
+                                <div className={styles.stepIconCompleted}><CheckCircleOutlined /></div> : 
+                                <div className={`${styles.stepIcon} ${currentStep === index ? styles.stepIconActive : ''}`}>
+                                    {step.icon}
+                                </div>,
+                            status: currentStep > index ? 'finish' : currentStep === index ? 'process' : 'wait'
+                        }))}
+                    />
+                </div>
             </div>
 
-            {/* Main Form */}
-            <Form
-                form={form}
-                layout="vertical"
-                onFinish={onFinish}
-                onValuesChange={handleFormValuesChange}
-                initialValues={convertInitialValues(initialFormData)}
-                className={styles.formCard}
-            >
-                {/* Dynamic Content Based on Current Step */}
-                <div className="steps-content">
-                    {currentStep === 0 && personalInfoStepContent}
-                    {currentStep === 1 && academicAndChoiceStepContent}
-                    {currentStep === 2 && documentsStepContent}
-                </div>
+            {/* Main Form Container */}
+            <div className={styles.formContainer}>
+                <Form
+                    form={form}
+                    layout="vertical"
+                    onFinish={onFinish}
+                    onValuesChange={handleFormValuesChange}
+                    initialValues={convertInitialValues(initialFormData)}
+                    className={styles.modernForm}
+                >
+                    {/* Dynamic Content Based on Current Step */}
+                    <div className={styles.stepContent}>
+                        {currentStep === 0 && personalInfoStepContent}
+                        {currentStep === 1 && academicAndChoiceStepContent}
+                        {currentStep === 2 && documentsStepContent}
+                    </div>
 
-                {/* Navigation Actions */}
-                <div className="steps-action" style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center',
-                    marginTop: '2rem',
-                    paddingTop: '2rem',
-                    borderTop: '2px solid var(--gray-100)'
-                }}>
-                    <div>
-                        {currentStep > 0 && (
-                            <Button 
-                                style={{ marginRight: '1rem' }} 
-                                onClick={prevStep} 
-                                size="large"
-                                className={styles.formButton + ' ' + styles.formButtonOutline}
-                                icon={<EditOutlined />}
-                            >
-                                Quay Lại
-                            </Button>
-                        )}
+                    {/* Enhanced Navigation Actions */}
+                    <div className={styles.actionSection}>
+                        <div className={styles.actionContainer}>
+                            <div className={styles.actionLeft}>
+                                {currentStep > 0 && (
+                                    <Button 
+                                        onClick={prevStep} 
+                                        size="large"
+                                        className={`${styles.actionButton} ${styles.actionButtonSecondary}`}
+                                        icon={<EditOutlined />}
+                                    >
+                                        Quay Lại
+                                    </Button>
+                                )}
+                            </div>
+                            
+                            <div className={styles.actionCenter}>
+                                <div className={styles.stepIndicator}>
+                                    Bước {currentStep + 1} / {steps.length}
+                                </div>
+                            </div>
+                            
+                            <div className={styles.actionRight}>
+                                {currentStep < steps.length - 1 && (
+                                    <Button 
+                                        type="primary" 
+                                        onClick={validateAndNextStep} 
+                                        size="large" 
+                                        className={`${styles.actionButton} ${styles.actionButtonPrimary}`}
+                                        loading={isSubmitting}
+                                        icon={<CheckCircleOutlined />}
+                                    >
+                                        Tiếp Tục
+                                    </Button>
+                                )}
+                                {currentStep === steps.length - 1 && (
+                                    <Button 
+                                        type="primary" 
+                                        htmlType="submit" 
+                                        size="large" 
+                                        className={`${styles.actionButton} ${styles.actionButtonSuccess}`}
+                                        loading={isSubmitting}
+                                        icon={<SendOutlined />}
+                                    >
+                                        {isSubmitting ? 'Đang xử lý...' : 'Nộp Hồ Sơ'}
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        {currentStep < steps.length - 1 && (
-                            <Button 
-                                type="primary" 
-                                onClick={validateAndNextStep} 
-                                size="large" 
-                                className={styles.formButton + ' ' + styles.formButtonPrimary} 
-                                loading={isSubmitting}
-                                icon={<CheckCircleOutlined />}
-                            >
-                                Tiếp Tục
-                            </Button>
-                        )}
-                        {currentStep === steps.length - 1 && (
-                            <Button 
-                                type="primary" 
-                                htmlType="submit" 
-                                size="large" 
-                                className={styles.formButton + ' ' + styles.formButtonPrimary} 
-                                loading={isSubmitting}
-                                icon={<SendOutlined />}
-                            >
-                                Nộp Hồ Sơ
-                            </Button>
-                        )}
-                    </div>
-                </div>
-            </Form>
+                </Form>
+            </div>
         </div>
     );
 };

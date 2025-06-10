@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  Layout, Menu, Button, Avatar, Dropdown, Badge, List, Typography, Spin, Empty, message, Drawer
+  Layout, Menu, Button, Avatar, Dropdown, Badge, Typography, message, Drawer
 } from 'antd';
 import type { MenuProps } from 'antd';
 import {
@@ -9,13 +9,14 @@ import {
   FormOutlined, SolutionOutlined, SettingOutlined, BuildOutlined,
   FileSearchOutlined, ReadOutlined, UnorderedListOutlined, AppstoreAddOutlined,
   LinkOutlined, BarChartOutlined, TeamOutlined, BellOutlined,
-  MailOutlined, MenuOutlined, CloseOutlined, DownOutlined
+  MenuOutlined, CloseOutlined, DownOutlined
 } from '@ant-design/icons';
 import { Briefcase, Sparkles } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { logout, selectUser, selectIsAuthenticated } from '../../features/auth/store/authSlice';
 import notificationService from '../../features/notification/services/notificationService';
 import { NotificationFE } from '../../features/notification/types';
+import NotificationDropdown from '../../features/notification/components/NotificationDropdown';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/vi';
@@ -25,7 +26,7 @@ dayjs.extend(relativeTime);
 dayjs.locale('vi');
 
 const { Header } = Layout;
-const { Text, Paragraph } = Typography;
+const { Text } = Typography;
 const MAX_NOTIFICATIONS_IN_DROPDOWN = 7;
 
 const AppHeader: React.FC = () => {
@@ -38,18 +39,11 @@ const AppHeader: React.FC = () => {
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
-
-  const [notifications, setNotifications] = useState<NotificationFE[]>([]);
+  }, []);  const [notifications, setNotifications] = useState<NotificationFE[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [loadingNotifications, setLoadingNotifications] = useState(false);
-  const [notificationDropdownVisible, setNotificationDropdownVisible] = useState(false);
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
-
-  const fetchNotifications = useCallback(async (showLoading = true) => {
+  const fetchNotifications = useCallback(async () => {
     if (!isAuthenticated) return;
-    
-    if (showLoading) setLoadingNotifications(true);
     
     try {
       const response = await notificationService.getMyNotifications({ 
@@ -65,8 +59,6 @@ const AppHeader: React.FC = () => {
       }
     } catch (error) {
       console.error('Error fetching notifications:', error);
-    } finally {
-      if (showLoading) setLoadingNotifications(false);
     }
   }, [isAuthenticated]);
 
@@ -76,10 +68,9 @@ const AppHeader: React.FC = () => {
     if (isClient && isAuthenticated) {
       // Initial fetch
       fetchNotifications();
-      
-      // Set up polling interval
+        // Set up polling interval
       intervalId = setInterval(() => {
-        fetchNotifications(false);
+        fetchNotifications();
       }, 60000); // Poll every minute
     } else {
       // Clear notifications when user logs out
@@ -227,112 +218,37 @@ const AppHeader: React.FC = () => {
             icon: <FormOutlined />, 
             label: 'Nộp Hồ Sơ', 
             onClick: () => handleNavigation('/candidate/submit-application') 
-          },
-        );
+          },        );
       }
     }
     return items;
   };
 
-  const handleNotificationClick = async (notification: NotificationFE) => {
-    setNotificationDropdownVisible(false);
-    if (notification.link) navigate(notification.link);
-    if (!notification.isRead) {
-      try {
-        const response = await notificationService.markAsRead(notification.id);
-        if (response.success) fetchNotifications(false);
-      } catch (error) {
-        console.error("Đánh dấu đã đọc thất bại:", error);
+  const handleMarkAsRead = async (id: string) => {    try {
+      const response = await notificationService.markAsRead(id);
+      if (response.success) {
+        fetchNotifications();
+        message.success('Đã đánh dấu là đã đọc');
+      } else {
+        message.error(response.message || 'Không thể đánh dấu.');
       }
+    } catch (error) {
+      console.error("Đánh dấu đã đọc thất bại:", error);
+      message.error('Lỗi kết nối.');
     }
   };
 
   const handleMarkAllAsRead = async () => {
     try {
-      const response = await notificationService.markAllAsRead();
-      if (response.success) {
+      const response = await notificationService.markAllAsRead();      if (response.success) {
         message.success('Tất cả đã được đánh dấu là đã đọc.');
-        fetchNotifications(false);
+        fetchNotifications();
       } else {
         message.error(response.message || 'Không thể đánh dấu.');
       }
     } catch {
       message.error('Lỗi kết nối.');
-    }
-  };
-  const notificationMenuOverlay = (
-    <div className="notification-dropdown" onClick={(e) => e.stopPropagation()}>
-      <div className="notification-header">
-        <Typography.Title level={5} className="notification-title">
-          Thông Báo
-          {unreadCount > 0 && <Badge count={unreadCount} size="small" />}
-        </Typography.Title>
-        {unreadCount > 0 && (
-          <Button type="link" size="small" onClick={handleMarkAllAsRead} className="mark-all-btn">
-            Đánh dấu đã đọc
-          </Button>
-        )}
-      </div>
-      <div className="notification-body">
-        {loadingNotifications && notifications.length === 0 ? (
-          <div className="notification-loading">
-            <Spin size="small" />
-            <Text type="secondary">Đang tải...</Text>
-          </div>
-        ) : notifications.length === 0 ? (
-          <Empty 
-            description="Không có thông báo mới" 
-            image={Empty.PRESENTED_IMAGE_SIMPLE} 
-            className="notification-empty" 
-          />
-        ) : (
-          <List
-            itemLayout="horizontal"
-            dataSource={notifications}
-            renderItem={item => (
-              <List.Item
-                onClick={() => handleNotificationClick(item)}
-                className={`notification-item ${!item.isRead ? 'unread' : 'read'}`}
-              >
-                <List.Item.Meta
-                  avatar={
-                    <div className={`notification-avatar ${!item.isRead ? 'unread' : ''}`}>
-                      <MailOutlined />
-                    </div>
-                  }
-                  title={<Text strong={!item.isRead} className="notification-title">{item.title}</Text>}
-                  description={
-                    <div className="notification-content">
-                      <Paragraph ellipsis={{ rows: 2 }} className="notification-message">
-                        {item.message}
-                      </Paragraph>
-                      <Text type="secondary" className="notification-time">
-                        {dayjs(item.createdAt).fromNow()}
-                      </Text>
-                    </div>
-                  }
-                />
-                {!item.isRead && <div className="unread-indicator" />}
-              </List.Item>
-            )}
-          />
-        )}
-      </div>
-      <div className="notification-footer">
-        <Button 
-          type="link" 
-          size="small" 
-          onClick={() => { 
-            navigate('/notifications'); 
-            setNotificationDropdownVisible(false); 
-          }}
-          className="view-all-btn"
-        >
-          Xem tất cả thông báo
-        </Button>
-      </div>
-    </div>
-  );
+    }  };
 
   const renderMobileMenuItem = (item: any, isChild = false) => (
     <div key={item.key} className={`mobile-menu-item ${isChild ? 'child' : ''}`}>
@@ -376,29 +292,23 @@ const AppHeader: React.FC = () => {
             selectable={false}
             theme="light"
           />          <div className="header-actions">
-            {isClient ? (
-              <>
-                {isAuthenticated && user && (
-                  <Dropdown 
-                    overlay={notificationMenuOverlay}
-                    placement="bottomRight"
-                    trigger={['click']}
-                    open={notificationDropdownVisible}
-                    onOpenChange={setNotificationDropdownVisible}
-                    overlayClassName="notification-dropdown-overlay"
-                  >
-                    <Badge count={unreadCount} size="small">
-                      <Button 
-                        type="text" 
-                        shape="circle" 
-                        icon={<BellOutlined />} 
-                        className="notification-button"
-                      />
-                    </Badge>
-                  </Dropdown>
+            {isClient ? (                <>
+                {isAuthenticated && user && (                  <NotificationDropdown
+                    notifications={notifications.map(n => ({
+                      id: n.id,
+                      title: n.title,
+                      message: n.message,
+                      type: (n.type as 'success' | 'error' | 'warning' | 'info') || 'info',
+                      isRead: n.isRead,
+                      createdAt: n.createdAt
+                    }))}
+                    onMarkAsRead={handleMarkAsRead}
+                    onMarkAllAsRead={handleMarkAllAsRead}
+                    maxDisplay={5}
+                  />
                 )}
 
-                {isAuthenticated && user ? (                  <Dropdown 
+                {isAuthenticated && user ? (<Dropdown 
                     menu={{ items: userDropdownItems }} 
                     placement="bottomRight"
                     overlayClassName="user-dropdown-overlay"

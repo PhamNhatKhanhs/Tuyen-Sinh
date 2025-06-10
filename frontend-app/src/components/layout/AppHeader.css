@@ -634,7 +634,7 @@
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
   background: white;
-  color: var(--text-primary);
+  color: #0f172a !important;
   font-family: 'Inter', sans-serif;
   font-weight: 500;
   font-size: 14px;
@@ -658,7 +658,7 @@
 
 .login-button:hover {
   border-color: var(--primary-color);
-  color: var(--primary-color);
+  color: var(--primary-color) !important;
   background: transparent;
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
@@ -671,44 +671,12 @@
 .login-button .anticon {
   margin-right: 8px;
   font-size: 16px;
+  color: inherit !important;
 }
 
-.register-button {
-  height: 48px;
-  padding: 0 24px;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  border: none;
-  color: white;
-  font-family: 'Inter', sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
-}
+/* Register button styles moved to unified definition below */
 
-.register-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s ease;
-}
-
-.register-button:hover {
-  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.35);
-}
-
-.register-button:hover::before {
-  left: 100%;
-}
+/* Hover effects moved to unified definition below */
 
 .register-button {
   height: 40px;
@@ -716,7 +684,7 @@
   border-radius: 8px;
   background: linear-gradient(135deg, #d8242c 0%, #e63946 100%);
   border: none;
-  color: white;
+  color: white !important;
   font-weight: 600;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(216, 36, 44, 0.2);
@@ -726,6 +694,7 @@
   background: linear-gradient(135deg, #c5212a 0%, #dc2f3e 100%);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(216, 36, 44, 0.3);
+  color: white !important;
 }
 
 /* Modern Mobile Menu Trigger */
@@ -1223,12 +1192,19 @@
   .auth-buttons {
     gap: 12px;
   }
-  
-  .login-button,
+    .login-button,
   .register-button {
     height: 44px;
     padding: 0 20px;
     font-size: 13px;
+  }
+  
+  .login-button {
+    color: #0f172a !important;
+  }
+  
+  .register-button {
+    color: white !important;
   }
 }
 
@@ -1299,12 +1275,19 @@
   .auth-buttons {
     gap: 8px;
   }
-  
-  .login-button,
+    .login-button,
   .register-button {
     height: 40px;
     padding: 0 16px;
     font-size: 12px;
+  }
+  
+  .login-button {
+    color: #0f172a !important;
+  }
+  
+  .register-button {
+    color: white !important;
   }
 }
 
@@ -1388,12 +1371,19 @@
     flex-direction: column;
     gap: 6px;
   }
-  
-  .login-button,
+    .login-button,
   .register-button {
     height: 36px;
     padding: 0 12px;
     font-size: 11px;
+  }
+  
+  .login-button {
+    color: #0f172a !important;
+  }
+  
+  .register-button {
+    color: white !important;
   }
   
   /* Hide user details text on very small screens, only show avatar */

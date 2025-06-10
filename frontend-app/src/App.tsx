@@ -22,6 +22,9 @@ const CandidateSubmitApplicationPage = lazy(() => import('./features/candidate/p
 const CandidateViewApplicationsPage = lazy(() => import('./features/candidate/pages/CandidateViewApplicationsPage'));
 const CandidateProfilePage = lazy(() => import('./features/candidate/pages/CandidateProfilePage'));
 
+// Notification Pages
+const NotificationsPage = lazy(() => import('./features/notification/pages/NotificationsPage'));
+
 // Admin Pages
 const AdminDashboardPage = lazy(() => import('./features/admin/pages/AdminDashboardPage'));
 const AdminManageUniversities = lazy(() => import('./features/admin/pages/AdminManageUniversities'));
@@ -113,8 +116,7 @@ function App() {
                 <CandidateViewApplicationsPage />
               </ProtectedRoute>
             } 
-          />
-          <Route 
+          />          <Route 
             path="/candidate/profile" 
             element={
               <ProtectedRoute allowedRoles={['candidate']}>
@@ -122,6 +124,9 @@ function App() {
               </ProtectedRoute>
             } 
           />
+
+          {/* Notifications Route */}
+          <Route path="/notifications" element={<NotificationsPage />} />
         </Route>
         
         {/* Admin Layout */}
