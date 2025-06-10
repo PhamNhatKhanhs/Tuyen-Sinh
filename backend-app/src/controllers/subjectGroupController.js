@@ -81,7 +81,7 @@ exports.deleteSubjectGroup = async (req, res, next) => {
             return res.status(404).json({ success: false, message: 'Không tìm thấy tổ hợp môn.' });
         }
         await group.deleteOne();
-        res.status(204).json({ success: true, data: null });
+        res.status(200).json({ success: true, message: 'Xóa tổ hợp môn thành công!' });
     } catch (error) {
         next(error);
     }

@@ -1,19 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { 
     Typography, Table, Button, Modal, Form, Select, Space, Tooltip, Tag, 
-    Input, DatePicker, Card, Row, Col, Spin, Alert, Descriptions, List, message, Empty 
+    Input, DatePicker, Card, Row, Col, Spin, Alert, Descriptions, List, message, Empty, Avatar 
 } from 'antd';
 import { 
-    EyeOutlined, EditOutlined, ReloadOutlined, FilterOutlined, SearchOutlined, 
-    FilePdfOutlined, FileImageOutlined, FileTextOutlined, InfoCircleOutlined,
-    UserOutlined // Thêm UserOutlined cho candidate info
+  EyeOutlined, EditOutlined, FilterOutlined, SearchOutlined, 
+  FilePdfOutlined, FileImageOutlined, FileTextOutlined, InfoCircleOutlined,
+  UserOutlined, FolderOpenOutlined, CheckCircleOutlined, CloseCircleOutlined,
+  ClockCircleOutlined, ExclamationCircleOutlined, MinusCircleOutlined, FileSearchOutlined
 } from '@ant-design/icons';
 import type { TableProps, PaginationProps } from 'antd';
 import type { RangePickerProps } from 'antd/es/date-picker';
 import dayjs from 'dayjs';
 
 import applicationAdminService from '../services/applicationAdminService';
-import { ApplicationAdminListItemFE, ApplicationDetailBE, CandidateProfileSnapshot } from '../../application/types';
+import { ApplicationAdminListItemFE, ApplicationDetailBE } from '../../application/types';
 import { UploadedFileResponse } from '../../upload/types';
 import type { User } from '../../auth/types';
 
@@ -28,19 +29,60 @@ const { Title, Paragraph, Text } = Typography;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
+// Modern color palette
+const COLORS = {
+  primary: '#6366f1',
+  primaryDark: '#4f46e5',
+  secondary: '#f1f5f9',
+  accent: '#10b981',
+  danger: '#ef4444',
+  warning: '#f59e0b',
+  dark: '#0f172a',
+  darkSecondary: '#1e293b',
+  text: '#334155',
+  textLight: '#64748b',
+  white: '#ffffff',
+  gray50: '#f8fafc',
+  gray100: '#f1f5f9',
+  gray200: '#e2e8f0',
+  blue50: '#eff6ff',
+  blue500: '#3b82f6',
+  green50: '#f0fdf4',
+  green500: '#22c55e',
+  red50: '#fef2f2',
+  red500: '#ef4444',
+  purple50: '#faf5ff',
+  purple500: '#a855f7',
+  orange50: '#fff7ed',
+  orange500: '#f97316',
+};
+
 const APPLICATION_STATUSES = [
-    { value: 'pending', label: 'Chờ duyệt', color: 'processing' },
-    { value: 'processing', label: 'Đang xử lý', color: 'blue' },
-    { value: 'additional_required', label: 'Cần bổ sung', color: 'warning' },
-    { value: 'approved', label: 'Đã duyệt', color: 'success' },
-    { value: 'rejected', label: 'Từ chối', color: 'error' },
-    { value: 'cancelled', label: 'Đã hủy', color: 'default' },
+  { value: 'pending', label: 'Chờ duyệt', color: 'processing', icon: <ClockCircleOutlined /> },
+  { value: 'processing', label: 'Đang xử lý', color: 'blue', icon: <FileSearchOutlined /> },
+  { value: 'additional_required', label: 'Cần bổ sung', color: 'warning', icon: <ExclamationCircleOutlined /> },
+  { value: 'approved', label: 'Đã duyệt', color: 'success', icon: <CheckCircleOutlined /> },
+  { value: 'rejected', label: 'Từ chối', color: 'error', icon: <CloseCircleOutlined /> },
+  { value: 'cancelled', label: 'Đã hủy', color: 'default', icon: <MinusCircleOutlined /> },
 ];
 
 const getStatusTag = (statusValue?: ApplicationDetailBE['status']) => {
   if (!statusValue) return <Tag color="default">KHÔNG RÕ</Tag>;
   const statusObj = APPLICATION_STATUSES.find(s => s.value === statusValue);
-  return <Tag color={statusObj?.color || 'default'} className="font-semibold px-2 py-1 text-xs">{statusObj?.label.toUpperCase() || statusValue.toUpperCase()}</Tag>;
+  return (
+    <Tag 
+      color={statusObj?.color || 'default'} 
+      icon={statusObj?.icon}
+      style={{
+        borderRadius: '20px',
+        padding: '4px 12px',
+        fontWeight: 500,
+        fontSize: '12px'
+      }}
+    >
+      {statusObj?.label.toUpperCase() || statusValue.toUpperCase()}
+    </Tag>
+  );
 };
 
 const getDocumentIcon = (fileType?: string) => {
@@ -145,13 +187,7 @@ const AdminManageApplications: React.FC = () => {
     }
   }, [filters.universityId]);
 
-
-  const handleTableChange: TableProps<ApplicationAdminListItemFE>['onChange'] = (newPagination, tableFilters, sorterResult) => {
-    // Xử lý sorter nếu cần
-    // const sorterParams = Array.isArray(sorterResult) ? sorterResult[0] : sorterResult;
-    // const sortBy = sorterParams.field as string;
-    // const sortOrder = sorterParams.order === 'ascend' ? 'asc' : 'desc';
-    // setFilters(prev => ({...prev, sortBy, sortOrder})); // Cần thêm sortBy, sortOrder vào state filters
+  const handleTableChange: TableProps<ApplicationAdminListItemFE>['onChange'] = (newPagination) => {
     fetchApplications(newPagination.current, newPagination.pageSize);
   };
   
@@ -237,129 +273,493 @@ const AdminManageApplications: React.FC = () => {
         setLoading(false);
     }
   };
-
   const columns: TableProps<ApplicationAdminListItemFE>['columns'] = [
-    { title: 'Mã HS', dataIndex: 'id', key: 'id', width: 180, render: (text) => <Text strong copyable>{text}</Text>, fixed: 'left', sorter: (a,b) => a.id.localeCompare(b.id) },
-    { title: 'Thí Sinh', dataIndex: 'candidateName', key: 'candidateName', width: 200, ellipsis: true, sorter: (a,b) => (a.candidateName || '').localeCompare(b.candidateName || '') },
-    { title: 'Email TS', dataIndex: 'candidateEmail', key: 'candidateEmail', width: 220, ellipsis: true, responsive: ['lg'], sorter: (a,b) => (a.candidateEmail || '').localeCompare(b.candidateEmail || '') },
-    { title: 'Trường ĐK', dataIndex: 'universityName', key: 'universityName', width: 250, ellipsis: true, sorter: (a,b) => (a.universityName || '').localeCompare(b.universityName || '') },
-    { title: 'Ngành ĐK', dataIndex: 'majorName', key: 'majorName', width: 250, ellipsis: true, sorter: (a,b) => (a.majorName || '').localeCompare(b.majorName || '') },
-    { title: 'Năm XT', dataIndex: 'year', key: 'year', width: 80, align: 'center', sorter: (a,b) => a.year - b.year },
-    { title: 'Ngày Nộp', dataIndex: 'submissionDate', key: 'submissionDate', width: 120, align: 'center', sorter: (a,b) => new Date(a.submissionDate.split('/').reverse().join('-')).getTime() - new Date(b.submissionDate.split('/').reverse().join('-')).getTime() },
-    { title: 'Trạng Thái', dataIndex: 'status', key: 'status', render: getStatusTag, width: 150, align: 'center', fixed: 'right',
-      filters: APPLICATION_STATUSES.map(s => ({text: s.label, value: s.value})),
-      // onFilter được xử lý qua state `filters` và nút "Lọc"
+    {
+      title: 'Thông Tin Hồ Sơ',
+      key: 'application_info',
+      render: (_, record) => (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Avatar
+            size={48}
+            style={{
+              backgroundColor: COLORS.primary,
+              fontSize: '16px',
+              fontWeight: 'bold'
+            }}
+            icon={<FolderOpenOutlined />}
+          >
+            HS
+          </Avatar>
+          <div>
+            <div style={{ 
+              fontWeight: 600, 
+              fontSize: '14px', 
+              color: COLORS.dark,
+              marginBottom: '4px'
+            }}>
+              {record.candidateName || 'N/A'}
+            </div>
+            <div style={{ 
+              fontSize: '12px', 
+              color: COLORS.textLight,
+              marginBottom: '4px'
+            }}>
+              Mã: <Text copyable style={{ fontSize: '11px' }}>{record.id}</Text>
+            </div>
+            <div style={{ 
+              fontSize: '11px', 
+              color: COLORS.textLight
+            }}>
+              {record.candidateEmail || 'N/A'}
+            </div>
+          </div>
+        </div>
+      ),
     },
     {
-      title: 'Hành Động',
-      key: 'action',
-      width: 100, // Giảm width nếu chỉ có 2 nút
+      title: 'Nguyện Vọng',
+      key: 'application_choice',
+      render: (_, record) => (
+        <div>
+          <div style={{ 
+            fontWeight: 500, 
+            fontSize: '13px', 
+            color: COLORS.dark,
+            marginBottom: '4px'
+          }}>
+            {record.universityName || 'N/A'}
+          </div>
+          <div style={{ 
+            fontSize: '12px', 
+            color: COLORS.textLight,
+            marginBottom: '4px'
+          }}>
+            {record.majorName || 'N/A'}
+          </div>
+          <Tag 
+            style={{
+              backgroundColor: COLORS.blue50,
+              color: COLORS.blue500,
+              border: `1px solid ${COLORS.blue500}20`,
+              borderRadius: '6px',
+              fontSize: '10px',
+              padding: '2px 6px'
+            }}
+          >
+            Năm {record.year}
+          </Tag>
+        </div>
+      ),
+    },
+    {
+      title: 'Ngày Nộp',
+      dataIndex: 'submissionDate',
+      key: 'submissionDate',
+      width: 120,
       align: 'center',
-      fixed: 'right',
-      render: (_: any, record: ApplicationAdminListItemFE) => (
+      render: (date: string) => (
+        <div style={{ fontSize: '12px', color: COLORS.text }}>
+          {date}
+        </div>
+      ),
+      sorter: (a,b) => new Date(a.submissionDate.split('/').reverse().join('-')).getTime() - new Date(b.submissionDate.split('/').reverse().join('-')).getTime()
+    },
+    {
+      title: 'Trạng Thái',
+      dataIndex: 'status',
+      key: 'status',
+      render: getStatusTag,
+      width: 150,
+      align: 'center',
+      filters: APPLICATION_STATUSES.map(s => ({text: s.label, value: s.value})),
+    },
+    {
+      title: 'Thao Tác',
+      key: 'action',
+      width: 140,
+      align: 'center',
+      render: (_, record) => (
         <Space size="small">
-          <Tooltip title="Xem chi tiết hồ sơ">
-            <Button type="text" shape="circle" icon={<EyeOutlined className="text-blue-600"/>} onClick={() => handleViewDetails(record.id)} />
+          <Tooltip title="Xem chi tiết">
+            <Button
+              type="primary"
+              shape="circle"
+              icon={<EyeOutlined style={{ color: '#ffffff' }} />}
+              onClick={() => handleViewDetails(record.id)}
+              style={{
+                backgroundColor: COLORS.primary,
+                borderColor: COLORS.primary,
+                boxShadow: `0 2px 4px ${COLORS.primary}30`
+              }}
+            />
           </Tooltip>
           <Tooltip title="Cập nhật trạng thái">
-            <Button type="text" shape="circle" icon={<EditOutlined className="text-green-600"/>} onClick={() => handleOpenStatusModal(record)} />
+            <Button
+              shape="circle"
+              icon={<EditOutlined style={{ color: '#ffffff' }} />}
+              onClick={() => handleOpenStatusModal(record)}
+              style={{
+                backgroundColor: COLORS.accent,
+                borderColor: COLORS.accent,
+                boxShadow: `0 2px 4px ${COLORS.accent}30`
+              }}
+            />
           </Tooltip>
         </Space>
       ),
     },
   ];
-
   return (
-    <Card title={<Title level={3} className="!mb-0">Quản Lý Hồ Sơ Tuyển Sinh</Title>} className="shadow-lg rounded-lg">
-      <Paragraph className="text-gray-600 mb-6">
-        Xem, duyệt và quản lý trạng thái các hồ sơ đăng ký của thí sinh.
-      </Paragraph>
+    <>
+      <style>{`
+        .modern-applications-management {
+          font-family: 'Inter', 'Segoe UI', sans-serif;
+        }
+        
+        .modern-applications-management .ant-table-thead > tr > th {
+          background: linear-gradient(135deg, ${COLORS.gray50} 0%, ${COLORS.gray100} 100%) !important;
+          color: ${COLORS.text} !important;
+          font-weight: 600 !important;
+          font-size: 14px !important;
+          border: none !important;
+          padding: 20px 16px !important;
+        }
+        
+        .modern-applications-management .ant-table-tbody > tr > td {
+          padding: 20px 16px !important;
+          border: none !important;
+          border-bottom: 1px solid ${COLORS.gray100} !important;
+        }
+        
+        .modern-applications-management .ant-table-tbody > tr:hover > td {
+          background: ${COLORS.blue50} !important;
+        }
+        
+        .modern-applications-management .ant-table {
+          border-radius: 16px !important;
+          overflow: hidden !important;
+        }
+        
+        .modern-applications-management .ant-input,
+        .modern-applications-management .ant-select-selector {
+          border-radius: 12px !important;
+          border-color: ${COLORS.gray200} !important;
+          transition: all 0.3s ease !important;
+        }
+        
+        .modern-applications-management .ant-input:focus,
+        .modern-applications-management .ant-select-focused .ant-select-selector {
+          border-color: ${COLORS.primary} !important;
+          box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1) !important;
+        }
+        
+        .modern-applications-management .ant-btn {
+          border-radius: 12px !important;
+          font-weight: 500 !important;
+          transition: all 0.3s ease !important;
+        }
+        
+        .modern-applications-management .ant-btn:hover {
+          transform: translateY(-1px) !important;
+        }
+        
+        .modern-applications-management .ant-modal-content {
+          border-radius: 16px !important;
+        }
+        
+        .modern-applications-management .ant-modal-header {
+          border-bottom: 1px solid ${COLORS.gray100} !important;
+        }
+        
+        @media (max-width: 768px) {
+          .modern-applications-management .mobile-stack {
+            flex-direction: column;
+            gap: 16px;
+          }
+        }
+      `}</style>
       
-      <Card title={<><FilterOutlined /> Bộ lọc hồ sơ</>} className="mb-6 shadow-sm rounded-lg" variant="borderless" size="small">
-        <Row gutter={[16,16]} align="bottom">
-            <Col xs={24} sm={12} md={8} lg={6}>
-                <Form.Item label="Tìm kiếm thí sinh/Mã HS" className="!mb-0">
-                <Input
+      <div className="modern-applications-management" style={{ 
+        background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+        minHeight: '100vh',
+        padding: '24px'
+      }}>
+        <Card 
+          style={{
+            background: COLORS.white,
+            borderRadius: '24px',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+            border: 'none',
+            overflow: 'hidden'
+          }}
+        >
+          {/* Header Section */}
+          <div style={{
+            background: `linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.primaryDark} 100%)`,
+            color: COLORS.white,
+            padding: '40px',
+            margin: '-24px -24px 32px -24px',
+            borderRadius: '24px 24px 0 0'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
+              <Avatar 
+                size={64}
+                style={{ 
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  color: COLORS.white,
+                  fontSize: '28px'
+                }}
+                icon={<FileSearchOutlined />} 
+              />
+              <div>
+                <Title level={2} style={{ color: COLORS.white, margin: 0, fontSize: '32px', fontWeight: '700' }}>
+                  Quản Lý Hồ Sơ Tuyển Sinh
+                </Title>
+                <Paragraph style={{ 
+                  color: 'rgba(255, 255, 255, 0.8)', 
+                  margin: 0, 
+                  fontSize: '16px',
+                  marginTop: '8px'
+                }}>
+                  Xem, duyệt và quản lý trạng thái các hồ sơ đăng ký của thí sinh
+                </Paragraph>
+              </div>
+            </div>
+          </div>
+
+          {/* Filters Section */}
+          <Card 
+            title={
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FilterOutlined style={{ color: COLORS.primary }} />
+                <span style={{ color: COLORS.dark, fontWeight: 600 }}>Bộ lọc hồ sơ</span>
+              </div>
+            }
+            style={{
+              marginBottom: '32px',
+              borderRadius: '16px',
+              border: `1px solid ${COLORS.gray200}`,
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)'
+            }}
+            size="small"
+          >
+            <Row gutter={[16,16]} align="bottom">
+              <Col xs={24} sm={12} md={8} lg={6}>
+                <Form.Item label={<span style={{ fontWeight: 600, color: COLORS.dark }}>Tìm kiếm thí sinh/Mã HS</span>} className="!mb-0">
+                  <Input
                     name="searchCandidate" 
                     prefix={<SearchOutlined />}
                     placeholder="Tên, Email, Mã HS..."
                     value={filters.searchCandidate}
                     onChange={handleFilterInputChange}
                     allowClear
-                />
+                    style={{ height: '42px' }}
+                  />
                 </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} md={8} lg={5}>
-                <Form.Item label="Trạng thái" className="!mb-0">
-                <Select
+              </Col>
+              <Col xs={24} sm={12} md={8} lg={5}>
+                <Form.Item label={<span style={{ fontWeight: 600, color: COLORS.dark }}>Trạng thái</span>} className="!mb-0">
+                  <Select
                     placeholder="Tất cả trạng thái"
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', height: '42px' }}
                     allowClear
                     value={filters.status}
                     onChange={value => handleFilterSelectChange('status', value)}
                     options={APPLICATION_STATUSES}
-                />
+                  />
                 </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} md={8} lg={6}>
-                <Form.Item label="Trường ĐH" className="!mb-0">
-                <Select placeholder="Tất cả trường" style={{ width: '100%' }} allowClear value={filters.universityId} onChange={value => handleFilterSelectChange('universityId', value)} loading={loadingFilterData && universitiesForFilter.length === 0} showSearch filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())}>
+              </Col>              <Col xs={24} sm={12} md={8} lg={6}>
+                <Form.Item label={<span style={{ fontWeight: 600, color: COLORS.dark }}>Trường ĐH</span>} className="!mb-0">
+                  <Select 
+                    placeholder="Tất cả trường" 
+                    style={{ width: '100%', height: '42px' }} 
+                    allowClear 
+                    value={filters.universityId} 
+                    onChange={value => handleFilterSelectChange('universityId', value)} 
+                    loading={loadingFilterData && universitiesForFilter.length === 0} 
+                    showSearch 
+                    filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())}
+                  >
                     {universitiesForFilter.map(u => <Option key={u.id} value={u.id} label={u.name}>{u.name} ({u.code})</Option>)}
-                </Select>
+                  </Select>
                 </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} md={8} lg={7}>
-                 <Form.Item label="Ngành học" className="!mb-0">
-                <Select placeholder="Tất cả ngành" style={{ width: '100%' }} allowClear value={filters.majorId} onChange={value => handleFilterSelectChange('majorId', value)} loading={loadingFilterData && !!filters.universityId} disabled={!filters.universityId} showSearch filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())}>
+              </Col>
+              <Col xs={24} sm={12} md={8} lg={7}>
+                <Form.Item label={<span style={{ fontWeight: 600, color: COLORS.dark }}>Ngành học</span>} className="!mb-0">
+                  <Select 
+                    placeholder="Tất cả ngành" 
+                    style={{ width: '100%', height: '42px' }} 
+                    allowClear 
+                    value={filters.majorId} 
+                    onChange={value => handleFilterSelectChange('majorId', value)} 
+                    loading={loadingFilterData && !!filters.universityId} 
+                    disabled={!filters.universityId} 
+                    showSearch 
+                    filterOption={(input, option) => (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())}
+                  >
                     {majorsForFilter.map(m => <Option key={m.id} value={m.id} label={m.name}>{m.name} ({m.code})</Option>)}
-                </Select>
+                  </Select>
                 </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} md={8} lg={5}>
-                <Form.Item label="Năm XT" className="!mb-0">
-                <Select placeholder="Tất cả năm" style={{ width: '100%' }} allowClear value={filters.year} onChange={value => handleFilterSelectChange('year', value)} options={yearOptions} />
+              </Col>
+              <Col xs={24} sm={12} md={8} lg={5}>
+                <Form.Item label={<span style={{ fontWeight: 600, color: COLORS.dark }}>Năm XT</span>} className="!mb-0">
+                  <Select 
+                    placeholder="Tất cả năm" 
+                    style={{ width: '100%', height: '42px' }} 
+                    allowClear 
+                    value={filters.year} 
+                    onChange={value => handleFilterSelectChange('year', value)} 
+                    options={yearOptions} 
+                  />
                 </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} md={8} lg={7}>
-                <Form.Item label="Ngày nộp" className="!mb-0">
-                <RangePicker style={{ width: '100%' }} value={filters.dateRange} onChange={handleDateRangeChange} />
+              </Col>
+              <Col xs={24} sm={12} md={8} lg={7}>
+                <Form.Item label={<span style={{ fontWeight: 600, color: COLORS.dark }}>Ngày nộp</span>} className="!mb-0">
+                  <RangePicker 
+                    style={{ width: '100%', height: '42px' }} 
+                    value={filters.dateRange} 
+                    onChange={handleDateRangeChange} 
+                  />
                 </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} md={8} lg={4}>
-                <Button icon={<FilterOutlined />} onClick={onApplyFilters} loading={loading} type="primary" block>Lọc</Button>
-            </Col>
-             <Col xs={24} sm={12} md={8} lg={3}>
-                <Button icon={<ReloadOutlined />} onClick={onResetFilters} loading={loading} block>Reset Filter</Button>
-            </Col>
-        </Row>
-      </Card>
+              </Col>
+              <Col xs={24} sm={12} md={8} lg={4}>
+                <Button 
+                  icon={<FilterOutlined />} 
+                  onClick={onApplyFilters} 
+                  loading={loading} 
+                  type="primary" 
+                  block
+                  style={{
+                    height: '42px',
+                    background: `linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.primaryDark} 100%)`,
+                    border: 'none',
+                    fontWeight: 600,
+                    boxShadow: `0 4px 12px ${COLORS.primary}30`
+                  }}
+                >
+                  Lọc
+                </Button>
+              </Col>
+              <Col xs={24} sm={12} md={8} lg={3}>
+                <Button 
+                  onClick={onResetFilters} 
+                  loading={loading} 
+                  block
+                  style={{
+                    height: '42px',
+                    border: `2px solid ${COLORS.gray200}`,
+                    color: COLORS.text,
+                    fontWeight: 500
+                  }}
+                >
+                  Reset
+                </Button>
+              </Col>
+            </Row>
+          </Card>
 
-      {error && !loading && <Alert message={error} type="error" showIcon className="mb-4" />}
-      
-      <Table 
-        columns={columns} 
-        dataSource={applications} 
-        rowKey="id" 
-        loading={loading}
-        pagination={pagination}
-        onChange={handleTableChange}
-        scroll={{ x: 1500 }}
-        className="shadow rounded-lg overflow-hidden"
-        bordered
-        locale={{ emptyText: <Empty description="Không có hồ sơ nào phù hợp với tiêu chí lọc." /> }}
-       />
+          {error && !loading && (
+            <Alert 
+              message={error} 
+              type="error" 
+              showIcon 
+              style={{ 
+                marginBottom: '24px',
+                borderRadius: '12px',
+                border: `1px solid ${COLORS.red500}20`
+              }} 
+            />
+          )}
+          
+          {/* Table Section */}
+          <Table 
+            columns={columns} 
+            dataSource={applications} 
+            rowKey="id" 
+            loading={loading}
+            pagination={{
+              ...pagination,
+              style: { marginTop: '32px' },
+              showTotal: (total, range) => 
+                `Hiển thị ${range[0]}-${range[1]} trong tổng số ${total} hồ sơ`,
+              simple: false,
+              showQuickJumper: false,
+              showSizeChanger: true
+            }}
+            onChange={handleTableChange}
+            scroll={{ x: 'max-content' }}
+            style={{
+              background: COLORS.white,
+              borderRadius: '16px',
+              overflow: 'hidden',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)'
+            }}
+            locale={{ emptyText: <Empty description="Không có hồ sơ nào phù hợp với tiêu chí lọc." /> }}          />
 
-       <Modal
-        title={<Title level={4} className="!m-0 text-indigo-700">Chi Tiết Hồ Sơ Tuyển Sinh</Title>}
-        open={isDetailModalVisible}
-        onCancel={() => setIsDetailModalVisible(false)}
-        footer={<Button type="primary" onClick={() => setIsDetailModalVisible(false)}>Đóng</Button>}
-        width={900}
-        destroyOnHidden
-       >
-        {loadingDetail && <div className="text-center py-8"><Spin size="large" /></div>}
-        {!loadingDetail && selectedApplicationDetail && (
-            <Descriptions bordered column={{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }} layout="vertical" size="small">
+        {/* Detail Modal */}
+        <Modal
+          title={
+            <div style={{ 
+              fontSize: '20px', 
+              fontWeight: 600, 
+              color: COLORS.dark,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <Avatar
+                size={32}
+                style={{
+                  backgroundColor: COLORS.primary,
+                }}
+                icon={<FileSearchOutlined />}
+              />
+              Chi Tiết Hồ Sơ Tuyển Sinh
+            </div>
+          }
+          open={isDetailModalVisible}
+          onCancel={() => setIsDetailModalVisible(false)}
+          footer={
+            <Button 
+              type="primary" 
+              onClick={() => setIsDetailModalVisible(false)}
+              style={{
+                background: `linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.primaryDark} 100%)`,
+                border: 'none',
+                height: '42px',
+                borderRadius: '12px',
+                fontWeight: 600,
+                boxShadow: `0 4px 12px ${COLORS.primary}30`
+              }}
+            >
+              Đóng
+            </Button>
+          }
+          width={900}
+          destroyOnClose
+        >
+          {loadingDetail && (
+            <div style={{ textAlign: 'center', padding: '32px' }}>
+              <Spin size="large" />
+            </div>
+          )}          {!loadingDetail && selectedApplicationDetail && (
+            <div style={{
+              background: `linear-gradient(135deg, ${COLORS.gray50} 0%, ${COLORS.blue50} 100%)`,
+              padding: '24px',
+              borderRadius: '16px',
+              margin: '16px 0'
+            }}>
+              <Descriptions 
+                bordered 
+                column={{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }} 
+                layout="vertical" 
+                size="small"
+                style={{
+                  background: COLORS.white,
+                  borderRadius: '12px',
+                  overflow: 'hidden'
+                }}
+              >
                 <Descriptions.Item label="Mã Hồ Sơ" span={2} contentStyle={{fontWeight: 'bold'}}>{selectedApplicationDetail._id}</Descriptions.Item>
                 <Descriptions.Item label="Trạng Thái">{getStatusTag(selectedApplicationDetail.status)}</Descriptions.Item>
                 <Descriptions.Item label="Ngày Nộp">{new Date(selectedApplicationDetail.submissionDate).toLocaleString('vi-VN')}</Descriptions.Item>
@@ -379,20 +779,33 @@ const AdminManageApplications: React.FC = () => {
                 <Descriptions.Item label="Năm Tốt Nghiệp">{selectedApplicationDetail.candidateProfileSnapshot?.graduationYear || 'N/A'}</Descriptions.Item>
                 <Descriptions.Item label="Điểm TB Lớp 12">{selectedApplicationDetail.candidateProfileSnapshot?.gpa12 ?? 'N/A'}</Descriptions.Item>
 
-
-                <Descriptions.Item label="Trường Đăng Ký" span={2}>{typeof selectedApplicationDetail.university === 'object' ? `${selectedApplicationDetail.university.name} (${selectedApplicationDetail.university.code})` : 'N/A'}</Descriptions.Item>
-                <Descriptions.Item label="Ngành Đăng Ký">{typeof selectedApplicationDetail.major === 'object' ? `${selectedApplicationDetail.major.name} (${selectedApplicationDetail.major.code})` : 'N/A'}</Descriptions.Item>
-                <Descriptions.Item label="Phương Thức XT">{typeof selectedApplicationDetail.admissionMethod === 'object' ? selectedApplicationDetail.admissionMethod.name : 'N/A'}</Descriptions.Item>
+                <Descriptions.Item label="Trường Đăng Ký" span={2}>
+                  {selectedApplicationDetail.university && typeof selectedApplicationDetail.university === 'object' 
+                    ? `${selectedApplicationDetail.university.name || 'N/A'} (${selectedApplicationDetail.university.code || 'N/A'})` 
+                    : 'N/A'}
+                </Descriptions.Item>
+                <Descriptions.Item label="Ngành Đăng Ký">
+                  {selectedApplicationDetail.major && typeof selectedApplicationDetail.major === 'object' 
+                    ? `${selectedApplicationDetail.major.name || 'N/A'} (${selectedApplicationDetail.major.code || 'N/A'})` 
+                    : 'N/A'}
+                </Descriptions.Item>
+                <Descriptions.Item label="Phương Thức XT">
+                  {selectedApplicationDetail.admissionMethod && typeof selectedApplicationDetail.admissionMethod === 'object' 
+                    ? selectedApplicationDetail.admissionMethod.name || 'N/A' 
+                    : 'N/A'}
+                </Descriptions.Item>
                 
                 {selectedApplicationDetail.subjectGroup && typeof selectedApplicationDetail.subjectGroup === 'object' && (
-                    <Descriptions.Item label="Tổ Hợp Môn">{`${selectedApplicationDetail.subjectGroup.name} (${selectedApplicationDetail.subjectGroup.code})`}</Descriptions.Item>
+                    <Descriptions.Item label="Tổ Hợp Môn">
+                      {`${selectedApplicationDetail.subjectGroup.name || 'N/A'} (${selectedApplicationDetail.subjectGroup.code || 'N/A'})`}
+                    </Descriptions.Item>
                 )}
 
                 {selectedApplicationDetail.examScores && Object.keys(selectedApplicationDetail.examScores).length > 0 && (
                     <Descriptions.Item label="Điểm Thi Tổ Hợp" span={2}>
                         <Space wrap>
                             {Object.entries(selectedApplicationDetail.examScores).map(([subject, score]) => (
-                                <Tag color="geekblue" key={subject} className="text-sm px-2 py-1">{subject}: <Text strong>{score}</Text></Tag>
+                                <Tag color="geekblue" key={subject} style={{ fontSize: '12px', padding: '4px 8px' }}>{subject}: <Text strong>{score}</Text></Tag>
                             ))}
                         </Space>
                     </Descriptions.Item>
@@ -423,8 +836,8 @@ const AdminManageApplications: React.FC = () => {
                                 >
                                     <List.Item.Meta
                                         avatar={getDocumentIcon(doc.documentType || '')}
-                                        title={<Text strong className="text-sm">{doc.originalName || 'Không rõ tên file'}</Text>}
-                                        description={<Text type="secondary" className="text-xs">Loại: {doc.documentType || 'Không rõ'} - {doc.fileSize ? (doc.fileSize / (1024*1024)).toFixed(2) + ' MB' : 'Không rõ dung lượng'}</Text>}
+                                        title={<Text strong style={{ fontSize: '13px' }}>{doc.originalName || 'Không rõ tên file'}</Text>}
+                                        description={<Text type="secondary" style={{ fontSize: '11px' }}>Loại: {doc.documentType || 'Không rõ'} - {doc.fileSize ? (doc.fileSize / (1024*1024)).toFixed(2) + ' MB' : 'Không rõ dung lượng'}</Text>}
                                     />
                                 </List.Item>
                             )}
@@ -442,43 +855,114 @@ const AdminManageApplications: React.FC = () => {
                         {selectedApplicationDetail.processedAt && <Text type="secondary"> lúc {new Date(selectedApplicationDetail.processedAt).toLocaleString('vi-VN')}</Text>}
                     </Descriptions.Item>
                 )}
-            </Descriptions>
-        )}
-       </Modal>
+              </Descriptions>
+            </div>
+          )}
+        </Modal>
 
-       <Modal
-        title={<Title level={4} className="!m-0 text-indigo-700">Cập Nhật Trạng Thái Hồ Sơ</Title>}
-        open={isStatusModalVisible}
-        onOk={handleUpdateStatus}
-        onCancel={() => {setIsStatusModalVisible(false); setProcessingApplication(null); statusForm.resetFields();}}
-        confirmLoading={loading}
-        okText="Lưu thay đổi"
-        cancelText="Hủy"
-        destroyOnHidden
-       >
-        <Form form={statusForm} layout="vertical">
-            <Title level={5}>Hồ sơ: <Text copyable>{processingApplication?.id}</Text></Title>
-            <Paragraph>Thí sinh: <Text strong>{processingApplication?.candidateName}</Text></Paragraph>
-            <Form.Item
+        {/* Status Update Modal */}
+        <Modal
+          title={
+            <div style={{ 
+              fontSize: '20px', 
+              fontWeight: 600, 
+              color: COLORS.dark,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <Avatar
+                size={32}
+                style={{
+                  backgroundColor: COLORS.accent,
+                }}
+                icon={<EditOutlined />}
+              />
+              Cập Nhật Trạng Thái Hồ Sơ
+            </div>
+          }
+          open={isStatusModalVisible}
+          onOk={handleUpdateStatus}
+          onCancel={() => {setIsStatusModalVisible(false); setProcessingApplication(null); statusForm.resetFields();}}
+          confirmLoading={loading}
+          okText="Lưu thay đổi"
+          cancelText="Hủy"
+          destroyOnClose
+          okButtonProps={{
+            style: {
+              background: `linear-gradient(135deg, ${COLORS.accent} 0%, #059669 100%)`,
+              border: 'none',
+              height: '42px',
+              borderRadius: '12px',
+              fontWeight: 600,
+              boxShadow: `0 4px 12px ${COLORS.accent}30`
+            }
+          }}
+          cancelButtonProps={{
+            style: {
+              height: '42px',
+              borderRadius: '12px',
+              border: `2px solid ${COLORS.gray200}`,
+              color: COLORS.text,
+              fontWeight: 500
+            }
+          }}
+        >
+          <div style={{
+            background: `linear-gradient(135deg, ${COLORS.gray50} 0%, ${COLORS.blue50} 100%)`,
+            padding: '24px',
+            borderRadius: '16px',
+            margin: '16px 0'
+          }}>
+            <Form form={statusForm} layout="vertical">
+              <div style={{ marginBottom: '16px' }}>
+                <Title level={5} style={{ color: COLORS.dark, margin: 0 }}>
+                  Hồ sơ: <Text copyable style={{ color: COLORS.primary }}>{processingApplication?.id}</Text>
+                </Title>
+                <Paragraph style={{ color: COLORS.textLight, margin: 0, marginTop: '4px' }}>
+                  Thí sinh: <Text strong style={{ color: COLORS.dark }}>{processingApplication?.candidateName}</Text>
+                </Paragraph>
+              </div>
+              
+              <Form.Item
                 name="status"
-                label="Trạng thái mới"
+                label={<span style={{ fontWeight: 600, color: COLORS.dark, fontSize: '15px' }}>Trạng thái mới</span>}
                 rules={[{required: true, message: "Vui lòng chọn trạng thái!"}]}
-            >
-                <Select placeholder="Chọn trạng thái">
-                    {APPLICATION_STATUSES.map(s => (
-                        <Option key={s.value} value={s.value}>{s.label}</Option>
-                    ))}
+              >
+                <Select 
+                  placeholder="Chọn trạng thái"
+                  style={{ height: '44px' }}
+                >
+                  {APPLICATION_STATUSES.map(s => (
+                    <Option key={s.value} value={s.value}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        {s.icon}
+                        {s.label}
+                      </div>
+                    </Option>
+                  ))}
                 </Select>
-            </Form.Item>
-            <Form.Item
+              </Form.Item>
+              
+              <Form.Item
                 name="adminNotes"
-                label="Ghi chú của Admin (sẽ được gửi cho thí sinh nếu có)"
-            >
-                <Input.TextArea rows={3} placeholder="Nhập ghi chú (nếu có)..." />
-            </Form.Item>
-        </Form>
-       </Modal>
-    </Card>
+                label={<span style={{ fontWeight: 600, color: COLORS.dark, fontSize: '15px' }}>Ghi chú của Admin (sẽ được gửi cho thí sinh nếu có)</span>}
+              >
+                <Input.TextArea 
+                  rows={3} 
+                  placeholder="Nhập ghi chú (nếu có)..." 
+                  style={{
+                    borderRadius: '12px',
+                    border: `2px solid ${COLORS.gray200}`
+                  }}
+                />
+              </Form.Item>
+            </Form>
+          </div>
+        </Modal>
+        </Card>
+      </div>
+    </>
   );
 };
 export default AdminManageApplications;

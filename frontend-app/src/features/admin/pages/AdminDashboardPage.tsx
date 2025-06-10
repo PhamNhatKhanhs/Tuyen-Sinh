@@ -1,30 +1,80 @@
 import React, { useEffect, useState } from 'react';
 import { 
   Table, Button, Spin, message, 
-  Input, Tag
+  Input, Tag, Card, Row, Col, Avatar, Typography, Space, Empty, Statistic
 } from 'antd';
 import { 
   BankOutlined, SolutionOutlined, TeamOutlined, FileSearchOutlined,
-  ArrowUpOutlined,
+  ArrowUpOutlined, ArrowDownOutlined,
   CalendarOutlined, ReloadOutlined,
   DashboardOutlined, CheckCircleOutlined, ClockCircleOutlined,
-  ExclamationCircleOutlined, CloseCircleOutlined
+  ExclamationCircleOutlined, CloseCircleOutlined, SearchOutlined,
+  TrophyOutlined, BookOutlined, UserOutlined, FolderOpenOutlined,
+  RiseOutlined, FallOutlined, LineChartOutlined, BarChartOutlined
 } from '@ant-design/icons';
 import universityAdminService from '../services/universityAdminService';
 import majorAdminService from '../services/majorAdminService';
 import applicationAdminService from '../services/applicationAdminService';
 import userAdminService from '../services/userAdminService';
 
-const STATUS_COLORS: Record<string, { color: string; text: string; icon: React.ReactNode }> = {
-  approved: { color: '#52c41a', text: 'Đã duyệt', icon: <CheckCircleOutlined /> },
-  processing: { color: '#fa8c16', text: 'Đang xử lý', icon: <ClockCircleOutlined /> },
-  pending: { color: '#faad14', text: 'Chờ duyệt', icon: <ExclamationCircleOutlined /> },
-  rejected: { color: '#ff4d4f', text: 'Từ chối', icon: <CloseCircleOutlined /> },
-  cancelled: { color: '#8c8c8c', text: 'Đã hủy', icon: <CloseCircleOutlined /> },
-  additional_required: { color: '#1890ff', text: 'Bổ sung', icon: <ExclamationCircleOutlined /> },
+const { Title, Paragraph, Text } = Typography;
+
+// Modern color palette
+const COLORS = {
+  primary: '#6366f1',
+  primaryDark: '#4f46e5',
+  secondary: '#f1f5f9',
+  accent: '#10b981',
+  danger: '#ef4444',
+  warning: '#f59e0b',
+  dark: '#0f172a',
+  darkSecondary: '#1e293b',
+  text: '#334155',
+  textLight: '#64748b',
+  white: '#ffffff',
+  gray50: '#f8fafc',
+  gray100: '#f1f5f9',
+  gray200: '#e2e8f0',
+  blue50: '#eff6ff',
+  blue500: '#3b82f6',
+  green50: '#f0fdf4',
+  green500: '#22c55e',
+  red50: '#fef2f2',
+  red500: '#ef4444',
+  purple50: '#faf5ff',
+  purple500: '#a855f7',
+  orange50: '#fff7ed',
+  orange500: '#f97316',
 };
 
-// Modern CSS Styles - Pure CSS Implementation
+const STATUS_COLORS: Record<string, { color: string; text: string; icon: React.ReactNode }> = {
+  approved: { color: COLORS.green500, text: 'Đã duyệt', icon: <CheckCircleOutlined /> },
+  processing: { color: COLORS.warning, text: 'Đang xử lý', icon: <ClockCircleOutlined /> },
+  pending: { color: COLORS.orange500, text: 'Chờ duyệt', icon: <ExclamationCircleOutlined /> },
+  rejected: { color: COLORS.danger, text: 'Từ chối', icon: <CloseCircleOutlined /> },
+  cancelled: { color: COLORS.textLight, text: 'Đã hủy', icon: <CloseCircleOutlined /> },
+  additional_required: { color: COLORS.blue500, text: 'Bổ sung', icon: <ExclamationCircleOutlined /> },
+};
+
+// Get status tag with modern styling
+const getStatusTag = (status: string) => {
+  const statusInfo = STATUS_COLORS[status] || STATUS_COLORS.pending;
+  return (
+    <Tag 
+      color={statusInfo.color} 
+      icon={statusInfo.icon}
+      style={{
+        borderRadius: '20px',
+        padding: '4px 12px',
+        fontWeight: 500,
+        fontSize: '12px',
+        border: 'none'
+      }}
+    >
+      {statusInfo.text.toUpperCase()}
+    </Tag>
+  );
+};
 const customStyles = `
   /* Dashboard Container */
   .admin-dashboard {

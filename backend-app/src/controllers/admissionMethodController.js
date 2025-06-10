@@ -81,14 +81,15 @@ exports.deleteAdmissionMethod = async (req, res, next) => {
         if (!method) {
             return res.status(404).json({ success: false, message: 'Không tìm thấy phương thức xét tuyển.' });
         }
-        // Soft delete:
+        
+        // Soft delete option:
         // method.isActive = false;
         // method.updatedBy = req.user.id;
         // await method.save();
         // return res.status(200).json({ success: true, message: 'Đã ẩn phương thức xét tuyển.' });
 
         await method.deleteOne();
-        res.status(204).json({ success: true, data: null });
+        res.status(200).json({ success: true, message: 'Xóa phương thức xét tuyển thành công!' });
     } catch (error) {
         next(error);
     }

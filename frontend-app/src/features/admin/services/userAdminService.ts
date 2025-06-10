@@ -23,6 +23,17 @@ interface UpdateUserStatusAdminResponse {
   message?: string;
 }
 
+interface UpdateUserRoleAdminResponse {
+  success: boolean;
+  data?: UserBE;
+  message?: string;
+}
+
+interface DeleteUserAdminResponse {
+  success: boolean;
+  message?: string;
+}
+
 const mapUserBEToFE = (userBE: UserBE): User => ({
     id: userBE._id,
     email: userBE.email,
@@ -52,7 +63,6 @@ const userAdminService = {
       return { success: false, message: error.response?.data?.message || error.message || "Lỗi khi tải danh sách người dùng." };
     }
   },
-
   updateUserStatus: async (userId: string, isActive: boolean): Promise<UpdateUserStatusAdminResponse> => {
     try {
       const response = await axiosInstance.patch<UpdateUserStatusAdminResponse>(`/admin/users/${userId}/status`, { isActive });
@@ -64,6 +74,35 @@ const userAdminService = {
       return { success: false, message: error.response?.data?.message || error.message };
     }
   },
-  // Có thể thêm các hàm khác như getUserById, createUser (nếu admin được phép), deleteUser
+  updateUserRole: async (userId: string, role: 'candidate' | 'admin'): Promise<UpdateUserRoleAdminResponse> => {
+    try {
+      console.log('Sending API request to update role:', { userId, role });
+      const response = await axiosInstance.patch<UpdateUserRoleAdminResponse>(`/admin/users/${userId}/role`, { role });
+      console.log('Raw API response:', response);
+      console.log('Response data:', response.data);
+      
+      if (response.data.success && response.data.data) {
+        const mappedData = { ...response.data, data: mapUserBEToFE(response.data.data as UserBE) };
+        console.log('Mapped response:', mappedData);
+        return mappedData;
+      }
+      console.log('API returned unsuccessful response:', response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error('API error in updateUserRole:', error);
+      console.error('Error response:', error.response?.data);
+      return { success: false, message: error.response?.data?.message || error.message };
+    }
+  },
+
+  deleteUser: async (userId: string): Promise<DeleteUserAdminResponse> => {
+    try {
+      const response = await axiosInstance.delete<DeleteUserAdminResponse>(`/admin/users/${userId}`);
+      return response.data;
+    } catch (error: any) {
+      return { success: false, message: error.response?.data?.message || error.message };
+    }
+  },
+  // Có thể thêm các hàm khác như getUserById, createUser (nếu admin được phép)
 };
 export default userAdminService;

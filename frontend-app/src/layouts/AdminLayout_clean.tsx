@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Avatar, Dropdown, Tooltip } from 'antd';
+import { Layout, Menu, Avatar, Dropdown, Tooltip, Typography } from 'antd';
 import type { MenuProps } from 'antd';
 import {
   DashboardOutlined, BankOutlined, SolutionOutlined, UnorderedListOutlined, AppstoreAddOutlined,
@@ -11,6 +11,7 @@ import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { selectUser, logout } from '../features/auth/store/authSlice';
 
 const { Sider, Content } = Layout;
+const { Text } = Typography;
 
 const menuItems = [
   { key: 'dashboard', icon: <DashboardOutlined />, label: 'Dashboard', path: '/admin/dashboard' },
@@ -56,6 +57,7 @@ const AdminLayout: React.FC = () => {
     dispatch(logout());
     navigate('/login');
   };
+
   const userMenu: MenuProps = {
     items: [
       {
@@ -185,7 +187,8 @@ const AdminLayout: React.FC = () => {
         .modern-menu .ant-menu-item-selected::after {
           display: none !important;
         }
-          .modern-header {
+        
+        .modern-header {
           background: white !important;
           box-shadow: 0 1px 24px rgba(0, 0, 0, 0.08) !important;
           border-bottom: 1px solid ${COLORS.gray200} !important;
@@ -234,42 +237,44 @@ const AdminLayout: React.FC = () => {
         }
         
         .header-right {
-          display: flex !important;
-          align-items: center !important;
-          gap: 16px !important;
+          display: flex;
+          align-items: center;
+          gap: 16px;
         }
-            .user-dropdown {
-          display: flex !important;
-          align-items: center !important;
-          gap: 12px !important;
-          padding: 8px 16px !important;
-          border-radius: 12px !important;
-          cursor: pointer !important;
-          transition: all 0.2s ease !important;
-          border: 1px solid transparent !important;
-          background: transparent !important;
+        
+        .user-dropdown {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 8px 16px;
+          border-radius: 12px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          border: 1px solid transparent;
+          background: transparent;
         }
         
         .user-dropdown:hover {
-          background: ${COLORS.gray50} !important;
-          border-color: ${COLORS.gray200} !important;
+          background: ${COLORS.gray50};
+          border-color: ${COLORS.gray200};
         }
         
         .user-name {
-          font-weight: 600 !important;
-          color: ${COLORS.text} !important;
-          font-size: 14px !important;
-          margin: 0 !important;
-          line-height: 1.2 !important;
+          font-weight: 600;
+          color: ${COLORS.text};
+          font-size: 14px;
+          margin: 0;
+          line-height: 1.2;
         }
         
         .user-role {
-          font-size: 12px !important;
-          color: ${COLORS.textLight} !important;
-          margin: 0 !important;
-          line-height: 1.2 !important;
+          font-size: 12px;
+          color: ${COLORS.textLight};
+          margin: 0;
+          line-height: 1.2;
         }
-          .modern-content {
+        
+        .modern-content {
           background: ${COLORS.gray50} !important;
           min-height: 100vh;
           padding: 32px !important;
@@ -380,7 +385,9 @@ const AdminLayout: React.FC = () => {
               <h1 className="page-title">
                 {menuItems.find(item => item.key === selectedKey)?.label || 'Dashboard'}
               </h1>
-            </div>            <div className="header-right">
+            </div>
+
+            <div className="header-right">
               <Dropdown 
                 menu={userMenu} 
                 placement="bottomRight" 

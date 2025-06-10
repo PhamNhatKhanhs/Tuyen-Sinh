@@ -126,13 +126,11 @@ exports.deleteUniversity = async (req, res, next) => {
         // university.isActive = false;
         // university.updatedBy = req.user.id;
         // await university.save();
-        // res.status(200).json({ success: true, message: 'Đã ẩn trường đại học.'});
-
-        // Hard delete:
+        // res.status(200).json({ success: true, message: 'Đã ẩn trường đại học.'});        // Hard delete:
         await university.deleteOne(); // Hoặc University.findByIdAndDelete(req.params.id);
-        res.status(204).json({ // 204 No Content
+        res.status(200).json({ 
             success: true,
-            data: null 
+            message: 'Xóa trường đại học thành công.'
         });
     } catch (error) {
         next(error);

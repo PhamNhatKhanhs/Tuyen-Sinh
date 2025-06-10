@@ -265,7 +265,8 @@ const AdminManageSubjectGroups: React.FC = () => {
         { text: 'Ẩn', value: false }
       ],
       onFilter: (value, record) => record.isActive === value,
-    },    {
+    },
+    {
       title: 'Thao Tác',
       key: 'action',
       width: 140,
@@ -276,7 +277,7 @@ const AdminManageSubjectGroups: React.FC = () => {
             <Button
               type="primary"
               shape="circle"
-              icon={<EditOutlined style={{ color: '#ffffff' }} />}
+              icon={<EditOutlined />}
               onClick={() => handleEdit(record)}
               style={{
                 backgroundColor: COLORS.primary,
@@ -300,10 +301,8 @@ const AdminManageSubjectGroups: React.FC = () => {
               <Button
                 danger
                 shape="circle"
-                icon={<DeleteOutlined style={{ color: '#ffffff' }} />}
+                icon={<DeleteOutlined />}
                 style={{
-                  backgroundColor: COLORS.danger,
-                  borderColor: COLORS.danger,
                   boxShadow: `0 2px 4px ${COLORS.danger}30`
                 }}
               />
@@ -430,9 +429,11 @@ const AdminManageSubjectGroups: React.FC = () => {
                 </Paragraph>
               </div>
             </div>
-          </div>          {/* Filters and Actions */}
+          </div>
+
+          {/* Filters and Actions */}
           <Row gutter={[24, 16]} style={{ marginBottom: '32px' }}>
-            <Col xs={24} sm={12} md={10}>
+            <Col xs={24} sm={12} md={8}>
               <Input.Search
                 placeholder="Tìm kiếm theo tên hoặc mã tổ hợp môn..."
                 onSearch={handleSearch}
@@ -441,7 +442,7 @@ const AdminManageSubjectGroups: React.FC = () => {
                     type="primary" 
                     icon={<SearchOutlined />}
                     style={{
-                      background: `linear-gradient(135deg, ${COLORS.danger} 0%, #dc2626 100%)`,
+                      background: `linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.primaryDark} 100%)`,
                       border: 'none',
                       height: '42px',
                       fontWeight: 600
@@ -456,7 +457,25 @@ const AdminManageSubjectGroups: React.FC = () => {
                 style={{ width: '100%' }}
               />
             </Col>
-            <Col xs={24} sm={12} md={14} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Col xs={24} sm={12} md={8} style={{ display: 'flex', gap: '12px' }}>
+              <Button 
+                icon={<ReloadOutlined />} 
+                onClick={() => {
+                  setSearchText('');
+                  fetchSubjectGroups(1, pagination.pageSize, '');
+                }} 
+                loading={loading}
+                style={{
+                  height: '42px',
+                  borderRadius: '12px',
+                  border: `2px solid ${COLORS.gray200}`,
+                  color: COLORS.text,
+                  fontWeight: 500,
+                  flex: 1
+                }}
+              >
+                Tải lại
+              </Button>
               <Button 
                 type="primary" 
                 icon={<PlusOutlined />} 
@@ -468,7 +487,7 @@ const AdminManageSubjectGroups: React.FC = () => {
                   borderRadius: '12px',
                   fontWeight: 600,
                   boxShadow: `0 4px 12px ${COLORS.accent}30`,
-                  minWidth: '160px'
+                  flex: 1
                 }}
               >
                 Thêm Tổ Hợp
@@ -481,14 +500,29 @@ const AdminManageSubjectGroups: React.FC = () => {
             columns={columns} 
             dataSource={subjectGroups} 
             rowKey="id" 
-            loading={loading}            pagination={{
+            loading={loading}
+            pagination={{
               ...pagination,
               style: { marginTop: '32px' },
               showTotal: (total, range) => 
                 `Hiển thị ${range[0]}-${range[1]} trong tổng số ${total} tổ hợp môn`,
-              simple: false,
-              showQuickJumper: false,
-              showSizeChanger: true
+              itemRender: (current, type, originalElement) => {
+                if (type === 'page') {
+                  return (
+                    <Button
+                      style={{
+                        border: current === pagination.current ? `2px solid ${COLORS.primary}` : `1px solid ${COLORS.gray200}`,
+                        color: current === pagination.current ? COLORS.primary : COLORS.text,
+                        fontWeight: current === pagination.current ? 600 : 400,
+                        borderRadius: '8px'
+                      }}
+                    >
+                      {current}
+                    </Button>
+                  );
+                }
+                return originalElement;
+              }
             }}
             onChange={handleTableChange}
             scroll={{ x: 'max-content' }}

@@ -45,3 +45,34 @@ exports.updateUserStatusAdmin = async (req, res, next) => {
         next(error);
     }
 };
+
+// ADMIN: Cập nhật quyền của User
+exports.updateUserRoleAdmin = async (req, res, next) => {
+    try {
+        const { role } = req.body;
+        if (!role || !['candidate', 'admin'].includes(role)) {
+            return res.status(400).json({ success: false, message: 'Quyền phải là "candidate" hoặc "admin".' });
+        }
+        
+        const user = await User.findByIdAndUpdate(req.params.userId, { role }, { new: true, runValidators: true }).select('-password');
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'Không tìm thấy người dùng.' });
+        }
+        res.status(200).json({ success: true, message: `Quyền người dùng đã được cập nhật thành ${role}.`, data: user });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// ADMIN: Xóa User
+exports.deleteUserAdmin = async (req, res, next) => {
+    try {
+        const user = await User.findByIdAndDelete(req.params.userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'Không tìm thấy người dùng.' });
+        }
+        res.status(200).json({ success: true, message: 'Người dùng đã được xóa thành công.' });
+    } catch (error) {
+        next(error);
+    }
+};
