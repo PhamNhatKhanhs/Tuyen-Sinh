@@ -1542,6 +1542,7 @@ body {
   color: rgba(255, 255, 255, 0.9);
   font-size: 1rem;
   flex-wrap: wrap;
+  margin-left: 2rem;
 }
 
 .cta-trust-item {
@@ -2613,7 +2614,8 @@ body {
 /* Cards Grid */
 .why-choose-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
   gap: 40px;
   max-width: 1200px;
   margin: 0 auto;
@@ -2701,6 +2703,7 @@ body {
 .icon-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
 .icon-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
 .icon-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+.icon-4 { background: linear-gradient(135deg, #ff9a56 0%, #ff6b95 100%); }
 
 .icon-inner {
   font-size: 2.5rem;
@@ -2896,8 +2899,10 @@ body {
 /* Responsive Design */
 @media (max-width: 1200px) {
   .why-choose-cards-grid {
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
     gap: 30px;
+    max-width: 900px;
   }
   
   .why-choose-container {
@@ -2912,6 +2917,7 @@ body {
   
   .why-choose-cards-grid {
     grid-template-columns: 1fr;
+    grid-template-rows: auto;
     gap: 25px;
   }
   

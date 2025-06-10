@@ -204,8 +204,81 @@ exports.getMyApplicationById = async (req, res, next) => {
 
 exports.getAllApplicationsAdmin = async (req, res, next) => {
     try {
-        const applications = await Application.find().populate('candidate university major admissionMethod subjectGroup');
-        res.status(200).json({ success: true, data: applications });
+        const { page = 1, limit = 10, searchCandidate, universityId, majorId, year, dateFrom, dateTo, sortBy = 'submissionDate', sortOrder = 'desc' } = req.query;
+        
+        console.log('Backend getAllApplicationsAdmin - Query params:', req.query); // Debug log
+        
+        // Build filter object
+        let filter = {};
+        
+        // Search by candidate name or email
+        if (searchCandidate) {
+            const searchRegex = new RegExp(searchCandidate, 'i');
+            // First find candidates matching the search
+            const User = require('../models/User');
+            const matchingCandidates = await User.find({
+                $or: [
+                    { fullName: searchRegex },
+                    { email: searchRegex }
+                ]
+            }).select('_id');
+            filter.candidate = { $in: matchingCandidates.map(u => u._id) };
+        }
+        
+        // Filter by university
+        if (universityId) {
+            filter.university = universityId;
+        }
+        
+        // Filter by major
+        if (majorId) {
+            filter.major = majorId;
+        }
+        
+        // Filter by year
+        if (year) {
+            filter.year = parseInt(year);
+        }
+        
+        // Filter by date range
+        if (dateFrom || dateTo) {
+            filter.submissionDate = {};
+            if (dateFrom) {
+                filter.submissionDate.$gte = new Date(dateFrom);
+            }
+            if (dateTo) {
+                filter.submissionDate.$lte = new Date(dateTo);
+            }
+        }
+        
+        // Build sort object
+        const sort = {};
+        sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
+          // Pagination
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+        const total = await Application.countDocuments(filter);
+        
+        console.log('Backend - Final filter object:', filter); // Debug final filter
+        console.log('Backend - Total documents found:', total); // Debug total
+        
+        // Get applications with filters, sorting, and pagination
+        const applications = await Application.find(filter)
+            .populate('candidate university major admissionMethod subjectGroup')
+            .sort(sort)
+            .skip(skip)
+            .limit(parseInt(limit));
+        
+        res.status(200).json({ 
+            success: true, 
+            data: applications,
+            count: applications.length,
+            total: total,
+            pagination: {
+                page: parseInt(page),
+                limit: parseInt(limit),
+                totalPages: Math.ceil(total / parseInt(limit))
+            }
+        });
     } catch (error) {
         next(error);
     }

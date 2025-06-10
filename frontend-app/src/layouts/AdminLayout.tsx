@@ -1,10 +1,12 @@
-import React from 'react';
-import { Layout, Menu, Avatar, Typography, Dropdown } from 'antd';
+import React, { useState } from 'react';
+import { Layout, Menu, Avatar, Dropdown, Badge, Tooltip, List, Typography, Empty } from 'antd';
 import {
   DashboardOutlined, BankOutlined, SolutionOutlined, UnorderedListOutlined, AppstoreAddOutlined,
-  FileSearchOutlined, TeamOutlined, BarChartOutlined, UserOutlined, BellOutlined, LogoutOutlined
+  FileSearchOutlined, TeamOutlined, BarChartOutlined, UserOutlined, BellOutlined, LogoutOutlined,
+  SettingOutlined, MenuFoldOutlined, MenuUnfoldOutlined, CheckCircleOutlined, ClockCircleOutlined,
+  ExclamationCircleOutlined
 } from '@ant-design/icons';
-import { Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { selectUser, logout } from '../features/auth/store/authSlice';
 
@@ -23,68 +25,549 @@ const menuItems = [
 ];
 
 const HEADER_HEIGHT = 64;
+const SIDEBAR_WIDTH = 260;
 
-const NAVY = '#101828';
+// Modern color palette
+const COLORS = {
+  primary: '#6366f1', // Indigo
+  primaryDark: '#4f46e5',
+  secondary: '#f1f5f9',
+  accent: '#10b981', // Emerald
+  danger: '#ef4444',
+  warning: '#f59e0b',
+  dark: '#0f172a', // Slate 900
+  darkSecondary: '#1e293b', // Slate 800
+  text: '#334155',
+  textLight: '#64748b',
+  white: '#ffffff',
+  gray50: '#f8fafc',
+  gray100: '#f1f5f9',
+  gray200: '#e2e8f0',
+};
 
 const AdminLayout: React.FC = () => {
+  const [collapsed, setCollapsed] = useState(false);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const selectedKey = menuItems.find(item => location.pathname.startsWith(item.path))?.key || 'dashboard';
   const user = useAppSelector(selectUser);
-
   const handleLogout = () => {
     dispatch(logout());
     navigate('/login');
   };
-
-  const logoutMenu = (
+  const userMenu = (
     <Menu>
+      <Menu.Item key="profile" icon={<UserOutlined />}>
+        <span>Hồ sơ cá nhân</span>
+      </Menu.Item>
+      <Menu.Item key="settings" icon={<SettingOutlined />}>
+        <span>Cài đặt</span>
+      </Menu.Item>
+      <Menu.Divider />
       <Menu.Item key="logout" danger icon={<LogoutOutlined />} onClick={handleLogout}>
-        Đăng xuất
+        <span>Đăng xuất</span>
       </Menu.Item>
     </Menu>
   );
 
+  // Sample notifications data
+  const notifications = [
+    {
+      id: 1,
+      title: 'Hồ sơ mới được nộp',
+      message: 'Nguyễn Văn A vừa nộp hồ sơ xét tuyển vào ngành Công nghệ thông tin',
+      time: '5 phút trước',
+      type: 'info',
+      icon: <FileSearchOutlined style={{ color: '#1890ff' }} />,
+      isRead: false
+    },
+    {
+      id: 2,
+      title: 'Hồ sơ được duyệt',
+      message: 'Hồ sơ của Trần Thị B đã được phê duyệt thành công',
+      time: '1 giờ trước',
+      type: 'success',
+      icon: <CheckCircleOutlined style={{ color: '#52c41a' }} />,
+      isRead: false
+    },
+    {
+      id: 3,
+      title: 'Cần xem xét hồ sơ',
+      message: 'Có 5 hồ sơ đang chờ xem xét và phê duyệt',
+      time: '2 giờ trước',
+      type: 'warning',
+      icon: <ClockCircleOutlined style={{ color: '#faad14' }} />,
+      isRead: true
+    },
+    {
+      id: 4,
+      title: 'Hồ sơ thiếu tài liệu',
+      message: 'Lê Văn C cần bổ sung thêm tài liệu cho hồ sơ',
+      time: '3 giờ trước',
+      type: 'error',
+      icon: <ExclamationCircleOutlined style={{ color: '#ff4d4f' }} />,
+      isRead: true
+    }
+  ];
+
+  const notificationMenu = (
+    <div style={{ width: 350, maxHeight: 400, overflow: 'auto' }}>
+      <div style={{ 
+        padding: '12px 16px', 
+        borderBottom: '1px solid #f0f0f0',
+        background: '#fafafa',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+        <Text strong>Thông báo</Text>
+        <Text style={{ fontSize: '12px', color: '#666' }}>
+          {notifications.filter(n => !n.isRead).length} chưa đọc
+        </Text>
+      </div>
+      
+      {notifications.length > 0 ? (
+        <List
+          itemLayout="horizontal"
+          dataSource={notifications}
+          renderItem={(item) => (
+            <List.Item 
+              style={{ 
+                padding: '12px 16px',
+                background: item.isRead ? 'transparent' : '#f6ffed',
+                borderBottom: '1px solid #f0f0f0',
+                cursor: 'pointer',
+                transition: 'background 0.3s'
+              }}
+              className="notification-item"
+            >
+              <List.Item.Meta
+                avatar={
+                  <div style={{ 
+                    width: 40, 
+                    height: 40, 
+                    borderRadius: '50%', 
+                    background: '#f5f5f5',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    {item.icon}
+                  </div>
+                }
+                title={
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text strong style={{ fontSize: '13px' }}>{item.title}</Text>
+                    {!item.isRead && (
+                      <div style={{ 
+                        width: 8, 
+                        height: 8, 
+                        borderRadius: '50%', 
+                        background: '#1890ff' 
+                      }}></div>
+                    )}
+                  </div>
+                }
+                description={
+                  <div>
+                    <Text style={{ fontSize: '12px', color: '#666' }}>{item.message}</Text>
+                    <br />
+                    <Text style={{ fontSize: '11px', color: '#999' }}>{item.time}</Text>
+                  </div>
+                }
+              />
+            </List.Item>
+          )}
+        />
+      ) : (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+          <Empty description="Không có thông báo mới" />
+        </div>
+      )}
+      
+      <div style={{ 
+        padding: '8px 16px', 
+        borderTop: '1px solid #f0f0f0',
+        background: '#fafafa',
+        textAlign: 'center'
+      }}>
+        <Text style={{ fontSize: '12px', color: '#1890ff', cursor: 'pointer' }}>
+          Xem tất cả thông báo
+        </Text>
+      </div>
+    </div>
+  );
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Sider width={220} className="flex flex-col" style={{ height: '100vh', position: 'fixed', left: 0, top: 0, bottom: 0, zIndex: 100, background: NAVY }}>
-        <div className="flex items-center gap-2 px-4 py-6">
-          <Avatar size={40} src={user?.avatarUrl} icon={<UserOutlined />} />
-          <div>
-            <Text className="text-white font-bold">{user?.fullName || user?.email || 'Admin'}</Text>
-            <div className="text-xs text-gray-400">{user?.role === 'admin' ? 'Quản trị viên' : user?.role}</div>
-          </div>
-        </div>
-        <Menu theme="dark" mode="inline" selectedKeys={[selectedKey]} items={menuItems.map(({key, icon, label, path}) => ({key, icon, label, onClick: () => navigate(path)}))} className="border-none" style={{ background: NAVY }} />
-      </Sider>
-      <Layout style={{ marginLeft: 220 }}>
-        {/* Top Header Bar */}
-        <div style={{ height: HEADER_HEIGHT, background: NAVY, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2rem', position: 'fixed', left: 220, right: 0, top: 0, zIndex: 101, borderBottom: '1px solid #23272f' }}>
-          {/* Logo (left) */}
-          <div className="flex items-center gap-2">
-            <Link to="/">
-              <img src="https://placehold.co/140x40/D8242C/FFFFFF?text=HỆ+THỐNG+TS&font=Inter" alt="Logo Hệ Thống Tuyển Sinh" style={{ height: 40, width: 140, objectFit: 'contain', borderRadius: 8, background: '#fff' }} />
-            </Link>
-            <span className="text-white text-lg font-bold tracking-wide">Admin Panel</span>
-          </div>
-          {/* Notification + User (right) */}
-          <div className="flex items-center gap-6">
-            <BellOutlined className="text-xl text-white cursor-pointer" />
-            <Dropdown overlay={logoutMenu} placement="bottomRight" trigger={['click']}>
-              <div className="flex items-center gap-2 cursor-pointer">
-                <Avatar size={36} src={user?.avatarUrl || undefined} icon={<UserOutlined style={{ color: '#fff' }} />} className="bg-gray-700 cursor-pointer" style={{ border: '2px solid #fff' }} />
-                <span className="font-semibold" style={{ color: '#fff', fontSize: '1.08rem', letterSpacing: '0.01em' }}>{user?.fullName || user?.email || 'Admin'}</span>
+    <>
+      {/* Modern CSS Styles */}
+      <style>{`
+        .modern-admin-layout {
+          font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .modern-sidebar {
+          background: linear-gradient(180deg, ${COLORS.dark} 0%, ${COLORS.darkSecondary} 100%) !important;
+          box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+          border-right: none !important;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .sidebar-header {
+          padding: 24px 20px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(10px);
+        }
+        
+        .sidebar-brand {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          transition: all 0.3s ease;
+        }
+        
+        .brand-logo {
+          width: 40px;
+          height: 40px;
+          background: ${COLORS.primary};
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 20px;
+          color: white;
+          font-weight: bold;
+          box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+        }
+        
+        .brand-text {
+          color: white;
+          font-size: 18px;
+          font-weight: 700;
+          letter-spacing: -0.025em;
+        }
+        
+        .user-info-sidebar {
+          padding: 20px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .user-avatar-wrapper {
+          position: relative;
+          display: inline-block;
+        }
+        
+        .user-status-indicator {
+          position: absolute;
+          bottom: 2px;
+          right: 2px;
+          width: 12px;
+          height: 12px;
+          background: ${COLORS.accent};
+          border: 2px solid white;
+          border-radius: 50%;
+        }
+        
+        .modern-menu {
+          background: transparent !important;
+          border: none !important;
+          padding: 16px 12px;
+        }
+        
+        .modern-menu .ant-menu-item {
+          margin: 4px 0 !important;
+          border-radius: 12px !important;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          padding: 12px 16px !important;
+          height: auto !important;
+          line-height: 1.4 !important;
+          color: rgba(255, 255, 255, 0.8) !important;
+          font-weight: 500 !important;
+        }
+        
+        .modern-menu .ant-menu-item:hover {
+          background: rgba(255, 255, 255, 0.1) !important;
+          color: white !important;
+          transform: translateX(4px);
+        }
+        
+        .modern-menu .ant-menu-item-selected {
+          background: linear-gradient(135deg, ${COLORS.primary}, ${COLORS.primaryDark}) !important;
+          color: white !important;
+          box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3) !important;
+          transform: translateX(4px);
+        }
+        
+        .modern-menu .ant-menu-item-selected::after {
+          display: none !important;
+        }
+        
+        .modern-header {
+          background: white !important;
+          box-shadow: 0 1px 24px rgba(0, 0, 0, 0.08) !important;
+          border-bottom: 1px solid ${COLORS.gray200} !important;
+          padding: 0 32px !important;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          position: fixed;
+          top: 0;
+          right: 0;
+          left: ${SIDEBAR_WIDTH}px;
+          z-index: 1001;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .header-left {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+        
+        .collapse-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          border-radius: 10px;
+          background: ${COLORS.gray50};
+          border: 1px solid ${COLORS.gray200};
+          cursor: pointer;
+          transition: all 0.2s ease;
+          color: ${COLORS.text};
+        }
+        
+        .collapse-btn:hover {
+          background: ${COLORS.gray100};
+          transform: scale(1.05);
+        }
+        
+        .page-title {
+          font-size: 20px;
+          font-weight: 600;
+          color: ${COLORS.text};
+          margin: 0;
+        }
+        
+        .header-right {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+        }
+        
+        .notification-btn {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          border-radius: 10px;
+          background: ${COLORS.gray50};
+          border: 1px solid ${COLORS.gray200};
+          cursor: pointer;
+          transition: all 0.2s ease;
+          color: ${COLORS.text};
+        }
+          .notification-btn:hover {
+          background: ${COLORS.gray100};
+          transform: scale(1.05);
+        }
+
+        .notification-item:hover {
+          background: #f0f0f0 !important;
+        }
+        
+        .user-dropdown {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 8px 16px;
+          border-radius: 12px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          border: 1px solid transparent;
+        }
+        
+        .user-dropdown:hover {
+          background: ${COLORS.gray50};
+          border-color: ${COLORS.gray200};
+        }
+        
+        .user-name {
+          font-weight: 600;
+          color: ${COLORS.text};
+          font-size: 14px;
+        }
+        
+        .user-role {
+          font-size: 12px;
+          color: ${COLORS.textLight};
+        }
+        
+        .modern-content {
+          background: ${COLORS.gray50} !important;
+          min-height: 100vh;
+          padding: 32px !important;
+          margin-left: ${SIDEBAR_WIDTH}px;
+          margin-top: ${HEADER_HEIGHT}px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @media (max-width: 768px) {
+          .modern-header {
+            left: 0;
+            padding: 0 16px !important;
+          }
+          
+          .modern-content {
+            margin-left: 0;
+            padding: 20px !important;
+          }
+          
+          .modern-sidebar {
+            position: fixed !important;
+            z-index: 1002;
+          }
+        }
+      `}</style>
+
+      <Layout className="modern-admin-layout" style={{ minHeight: '100vh' }}>
+        {/* Modern Sidebar */}
+        <Sider 
+          width={SIDEBAR_WIDTH}
+          collapsible={false}
+          className="modern-sidebar"
+          style={{ 
+            height: '100vh', 
+            position: 'fixed', 
+            left: 0, 
+            top: 0, 
+            bottom: 0, 
+            zIndex: 1000 
+          }}
+        >
+          {/* Brand Header */}
+          <div className="sidebar-header">
+            <div className="sidebar-brand">
+              <div className="brand-logo">
+                TS
               </div>
-            </Dropdown>
+              <div className="brand-text">
+                TuyenSinh 
+              </div>
+            </div>
           </div>
-        </div>
-        {/* Main Content */}
-        <Content className="p-6 bg-neutral-50" style={{ minHeight: '100vh', paddingTop: HEADER_HEIGHT + 24 }}>
-          <Outlet />
-        </Content>
+
+          {/* User Info */}
+          <div className="user-info-sidebar">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div className="user-avatar-wrapper">
+                <Avatar 
+                  size={44} 
+                  src={user?.avatarUrl} 
+                  icon={<UserOutlined />}
+                  style={{ 
+                    border: '2px solid rgba(255, 255, 255, 0.2)',
+                    background: COLORS.primary 
+                  }}
+                />
+                <div className="user-status-indicator"></div>
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ 
+                  color: 'white', 
+                  fontWeight: 600, 
+                  fontSize: '14px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}>
+                  {user?.fullName || user?.email || 'Admin'}
+                </div>
+                <div style={{ 
+                  color: 'rgba(255, 255, 255, 0.6)', 
+                  fontSize: '12px' 
+                }}>
+                  {user?.role === 'admin' ? 'Quản trị viên' : user?.role}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation Menu */}
+          <Menu 
+            theme="dark" 
+            mode="inline" 
+            selectedKeys={[selectedKey]} 
+            className="modern-menu"
+            items={menuItems.map(({key, icon, label, path}) => ({
+              key, 
+              icon, 
+              label, 
+              onClick: () => navigate(path)
+            }))} 
+          />
+        </Sider>
+
+        {/* Main Layout */}
+        <Layout>
+          {/* Modern Header */}
+          <div className="modern-header" style={{ height: HEADER_HEIGHT }}>
+            <div className="header-left">
+              <Tooltip title={collapsed ? "Mở rộng menu" : "Thu gọn menu"}>
+                <div 
+                  className="collapse-btn"
+                  onClick={() => setCollapsed(!collapsed)}
+                >
+                  {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                </div>
+              </Tooltip>
+              <h1 className="page-title">
+                {menuItems.find(item => item.key === selectedKey)?.label || 'Dashboard'}
+              </h1>
+            </div>            <div className="header-right">
+              <Tooltip title="Thông báo">
+                <Dropdown overlay={notificationMenu} placement="bottomRight" trigger={['click']}>
+                  <Badge count={notifications.filter(n => !n.isRead).length} size="small">
+                    <div className="notification-btn">
+                      <BellOutlined style={{ fontSize: '16px' }} />
+                    </div>
+                  </Badge>
+                </Dropdown>
+              </Tooltip>
+
+              <Dropdown overlay={userMenu} placement="bottomRight" trigger={['click']}>
+                <div className="user-dropdown">
+                  <Avatar 
+                    size={36} 
+                    src={user?.avatarUrl} 
+                    icon={<UserOutlined />}
+                    style={{ background: COLORS.primary }}
+                  />
+                  <div>
+                    <div className="user-name">
+                      {user?.fullName || user?.email || 'Admin'}
+                    </div>
+                    <div className="user-role">
+                      {user?.role === 'admin' ? 'Quản trị viên' : user?.role}
+                    </div>
+                  </div>
+                </div>
+              </Dropdown>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <Content className="modern-content">
+            <Outlet />
+          </Content>
+        </Layout>
       </Layout>
-    </Layout>
+    </>
   );
 };
 
