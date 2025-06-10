@@ -1,126 +1,609 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
+/* ===== MODERN DESIGN SYSTEM ===== */
 :root {
-  --primary: #3730a3;
-  --secondary: #2563eb;
-  --accent: #ef4444;
-  --accent2: #ec4899;
-  --bg: #f8fafc;
-  --card-bg: #fff;
-  --border: #f1f5f9;
-  --text-main: #1e293b;
-  --text-sub: #64748b;
-  --shadow: 0 4px 24px 0 rgba(30, 41, 59, 0.10);
-  --shadow-hover: 0 8px 32px 0 rgba(99, 102, 241, 0.18);
+  /* Enhanced Color Palette */
+  --primary: #2563eb;
+  --primary-light: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --secondary: #8b5cf6;
+  --secondary-light: #a78bfa;
+  --accent: #06b6d4;
+  --accent-warm: #f59e0b;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  
+  /* Neutral Colors */
+  --gray-50: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
+  --gray-400: #94a3b8;
+  --gray-500: #64748b;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1e293b;
+  --gray-900: #0f172a;
+  
+  /* Backgrounds */
+  --bg-primary: #ffffff;
+  --bg-secondary: var(--gray-50);
+  --bg-tertiary: var(--gray-100);
+  --bg-glass: rgba(255, 255, 255, 0.9);
+  --bg-glass-strong: rgba(255, 255, 255, 0.95);
+  
+  /* Text Colors */
+  --text-primary: var(--gray-900);
+  --text-secondary: var(--gray-600);
+  --text-tertiary: var(--gray-500);
+  --text-muted: var(--gray-400);
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  
+  /* Typography */
+  --font-sans: 'Inter', 'Poppins', system-ui, sans-serif;
+  --font-display: 'Poppins', 'Inter', system-ui, sans-serif;
+  
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
 }
 
+/* ===== MAIN CONTAINER ===== */
 .submitContainer {
-  background: var(--card-bg);
-  padding: 2.5rem 1.5rem 2rem 1.5rem;
-  border-radius: 1.5rem;
-  box-shadow: 0 6px 32px 0 rgba(30, 41, 59, 0.10);
-  max-width: 1200px;
-  margin: 0 auto;
-  min-height: 70vh;
-  font-family: 'Be Vietnam Pro', 'Inter', Arial, sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(135deg, 
+    #e0f2fe 0%,    /* Light blue */
+    #f0f9ff 20%,   /* Very light blue */
+    #ede9fe 40%,   /* Light purple */
+    #faf5ff 60%,   /* Very light purple */
+    #fef3c7 80%,   /* Light yellow */
+    #f0fdf4 100%   /* Light green */
+  );
+  padding: 2rem;
+  font-family: var(--font-sans);
+  position: relative;
+  overflow: hidden;
 }
 
+.submitContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(37, 99, 235, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 50% 10%, rgba(6, 182, 212, 0.04) 0%, transparent 40%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== HEADER SECTION ===== */
 .sectionTitle {
-  font-size: 2rem;
+  font-family: var(--font-display);
+  font-size: 2.5rem;
   font-weight: 800;
-  color: var(--primary);
-  margin-bottom: 1.2rem;
+  color: var(--text-primary);
+  margin-bottom: 2rem;
   text-align: center;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.02em;
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.2;
+}
+
+.sectionTitle::after {
+  content: '';
+  position: absolute;
+  bottom: -0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border-radius: 2px;
+}
+
+/* ===== MODERN STEPS ===== */
+.formSteps {
+  background: var(--bg-glass-strong);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.formSteps::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* ===== FORM CARD ===== */
+.formCard {
+  background: var(--bg-glass-strong);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.formCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* ===== FORM STYLING ===== */
+.formCard :global(.ant-form) {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  color: var(--text-primary);
+  position: relative;
+  z-index: 1;
+}
+
+.formCard :global(.ant-form-item-label > label) {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.formCard :global(.ant-input),
+.formCard :global(.ant-select-selector),
+.formCard :global(.ant-picker),
+.formCard :global(.ant-input-number) {
+  border-radius: var(--radius-md) !important;
+  font-size: 1rem !important;
+  padding: 0.75rem 1rem !important;
+  border: 2px solid var(--gray-200) !important;
+  transition: all 0.3s ease !important;
+  background: var(--bg-primary) !important;
+  font-family: var(--font-sans) !important;
+}
+
+.formCard :global(.ant-input:focus),
+.formCard :global(.ant-select-selector:focus),
+.formCard :global(.ant-picker:focus),
+.formCard :global(.ant-input-number:focus) {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+}
+
+.formCard :global(.ant-input:hover),
+.formCard :global(.ant-select-selector:hover),
+.formCard :global(.ant-picker:hover),
+.formCard :global(.ant-input-number:hover) {
+  border-color: var(--primary-light) !important;
+}
+
+.formCard :global(.ant-select-focused .ant-select-selector) {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+}
+
+/* ===== MODERN BUTTONS ===== */
+.formButton {
+  font-family: var(--font-sans) !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  border-radius: var(--radius-md) !important;
+  padding: 0.75rem 2rem !important;
+  height: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  text-transform: none !important;
+  letter-spacing: 0.025em !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.formButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.formButton:hover::before {
+  left: 100%;
+}
+
+.formButtonPrimary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+  color: white !important;
+  border: none !important;
+}
+
+.formButtonPrimary:hover,
+.formButtonPrimary:focus {
+  background: linear-gradient(135deg, var(--primary-dark), #1e40af) !important;
+  color: white !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: var(--shadow-xl) !important;
+}
+
+.formButtonOutline {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+  border: 2px solid var(--gray-200) !important;
+}
+
+.formButtonOutline:hover,
+.formButtonOutline:focus {
+  background: var(--bg-primary) !important;
+  color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+/* ===== MODERN UPLOAD AREA ===== */
+.uploadArea {
+  background: var(--bg-glass);
+  border: 2px dashed var(--gray-300);
+  border-radius: var(--radius-lg);
+  padding: 3rem 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.uploadArea::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.02) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.uploadArea:hover,
+.uploadArea:focus {
+  border-color: var(--primary);
+  background: var(--bg-glass-strong);
+}
+
+.uploadArea:hover::before {
+  opacity: 1;
+}
+
+.uploadArea :global(.ant-upload-drag-icon) {
+  color: var(--primary) !important;
+  font-size: 3rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.uploadArea :global(.ant-upload-text) {
+  color: var(--text-primary) !important;
+  font-size: 1.125rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.uploadArea :global(.ant-upload-hint) {
+  color: var(--text-secondary) !important;
+  font-size: 0.875rem !important;
+}
+
+/* ===== SECTION TITLES ===== */
+.formCard :global(.ant-typography-h5) {
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  color: var(--primary) !important;
+  margin-bottom: 1.5rem !important;
+  margin-top: 2rem !important;
+  padding-bottom: 0.5rem !important;
+  border-bottom: 2px solid var(--gray-100) !important;
+  position: relative !important;
+}
+
+.formCard :global(.ant-typography-h5:first-child) {
+  margin-top: 0 !important;
+}
+
+.formCard :global(.ant-typography-h5::after) {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 1px;
+}
+
+/* ===== CARD STYLING ===== */
+.formCard :global(.ant-card) {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.formCard :global(.ant-card-head) {
+  border-bottom: 2px solid var(--gray-100) !important;
+  padding: 0 0 1rem 0 !important;
+  margin-bottom: 2rem !important;
+  background: transparent !important;
+}
+
+.formCard :global(.ant-card-head-title) {
+  font-family: var(--font-display) !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  color: var(--primary) !important;
+  padding: 0 !important;
+}
+
+.formCard :global(.ant-card-body) {
+  padding: 0 !important;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .submitContainer {
+    padding: 1rem;
+  }
+  
+  .sectionTitle {
+    font-size: 2rem;
+  }
+  
+  .formSteps,
+  .formCard {
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+  }
+  
+  .uploadArea {
+    padding: 2rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .submitContainer {
+    padding: 0.5rem;
+  }
+  
+  .sectionTitle {
+    font-size: 1.75rem;
+  }
+  
+  .formSteps,
+  .formCard {
+    padding: 1rem;
+    border-radius: var(--radius-md);
+  }
+  
+  .formButton {
+    padding: 0.75rem 1.5rem !important;
+    font-size: 0.875rem !important;
+  }
+}
+
+/* ===== LOADING STATES ===== */
+.formCard :global(.ant-spin-container) {
+  transition: opacity 0.3s ease;
+}
+
+.formCard :global(.ant-spin-blur) {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.submitContainer > * {
+  animation: fadeInUp 0.6s ease-out forwards;
 }
 
 .formSteps {
-  margin-bottom: 2.5rem;
-  background: #f8fafc;
-  border-radius: 1rem;
-  padding: 1.2rem 1rem 0.5rem 1rem;
-  box-shadow: 0 2px 12px 0 rgba(30, 41, 59, 0.06);
-}
-
-.ant-form {
-  font-family: 'Be Vietnam Pro', 'Inter', Arial, sans-serif;
-  font-size: 1.08rem;
-  color: var(--text-main);
+  animation-delay: 0.1s;
 }
 
 .formCard {
-  background: #f9fafb;
-  border-radius: 1.1rem;
-  box-shadow: 0 2px 12px 0 rgba(99, 102, 241, 0.08);
-  padding: 2rem 1.5rem 1.5rem 1.5rem;
-  margin-bottom: 2.2rem;
+  animation-delay: 0.2s;
 }
 
-.formLabel {
-  font-weight: 600;
-  color: var(--primary);
-  font-size: 1.05rem;
+/* ===== SCROLL IMPROVEMENTS ===== */
+.submitContainer {
+  scroll-behavior: smooth;
 }
 
-.formInput, .ant-input, .ant-select-selector, .ant-picker {
-  border-radius: 0.7rem !important;
-  font-size: 1.05rem;
-  padding: 0.7rem 1rem !important;
+.submitContainer::-webkit-scrollbar {
+  width: 8px;
 }
 
-.formButton {
-  font-family: 'Be Vietnam Pro', 'Inter', Arial, sans-serif;
-  font-size: 1.08rem;
-  font-weight: 700;
-  border-radius: 0.85rem !important;
-  padding: 1.1rem 0 !important;
-  box-shadow: 0 2px 12px 0 rgba(239, 68, 68, 0.10);
-  transition: background 0.18s, box-shadow 0.18s, transform 0.16s;
+.submitContainer::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
 }
-.formButtonPrimary {
-  background: linear-gradient(90deg, #ef4444 0%, #ec4899 100%) !important;
-  color: #fff !important;
+
+.submitContainer::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-radius: 4px;
+}
+
+.submitContainer::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+}
+
+/* ===== ALERT STYLING ===== */
+.formCard :global(.ant-alert) {
+  border-radius: var(--radius-md) !important;
   border: none !important;
-}
-.formButtonPrimary:hover, .formButtonPrimary:focus {
-  background: linear-gradient(90deg, #dc2626 0%, #db2777 100%) !important;
-  box-shadow: 0 4px 24px 0 rgba(236, 72, 153, 0.18);
-  color: #fff !important;
-  transform: scale(1.04);
-}
-.formButtonOutline {
-  background: #fff !important;
-  color: var(--primary) !important;
-  border: 2px solid #f1f5f9 !important;
-}
-.formButtonOutline:hover, .formButtonOutline:focus {
-  border-color: #ef4444 !important;
-  color: #ef4444 !important;
-  box-shadow: 0 2px 12px 0 rgba(239, 68, 68, 0.10);
-  transform: scale(1.03);
+  box-shadow: var(--shadow-sm) !important;
+  margin-bottom: 1.5rem !important;
 }
 
-.uploadArea {
-  background: #f3f4f6;
-  border: 2px dashed #d1d5db;
-  border-radius: 1rem;
-  padding: 2rem 1rem;
-  text-align: center;
-  margin-bottom: 1.5rem;
-  transition: border-color 0.2s;
-}
-.uploadArea:hover, .uploadArea:focus {
-  border-color: #ef4444;
+.formCard :global(.ant-alert-info) {
+  background: rgba(37, 99, 235, 0.05) !important;
+  border-left: 4px solid var(--primary) !important;
 }
 
-@media (max-width: 900px) {
-  .submitContainer {
-    padding: 1.2rem 0.5rem 1.2rem 0.5rem;
-  }
-  .sectionTitle {
-    font-size: 1.3rem;
-  }
-  .formCard {
-    padding: 1.1rem 0.5rem 1rem 0.5rem;
-  }
-} 
+.formCard :global(.ant-alert-success) {
+  background: rgba(16, 185, 129, 0.05) !important;
+  border-left: 4px solid var(--success) !important;
+}
+
+.formCard :global(.ant-alert-warning) {
+  background: rgba(245, 158, 11, 0.05) !important;
+  border-left: 4px solid var(--warning) !important;
+}
+
+.formCard :global(.ant-alert-error) {
+  background: rgba(239, 68, 68, 0.05) !important;
+  border-left: 4px solid var(--error) !important;
+}
+
+/* ===== MODERN STEPS STYLING ===== */
+.formSteps :global(.ant-steps) {
+  position: relative;
+  z-index: 1;
+}
+
+.formSteps :global(.ant-steps-item-process .ant-steps-item-icon) {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+.formSteps :global(.ant-steps-item-finish .ant-steps-item-icon) {
+  background: var(--success) !important;
+  border-color: var(--success) !important;
+}
+
+.formSteps :global(.ant-steps-item-wait .ant-steps-item-icon) {
+  background: var(--bg-primary) !important;
+  border-color: var(--gray-300) !important;
+}
+
+.formSteps :global(.ant-steps-item-title) {
+  font-weight: 600 !important;
+  color: var(--text-primary) !important;
+}
+
+.formSteps :global(.ant-steps-item-description) {
+  color: var(--text-secondary) !important;
+}
+
+/* ===== ENHANCED FORM ELEMENTS ===== */
+.formCard :global(.ant-input-affix-wrapper) {
+  border-radius: var(--radius-md) !important;
+  border: 2px solid var(--gray-200) !important;
+  transition: all 0.3s ease !important;
+}
+
+.formCard :global(.ant-input-affix-wrapper:focus),
+.formCard :global(.ant-input-affix-wrapper-focused) {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+}
+
+.formCard :global(.ant-input-prefix) {
+  color: var(--text-tertiary) !important;
+}
+
+.formCard :global(.ant-select-arrow) {
+  color: var(--text-tertiary) !important;
+}
+
+.formCard :global(.ant-picker-suffix) {
+  color: var(--text-tertiary) !important;
+}
+
+/* Fix for nested input field issue */
+.formCard :global(.ant-col) {
+  position: relative;
+  min-height: 0;
+}
+
+.formCard :global(.ant-form-item) {
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.formCard :global(.ant-form-item-control) {
+  position: relative;
+}
+
+/* Prevent any double-rendering of form inputs */
+.formCard :global(.ant-form-item-control-input) > :global(.ant-form-item-control-input) {
+  display: none !important;
+}
+
+.formCard :global(.ant-input-affix-wrapper) + :global(.ant-input-affix-wrapper) {
+  display: none !important;
+}

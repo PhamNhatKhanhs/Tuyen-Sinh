@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Layout, Menu, Button, Avatar, Dropdown, Badge, List, Typography, Spin, Empty, message, Drawer
@@ -9,8 +9,7 @@ import {
   FormOutlined, SolutionOutlined, SettingOutlined, BuildOutlined,
   FileSearchOutlined, ReadOutlined, UnorderedListOutlined, AppstoreAddOutlined,
   LinkOutlined, BarChartOutlined, TeamOutlined, BellOutlined,
-  MailOutlined, MenuOutlined, CloseOutlined, DownOutlined, StarOutlined,
-  ThunderboltOutlined, GiftOutlined
+  MailOutlined, MenuOutlined, CloseOutlined, DownOutlined
 } from '@ant-design/icons';
 import { Briefcase, Sparkles } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -261,9 +260,8 @@ const AppHeader: React.FC = () => {
       message.error('Lỗi kết nối.');
     }
   };
-
   const notificationMenuOverlay = (
-    <div className="notification-dropdown">
+    <div className="notification-dropdown" onClick={(e) => e.stopPropagation()}>
       <div className="notification-header">
         <Typography.Title level={5} className="notification-title">
           Thông Báo
@@ -377,28 +375,27 @@ const AppHeader: React.FC = () => {
             items={getMenuItems(isClient)} 
             selectable={false}
             theme="light"
-          />
-
-          <div className="header-actions">
+          />          <div className="header-actions">
             {isClient ? (
               <>
                 {isAuthenticated && user && (
-                  <div className="notification-container">
+                  <Dropdown 
+                    overlay={notificationMenuOverlay}
+                    placement="bottomRight"
+                    trigger={['click']}
+                    open={notificationDropdownVisible}
+                    onOpenChange={setNotificationDropdownVisible}
+                    overlayClassName="notification-dropdown-overlay"
+                  >
                     <Badge count={unreadCount} size="small">
                       <Button 
                         type="text" 
                         shape="circle" 
                         icon={<BellOutlined />} 
                         className="notification-button"
-                        onClick={() => setNotificationDropdownVisible(!notificationDropdownVisible)}
                       />
                     </Badge>
-                    {notificationDropdownVisible && (
-                      <div className="notification-dropdown-wrapper">
-                        {notificationMenuOverlay}
-                      </div>
-                    )}
-                  </div>
+                  </Dropdown>
                 )}
 
                 {isAuthenticated && user ? (                  <Dropdown 

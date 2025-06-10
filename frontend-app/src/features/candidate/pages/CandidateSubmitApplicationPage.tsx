@@ -3,8 +3,9 @@ import {
   Typography, Form, Input, Button, Select, DatePicker, Upload, Alert, Steps, Card, Row, Col, message, InputNumber, Modal
 } from 'antd';
 import {
-  InboxOutlined, UserOutlined, IdcardOutlined, BookOutlined, EnvironmentOutlined, PhoneOutlined, MailOutlined,
-  SolutionOutlined, UploadOutlined, GlobalOutlined, TeamOutlined
+    InboxOutlined, UserOutlined, IdcardOutlined, BookOutlined, PhoneOutlined, MailOutlined,
+    GlobalOutlined, TeamOutlined, FileTextOutlined, CheckCircleOutlined, EditOutlined, SendOutlined,
+    StarOutlined
 } from '@ant-design/icons';
 import type { RcFile, UploadFile, UploadProps } from 'antd/es/upload/interface';
 import dayjs from 'dayjs';
@@ -998,29 +999,86 @@ const CandidateSubmitApplicationPage: React.FC = () => {
             });
         }
         setCurrentStep(currentStep - 1); 
-    };
-    
-    // JSX Components for each step
+    };    // JSX Components for each step - FIXED DUPLICATE INPUT ISSUE v3.0
     const personalInfoStepContent = (
         <Card title="Bước 1: Thông Tin Cá Nhân" className="shadow-none">
             <Row gutter={24}>
-                <Col xs={24} md={12}><Form.Item name={["personalInfo", "fullName"]} label="Họ và tên khai sinh" rules={[{ required: true, message: 'Vui lòng nhập họ tên!' }, { pattern: /^[a-zA-Z\sÀ-ỹ]+$/, message: 'Họ tên không hợp lệ!' }]}><Input prefix={<UserOutlined />} placeholder="Nguyễn Văn A" /></Form.Item></Col>
-                <Col xs={24} md={12}><Form.Item name={["personalInfo", "dob"]} label="Ngày sinh" rules={[{ required: true, message: 'Vui lòng chọn ngày sinh!' }]}><DatePicker style={{ width: '100%' }} placeholder="Chọn ngày" format="DD/MM/YYYY"/></Form.Item></Col>
-                <Col xs={24} md={12}><Form.Item name={["personalInfo", "gender"]} label="Giới tính" rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}><Select placeholder="Chọn giới tính"><AntOption value="male">Nam</AntOption><AntOption value="female">Nữ</AntOption><AntOption value="other">Khác</AntOption></Select></Form.Item></Col>
-                <Col xs={24} md={12}><Form.Item name={["personalInfo", "idNumber"]} label="Số CCCD/CMND" rules={[{ required: true, message: 'Vui lòng nhập số CCCD/CMND!' }, { pattern: /^[0-9]{9,12}$/, message: 'Số CCCD/CMND không hợp lệ (9-12 số)!' }]}><Input prefix={<IdcardOutlined />} placeholder="0123456789" /></Form.Item></Col>
-                <Col xs={24} md={12}><Form.Item name={["personalInfo", "idIssueDate"]} label="Ngày cấp CCCD/CMND" rules={[{ required: true, message: 'Vui lòng chọn ngày cấp!' }]}><DatePicker style={{ width: '100%' }} placeholder="Chọn ngày" format="DD/MM/YYYY"/></Form.Item></Col>
-                <Col xs={24} md={12}><Form.Item name={["personalInfo", "idIssuePlace"]} label="Nơi cấp CCCD/CMND" rules={[{ required: true, message: 'Vui lòng nhập nơi cấp!' }]}><Input placeholder="Ví dụ: Cục CSQLHC về TTXH" /></Form.Item></Col>
-                <Col xs={24} md={12}><Form.Item name={["personalInfo", "ethnic"]} label="Dân tộc" rules={[{ required: true, message: 'Vui lòng nhập dân tộc!' }]}><Input prefix={<TeamOutlined />} placeholder="Kinh" /></Form.Item></Col>
-                <Col xs={24} md={12}><Form.Item name={["personalInfo", "nationality"]} label="Quốc tịch" rules={[{ required: true, message: 'Vui lòng nhập quốc tịch!' }]}><Input prefix={<GlobalOutlined />} /></Form.Item></Col>
-                <Col xs={24}><Form.Item name={["personalInfo", "permanentAddress"]} label="Địa chỉ thường trú (theo HKTT)" rules={[{ required: true, message: 'Vui lòng nhập địa chỉ thường trú!' }]}><Input.TextArea rows={2} prefix={<EnvironmentOutlined />} placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố" /></Form.Item></Col>
-                <Col xs={24}><Form.Item name={["personalInfo", "contactAddress"]} label="Địa chỉ liên hệ (nếu khác HKTT)"><Input.TextArea rows={2} placeholder="Địa chỉ nhận thư báo nếu khác HKTT" /></Form.Item></Col>
-                <Col xs={24} md={12}><Form.Item name={["personalInfo", "phoneNumber"]} label="Số điện thoại" rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }, { pattern: /^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/, message: 'Số điện thoại không hợp lệ!'}]}><Input prefix={<PhoneOutlined />} placeholder="09xxxxxxxx" /></Form.Item></Col>
-                <Col xs={24} md={12}><Form.Item name={["personalInfo", "email"]} label="Email" rules={[{ required: true, message: 'Vui lòng nhập email!' }, { type: 'email', message: 'Email không hợp lệ!' }]}><Input prefix={<MailOutlined />} placeholder="example@email.com" /></Form.Item></Col>
-                <Col xs={24} md={12}><Form.Item name={["personalInfo", "priorityArea"]} label="Khu vực ưu tiên (nếu có)"><Select placeholder="Chọn khu vực ưu tiên" options={priorityAreas} allowClear/></Form.Item></Col>
-                <Col xs={24} md={12}><Form.Item name={["personalInfo", "priorityObject"]} label="Đối tượng ưu tiên (nếu có)"><Select mode="multiple" placeholder="Chọn đối tượng ưu tiên" options={priorityObjects} allowClear/></Form.Item></Col>
+                <Col xs={24} md={12}>
+                    <Form.Item name={["personalInfo", "fullName"]} label="Họ và tên khai sinh" rules={[{ required: true, message: 'Vui lòng nhập họ tên!' }, { pattern: /^[a-zA-Z\sÀ-ỹ]+$/, message: 'Họ tên không hợp lệ!' }]}>
+                        <Input prefix={<UserOutlined />} placeholder="Nguyễn Văn A" />
+                    </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                    <Form.Item name={["personalInfo", "dob"]} label="Ngày sinh" rules={[{ required: true, message: 'Vui lòng chọn ngày sinh!' }]}>
+                        <DatePicker style={{ width: '100%' }} placeholder="Chọn ngày" format="DD/MM/YYYY"/>
+                    </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                    <Form.Item name={["personalInfo", "gender"]} label="Giới tính" rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}>
+                        <Select placeholder="Chọn giới tính">
+                            <AntOption value="male">Nam</AntOption>
+                            <AntOption value="female">Nữ</AntOption>
+                            <AntOption value="other">Khác</AntOption>
+                        </Select>
+                    </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                    <Form.Item name={["personalInfo", "idNumber"]} label="Số CCCD/CMND" rules={[{ required: true, message: 'Vui lòng nhập số CCCD/CMND!' }, { pattern: /^[0-9]{9,12}$/, message: 'Số CCCD/CMND không hợp lệ (9-12 số)!' }]}>
+                        <Input prefix={<IdcardOutlined />} placeholder="0123456789" />
+                    </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                    <Form.Item name={["personalInfo", "idIssueDate"]} label="Ngày cấp CCCD/CMND" rules={[{ required: true, message: 'Vui lòng chọn ngày cấp!' }]}>
+                        <DatePicker style={{ width: '100%' }} placeholder="Chọn ngày" format="DD/MM/YYYY"/>
+                    </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                    <Form.Item name={["personalInfo", "idIssuePlace"]} label="Nơi cấp CCCD/CMND" rules={[{ required: true, message: 'Vui lòng nhập nơi cấp!' }]}>
+                        <Input placeholder="Ví dụ: Cục CSQLHC về TTXH" />
+                    </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                    <Form.Item name={["personalInfo", "ethnic"]} label="Dân tộc" rules={[{ required: true, message: 'Vui lòng nhập dân tộc!' }]}>
+                        <Input prefix={<TeamOutlined />} placeholder="Kinh" />
+                    </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                    <Form.Item name={["personalInfo", "nationality"]} label="Quốc tịch" rules={[{ required: true, message: 'Vui lòng nhập quốc tịch!' }]}>
+                        <Input prefix={<GlobalOutlined />} placeholder="Việt Nam" />
+                    </Form.Item>
+                </Col>
+                <Col xs={24}>
+                    <Form.Item name={["personalInfo", "permanentAddress"]} label="Địa chỉ thường trú (theo HKTT)" rules={[{ required: true, message: 'Vui lòng nhập địa chỉ thường trú!' }]}>
+                        <Input.TextArea rows={2} placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố" />
+                    </Form.Item>
+                </Col>
+                <Col xs={24}>
+                    <Form.Item name={["personalInfo", "contactAddress"]} label="Địa chỉ liên hệ (nếu khác HKTT)">
+                        <Input.TextArea rows={2} placeholder="Địa chỉ nhận thư báo nếu khác HKTT" />
+                    </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                    <Form.Item name={["personalInfo", "phoneNumber"]} label="Số điện thoại" rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }, { pattern: /^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/, message: 'Số điện thoại không hợp lệ!'}]}>
+                        <Input prefix={<PhoneOutlined />} placeholder="09xxxxxxxx" />
+                    </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                    <Form.Item name={["personalInfo", "email"]} label="Email" rules={[{ required: true, message: 'Vui lòng nhập email!' }, { type: 'email', message: 'Email không hợp lệ!' }]}>
+                        <Input prefix={<MailOutlined />} placeholder="example@email.com" />
+                    </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                    <Form.Item name={["personalInfo", "priorityArea"]} label="Khu vực ưu tiên (nếu có)">
+                        <Select placeholder="Chọn khu vực ưu tiên" options={priorityAreas} allowClear/>
+                    </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                    <Form.Item name={["personalInfo", "priorityObject"]} label="Đối tượng ưu tiên (nếu có)">
+                        <Select mode="multiple" placeholder="Chọn đối tượng ưu tiên" options={priorityObjects} allowClear/>
+                    </Form.Item>
+                </Col>
             </Row>
-        </Card>
-    );const academicAndChoiceStepContent = (
+        </Card>    );const academicAndChoiceStepContent = (
         <Card title="Bước 2: Thông Tin Học Vấn & Nguyện Vọng" className="shadow-none">
             <AntTitle level={5} className="!mt-0 !mb-3 text-indigo-600">Thông tin THPT</AntTitle>
             <Row gutter={24}>
@@ -1220,24 +1278,51 @@ const CandidateSubmitApplicationPage: React.FC = () => {
             <Alert message="Lưu ý: Chọn đúng 'Loại giấy tờ hiện tại' trước khi nhấn hoặc kéo thả file để tải lên." type="info" showIcon className="!mt-4"/>
             {previewVisible && ( <Modal open={previewVisible} title={previewTitle} footer={null} onCancel={() => setPreviewVisible(false)} destroyOnHidden><img alt="Xem trước" style={{ width: '100%' }} src={previewImage} /></Modal> )}
          </Card>
-    );
-
-    const steps = [
-        { title: 'Thông tin cá nhân', content: personalInfoStepContent, icon: <UserOutlined /> },
-        { title: 'Học vấn & Nguyện Vọng', content: academicAndChoiceStepContent, icon: <SolutionOutlined /> },
-        { title: 'Minh chứng', content: documentsStepContent, icon: <UploadOutlined /> }
+    );    const steps = [
+        { 
+            title: 'Thông tin cá nhân', 
+            content: personalInfoStepContent, 
+            icon: <UserOutlined />,
+            description: 'Cung cấp thông tin cá nhân của bạn'
+        },        { 
+            title: 'Học vấn & Nguyện Vọng', 
+            content: academicAndChoiceStepContent, 
+            icon: <BookOutlined />,
+            description: 'Thông tin học tập và nguyện vọng xét tuyển'
+        },
+        { 
+            title: 'Minh chứng', 
+            content: documentsStepContent, 
+            icon: <FileTextOutlined />,
+            description: 'Tải lên các giấy tờ minh chứng'
+        }
     ];
 
     return (
         <div className={styles.submitContainer}>
-            <div className={styles.sectionTitle}>Nộp Hồ Sơ Xét Tuyển Trực Tuyến</div>
+            {/* Modern Header Section */}
+            <div className={styles.sectionTitle}>
+                <StarOutlined style={{ marginRight: '0.5rem', color: '#f59e0b' }} />
+                Nộp Hồ Sơ Xét Tuyển Trực Tuyến
+            </div>
+            
+            {/* Progress Steps */}
             <div className={styles.formSteps}>
-                <Steps current={currentStep} responsive>
-                    <Steps.Step title="Thông tin cá nhân" />
-                    <Steps.Step title="Thông tin học tập & nguyện vọng" />
-                    <Steps.Step title="Minh chứng & xác nhận" />
-                </Steps>
-            </div>            <Form
+                <Steps 
+                    current={currentStep} 
+                    responsive
+                    size="default"
+                    items={steps.map((step, index) => ({
+                        title: step.title,
+                        description: currentStep === index ? step.description : undefined,
+                        icon: currentStep > index ? <CheckCircleOutlined /> : step.icon,
+                        status: currentStep > index ? 'finish' : currentStep === index ? 'process' : 'wait'
+                    }))}
+                />
+            </div>
+
+            {/* Main Form */}
+            <Form
                 form={form}
                 layout="vertical"
                 onFinish={onFinish}
@@ -1245,19 +1330,62 @@ const CandidateSubmitApplicationPage: React.FC = () => {
                 initialValues={convertInitialValues(initialFormData)}
                 className={styles.formCard}
             >
-                <div className="steps-content mb-8 min-h-[300px]">
+                {/* Dynamic Content Based on Current Step */}
+                <div className="steps-content">
                     {currentStep === 0 && personalInfoStepContent}
                     {currentStep === 1 && academicAndChoiceStepContent}
                     {currentStep === 2 && documentsStepContent}
                 </div>
-                <div className="steps-action flex justify-between items-center">
+
+                {/* Navigation Actions */}
+                <div className="steps-action" style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center',
+                    marginTop: '2rem',
+                    paddingTop: '2rem',
+                    borderTop: '2px solid var(--gray-100)'
+                }}>
                     <div>
-                        {currentStep > 0 && ( <Button style={{ margin: '0 8px 0 0' }} onClick={prevStep} size="large">Quay Lại</Button> )}
+                        {currentStep > 0 && (
+                            <Button 
+                                style={{ marginRight: '1rem' }} 
+                                onClick={prevStep} 
+                                size="large"
+                                className={styles.formButton + ' ' + styles.formButtonOutline}
+                                icon={<EditOutlined />}
+                            >
+                                Quay Lại
+                            </Button>
+                        )}
                     </div>
                     <div>
-                        {currentStep < steps.length - 1 && ( <Button type="primary" onClick={validateAndNextStep} size="large" className={styles.formButton + ' ' + styles.formButtonPrimary} loading={isSubmitting}>Tiếp Tục</Button> )}
-                        {currentStep === steps.length - 1 && ( <Button type="primary" htmlType="submit" size="large" className={styles.formButton + ' ' + styles.formButtonPrimary} loading={isSubmitting}>Nộp Hồ Sơ</Button> )}
-                    </div>                </div>
+                        {currentStep < steps.length - 1 && (
+                            <Button 
+                                type="primary" 
+                                onClick={validateAndNextStep} 
+                                size="large" 
+                                className={styles.formButton + ' ' + styles.formButtonPrimary} 
+                                loading={isSubmitting}
+                                icon={<CheckCircleOutlined />}
+                            >
+                                Tiếp Tục
+                            </Button>
+                        )}
+                        {currentStep === steps.length - 1 && (
+                            <Button 
+                                type="primary" 
+                                htmlType="submit" 
+                                size="large" 
+                                className={styles.formButton + ' ' + styles.formButtonPrimary} 
+                                loading={isSubmitting}
+                                icon={<SendOutlined />}
+                            >
+                                Nộp Hồ Sơ
+                            </Button>
+                        )}
+                    </div>
+                </div>
             </Form>
         </div>
     );

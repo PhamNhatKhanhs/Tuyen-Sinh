@@ -581,6 +581,25 @@
   min-width: 200px;
 }
 
+/* Notification Dropdown Overlay */
+.notification-dropdown-overlay {
+  z-index: 1050 !important;
+}
+
+.notification-dropdown-overlay .ant-dropdown {
+  padding: 0 !important;
+}
+
+.notification-dropdown-overlay .ant-dropdown-menu {
+  padding: 0 !important;
+  border-radius: var(--radius-xl) !important;
+  box-shadow: var(--shadow-xl) !important;
+  border: 1px solid var(--border-color) !important;
+  overflow: hidden !important;
+  min-width: 420px !important;
+  max-width: 420px !important;
+}
+
 .dropdown-item {
   display: flex;
   align-items: center;

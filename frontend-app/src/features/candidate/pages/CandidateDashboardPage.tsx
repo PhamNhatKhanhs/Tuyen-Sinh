@@ -1,6 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Typography, Row, Col, Card, Button, Statistic, Avatar, Tag, Table, Skeleton, Empty, Tooltip, Space } from 'antd';
-import { FileTextOutlined, CheckCircleOutlined, ClockCircleOutlined, FormOutlined, UserOutlined, ReloadOutlined, InfoCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { 
+  FileTextOutlined, 
+  CheckCircleOutlined, 
+  ClockCircleOutlined, 
+  FormOutlined, 
+  UserOutlined, 
+  ReloadOutlined, 
+  InfoCircleOutlined, 
+  CloseCircleOutlined,
+  TrophyOutlined,
+  BookOutlined,
+  EyeOutlined,
+  PlusOutlined,
+  SettingOutlined
+} from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../../../store/hooks';
 import { selectUser } from '../../auth/store/authSlice';
@@ -79,60 +93,146 @@ const CandidateDashboardPage: React.FC = () => {
           </div>
           <span className={styles.statusTag}><CheckCircleOutlined style={{ color: '#22c55e', marginRight: 6 }} />Tài khoản đang hoạt động</span>
         </div>
-      </div>
-
-      {/* Thống kê */}
+      </div>      {/* Modern Statistics Section */}
       <div className={styles.statsRow}>
         <div className={styles.statsCard}>
+          <div className={styles.statsIcon}>
+            <FileTextOutlined />
+          </div>
           <div className={styles.statsTitle}>Hồ Sơ Đã Nộp</div>
-          <div className={styles.statsValue}><FileTextOutlined style={{ marginRight: 8 }} />{submittedApplications}</div>
+          <div className={styles.statsValue}>{submittedApplications}</div>
+          <div className={styles.statsChange}>
+            Tổng số hồ sơ đã gửi
+          </div>
         </div>
         <div className={styles.statsCard}>
+          <div className={styles.statsIcon}>
+            <CheckCircleOutlined />
+          </div>
           <div className={styles.statsTitle}>Được Duyệt</div>
-          <div className={styles.statsValue}><CheckCircleOutlined style={{ marginRight: 8 }} />{approvedApplications}</div>
+          <div className={styles.statsValue}>{approvedApplications}</div>
+          <div className={styles.statsChange}>
+            Hồ sơ được chấp nhận
+          </div>
         </div>
         <div className={styles.statsCard}>
+          <div className={styles.statsIcon}>
+            <ClockCircleOutlined />
+          </div>
           <div className={styles.statsTitle}>Chờ Duyệt</div>
-          <div className={styles.statsValue}><ClockCircleOutlined style={{ marginRight: 8 }} />{pendingApplications}</div>
+          <div className={styles.statsValue}>{pendingApplications}</div>
+          <div className={styles.statsChange}>
+            Đang xem xét
+          </div>
         </div>
         <div className={styles.statsCard}>
+          <div className={styles.statsIcon}>
+            <CloseCircleOutlined />
+          </div>
           <div className={styles.statsTitle}>Bị Từ Chối</div>
-          <div className={styles.statsValue}><CloseCircleOutlined style={{ marginRight: 8 }} />{rejectedApplications}</div>
+          <div className={styles.statsValue}>{rejectedApplications}</div>
+          <div className={styles.statsChange}>
+            Cần xem lại
+          </div>
         </div>
+      </div>      {/* Recent Applications Section */}
+      <div className={styles.sectionTitle}>
+        <div className={styles.sectionIcon}>
+          <BookOutlined />
+        </div>
+        Hồ sơ gần nhất
       </div>
-
-      {/* Preview hồ sơ gần nhất */}
-      <div className={styles.sectionTitle}><InfoCircleOutlined style={{ color: '#ef4444', marginRight: 8 }} />Hồ sơ gần nhất</div>
       <div className={styles.previewTable}>
+        <div className={styles.tableHeader}>
+          <div className={styles.tableTitle}>Danh sách hồ sơ mới nhất</div>
+          <Button 
+            className={styles.viewAllBtn}
+            icon={<EyeOutlined />}
+            onClick={() => navigate('/candidate/my-applications')}
+          >
+            Xem tất cả
+          </Button>
+        </div>
+        
         {loading ? (
           <Skeleton active paragraph={{ rows: 3 }} />
         ) : error ? (
           <div className="mb-4"><Tag color="red">{error}</Tag></div>
         ) : latestApplications.length === 0 ? (
-          <Empty description="Bạn chưa có hồ sơ nào được nộp." image={Empty.PRESENTED_IMAGE_SIMPLE} />
+          <div className={styles.emptyState}>
+            <div className={styles.emptyIcon}>
+              <FileTextOutlined />
+            </div>
+            <div className={styles.emptyTitle}>Chưa có hồ sơ nào</div>
+            <div className={styles.emptyDesc}>
+              Bạn chưa nộp hồ sơ tuyển sinh nào. Hãy bắt đầu với hồ sơ đầu tiên của bạn!
+            </div>
+            <Button 
+              className={styles.emptyAction}
+              icon={<PlusOutlined />}
+              onClick={() => navigate('/candidate/submit-application')}
+            >
+              Nộp Hồ Sơ Đầu Tiên
+            </Button>
+          </div>
         ) : (
           <Table
             dataSource={latestApplications}
             rowKey="id"
             pagination={false}
-            size="small"
-            bordered
+            size="middle"
+            scroll={{ x: 800 }}
             columns={[
-              { title: 'Trường', dataIndex: 'universityName', key: 'universityName', render: (text: string, r) => <Text strong>{text}</Text> },
-              { title: 'Ngành', dataIndex: 'majorName', key: 'majorName' },
-              { title: 'Năm', dataIndex: 'year', key: 'year', align: 'center' },
-              { title: 'Ngày Nộp', dataIndex: 'submissionDate', key: 'submissionDate', align: 'center' },
-              { title: 'Trạng Thái', dataIndex: 'status', key: 'status', align: 'center', render: getStatusTag },
+              { 
+                title: 'Trường', 
+                dataIndex: 'universityName', 
+                key: 'universityName', 
+                render: (text: string) => <Text strong style={{ color: '#1f2937' }}>{text}</Text>,
+                width: 200,
+                ellipsis: true
+              },
+              { 
+                title: 'Ngành', 
+                dataIndex: 'majorName', 
+                key: 'majorName',
+                width: 180,
+                ellipsis: true
+              },
+              { 
+                title: 'Năm', 
+                dataIndex: 'year', 
+                key: 'year', 
+                align: 'center',
+                width: 80
+              },
+              { 
+                title: 'Ngày Nộp', 
+                dataIndex: 'submissionDate', 
+                key: 'submissionDate', 
+                align: 'center',
+                width: 120,
+                render: (date: string) => new Date(date).toLocaleDateString('vi-VN')
+              },
+              { 
+                title: 'Trạng Thái', 
+                dataIndex: 'status', 
+                key: 'status', 
+                align: 'center', 
+                render: getStatusTag,
+                width: 140
+              },
               {
-                title: 'Hành Động',
+                title: 'Thao Tác',
                 key: 'action',
                 align: 'center',
+                width: 100,
                 render: (_: any, record: ApplicationListItemFE) => (
                   <Tooltip title="Xem chi tiết">
                     <Button
-                      type="link"
+                      type="text"
                       icon={<InfoCircleOutlined />}
                       onClick={() => navigate('/candidate/my-applications')}
+                      style={{ color: '#2563eb' }}
                     />
                   </Tooltip>
                 ),
@@ -140,36 +240,39 @@ const CandidateDashboardPage: React.FC = () => {
             ]}
           />
         )}
+      </div>      {/* Modern Quick Actions */}
+      <div className={styles.sectionTitle}>
+        <div className={styles.sectionIcon}>
+          <TrophyOutlined />
+        </div>
+        Thao tác nhanh
       </div>
-
-      {/* Tác vụ nhanh */}
-      <div className={styles.sectionTitle}>Tác vụ nhanh</div>
       <div className={styles.quickActions}>
         <Button
           type="primary"
-          icon={<FormOutlined />}
+          icon={<PlusOutlined className={styles.quickBtnIcon} />}
           size="large"
           block
           onClick={() => navigate('/candidate/submit-application')}
-          className={styles.quickBtn + ' ' + styles.quickBtnPrimary}
+          className={`${styles.quickBtn} ${styles.quickBtnPrimary}`}
         >
           Nộp Hồ Sơ Mới
         </Button>
         <Button
-          icon={<FileTextOutlined />}
+          icon={<FileTextOutlined className={styles.quickBtnIcon} />}
           size="large"
           block
           onClick={() => navigate('/candidate/my-applications')}
-          className={styles.quickBtn + ' ' + styles.quickBtnOutline}
+          className={`${styles.quickBtn} ${styles.quickBtnOutline}`}
         >
           Xem Hồ Sơ Đã Nộp
         </Button>
         <Button
-          icon={<UserOutlined />}
+          icon={<SettingOutlined className={styles.quickBtnIcon} />}
           size="large"
           block
           onClick={() => navigate('/candidate/profile')}
-          className={styles.quickBtn + ' ' + styles.quickBtnOutline}
+          className={`${styles.quickBtn} ${styles.quickBtnOutline}`}
         >
           Cập Nhật Thông Tin
         </Button>
