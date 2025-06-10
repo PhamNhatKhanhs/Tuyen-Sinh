@@ -159,20 +159,36 @@ exports.submitApplication = async (req, res, next) => {
             year: applicationChoice.year,
             examScores: req.body.examScores || {},
             documents: documentIds || [], status: 'pending',
-        };
-
-        const newApplicationArray = await Application.create([newApplicationData]);
+        };        const newApplicationArray = await Application.create([newApplicationData]);
         const newApplication = newApplicationArray[0];
-        console.log('SUBMIT_APP_CTRL: Application document created:', newApplication._id);        console.log('SUBMIT_APP_CTRL: Step 5 - Sending email and creating notification...');
-        const emailSubject = `Xác nhận nộp hồ sơ thành công - Mã HS: ${newApplication._id}`;
-        const emailHtml = `<p>Chào ${candidateProfile.fullName || 'bạn'},</p><p>Hồ sơ của bạn (Mã: <strong>${newApplication._id}</strong>) ứng tuyển ngành ${major.name} - ${university.name} đã được nộp thành công.</p><p>Trạng thái hiện tại: Chờ duyệt. Chúng tôi sẽ thông báo khi có cập nhật.</p><p>Trân trọng,</p><p>Hệ thống Tuyển sinh Đại học</p>`;        sendEmail(candidateEmail, emailSubject, '', emailHtml).catch(err => console.error("SUBMIT_APP_CTRL: Failed to send submission email:", err));
-        createNotification( candidateId, 'Nộp hồ sơ thành công!', `Hồ sơ ${newApplication._id} đã được nộp.`, 'application_submitted', `/candidate/applications/${newApplication._id}`, newApplication._id).catch(err => console.error("SUBMIT_APP_CTRL: Failed to create submission notification:", err));
-        console.log('SUBMIT_APP_CTRL: Email and notification tasks initiated.');
+        console.log('SUBMIT_APP_CTRL: Application document created:', newApplication._id);
 
-        res.status(201).json({ 
+        // Populate the application for response
+        console.log('SUBMIT_APP_CTRL: Populating application for response...');
+        const populatedApplication = await Application.findById(newApplication._id)
+            .populate('candidate', 'fullName email')
+            .populate('university', 'name code')
+            .populate('major', 'name code')
+            .populate('admissionMethod', 'name')
+            .populate('subjectGroup', 'name code subjects')
+            .populate('documents');
+        
+        if (!populatedApplication) {
+            console.error('SUBMIT_APP_CTRL: Failed to populate application after creation');
+            return res.status(500).json({ 
+                success: false, 
+                message: 'Hồ sơ đã được tạo nhưng không thể tải thông tin chi tiết.' 
+            });
+        }        console.log('SUBMIT_APP_CTRL: Step 5 - Sending email and creating notification...');
+        const emailSubject = `Xác nhận nộp hồ sơ thành công - Mã HS: ${populatedApplication._id}`;
+        const emailHtml = `<p>Chào ${candidateProfile.fullName || 'bạn'},</p><p>Hồ sơ của bạn (Mã: <strong>${populatedApplication._id}</strong>) ứng tuyển ngành ${major.name} - ${university.name} đã được nộp thành công.</p><p>Trạng thái hiện tại: Chờ duyệt. Chúng tôi sẽ thông báo khi có cập nhật.</p><p>Trân trọng,</p><p>Hệ thống Tuyển sinh Đại học</p>`;
+
+        sendEmail(candidateEmail, emailSubject, '', emailHtml).catch(err => console.error("SUBMIT_APP_CTRL: Failed to send submission email:", err));
+        createNotification( candidateId, 'Nộp hồ sơ thành công!', `Hồ sơ ${populatedApplication._id} đã được nộp.`, 'application_submitted', `/candidate/applications/${populatedApplication._id}`, populatedApplication._id).catch(err => console.error("SUBMIT_APP_CTRL: Failed to create submission notification:", err));
+        console.log('SUBMIT_APP_CTRL: Email and notification tasks initiated.');        res.status(201).json({ 
             success: true, 
             message: 'Nộp hồ sơ thành công!', 
-            data: newApplication
+            data: populatedApplication
         });
 
     } catch (error) {

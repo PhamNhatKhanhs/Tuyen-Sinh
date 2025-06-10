@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
 import { Form, Input, Button, Typography, Alert, Spin } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { LockOutlined, MailOutlined } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { loginStart, loginSuccess, loginFailure, selectAuthLoading, selectAuthError, selectIsAuthenticated, selectUser, selectToken } from '../store/authSlice';
-import authService from '../services/authService'; 
+import authService from '../services/authService';
+import styles from './AuthPages.module.css';
 
-const { Title } = Typography;
+const { Text } = Typography;
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -61,24 +62,23 @@ const LoginPage: React.FC = () => {
       }
     }
   };
-
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <Spin size="large" tip="Đang xử lý..." />
+      <div className={styles.loadingContainer}>
+        <Spin size="large" tip="Đang xử lý đăng nhập..." />
       </div>
     );
   }
 
   return (
-    <div className="w-full">
-      <Title level={3} className="text-center mb-6">Đăng Nhập Tài Khoản</Title>
+    <div className={styles.authForm}>
       {authError && (
         <Alert 
-          message={authError} 
+          message="Đăng nhập thất bại" 
+          description={authError}
           type="error" 
           showIcon 
-          className="mb-4" 
+          className="mb-6" 
           closable
         />
       )}
@@ -92,52 +92,49 @@ const LoginPage: React.FC = () => {
       >
         <Form.Item
           name="email"
-          label="Email"
+          label="📧 Địa chỉ Email"
           rules={[
-            { required: true, message: 'Vui lòng nhập email!' },
-            { type: 'email', message: 'Email không hợp lệ!' }
+            { required: true, message: 'Vui lòng nhập email của bạn!' },
+            { type: 'email', message: 'Định dạng email không hợp lệ!' }
           ]}
         >
-          <Input 
-            prefix={<UserOutlined className="text-gray-400" />} 
-            placeholder="Email" 
-            size="large"
+          <Input
+            prefix={<MailOutlined />} 
+            placeholder="Nhập địa chỉ email của bạn" 
             autoComplete="email"
           />
         </Form.Item>
 
         <Form.Item
           name="password"
-          label="Mật khẩu"
+          label="🔒 Mật khẩu"
           rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
         >
           <Input.Password 
-            prefix={<LockOutlined className="text-gray-400" />} 
-            placeholder="Mật khẩu" 
-            size="large"
+            prefix={<LockOutlined />} 
+            placeholder="Nhập mật khẩu của bạn" 
             autoComplete="current-password"
           />
         </Form.Item>
 
-        <Form.Item>
+        <Form.Item className="mb-6">
           <Button 
             type="primary" 
             htmlType="submit" 
             loading={isLoading} 
             block 
-            size="large" 
-            className="bg-indigo-600 hover:bg-indigo-700 h-12 text-base"
+            className={styles.primaryButton}
+            disabled={isLoading}
           >
-            {isLoading ? 'Đang xử lý...' : 'Đăng Nhập'}
+            {isLoading ? 'Đang đăng nhập...' : '🚀 Đăng Nhập'}
           </Button>
         </Form.Item>
-      </Form>
-      <div className="text-center mt-4">
-        <Typography.Text className="text-gray-600">Chưa có tài khoản? </Typography.Text>
+      </Form>      <div className={styles.authFooter}>
+        <Text className={styles.footerText}>Chưa có tài khoản? </Text>
         <Button 
           type="link" 
           onClick={() => navigate('/register')} 
-          className="p-0 text-indigo-600 hover:text-indigo-500"
+          className={styles.linkButton}
         >
           Đăng ký ngay
         </Button>

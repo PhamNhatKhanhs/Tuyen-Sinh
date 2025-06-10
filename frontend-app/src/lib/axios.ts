@@ -14,7 +14,7 @@ const axiosInstance = axios.create({
 // Request interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('token'); // Changed from 'authToken' to 'token'
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -38,7 +38,7 @@ axiosInstance.interceptors.response.use(
       // Nếu là lỗi token hết hạn
       if (error.response?.data?.message?.includes('Token đã hết hạn')) {
         // Xóa token và user
-        localStorage.removeItem('authToken');
+        localStorage.removeItem('token'); // Changed from 'authToken' to 'token'
         localStorage.removeItem('authUser');
         
         // Dispatch action logout

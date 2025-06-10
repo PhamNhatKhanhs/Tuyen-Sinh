@@ -7,7 +7,7 @@ import {
   EyeOutlined, EditOutlined, FilterOutlined, SearchOutlined, 
   FilePdfOutlined, FileImageOutlined, FileTextOutlined, InfoCircleOutlined,
   UserOutlined, FolderOpenOutlined, CheckCircleOutlined, CloseCircleOutlined,
-  ClockCircleOutlined, ExclamationCircleOutlined, MinusCircleOutlined, FileSearchOutlined
+  ClockCircleOutlined, FileSearchOutlined
 } from '@ant-design/icons';
 import type { TableProps, PaginationProps } from 'antd';
 import type { RangePickerProps } from 'antd/es/date-picker';
@@ -59,11 +59,8 @@ const COLORS = {
 
 const APPLICATION_STATUSES = [
   { value: 'pending', label: 'Chờ duyệt', color: 'processing', icon: <ClockCircleOutlined /> },
-  { value: 'processing', label: 'Đang xử lý', color: 'blue', icon: <FileSearchOutlined /> },
-  { value: 'additional_required', label: 'Cần bổ sung', color: 'warning', icon: <ExclamationCircleOutlined /> },
   { value: 'approved', label: 'Đã duyệt', color: 'success', icon: <CheckCircleOutlined /> },
   { value: 'rejected', label: 'Từ chối', color: 'error', icon: <CloseCircleOutlined /> },
-  { value: 'cancelled', label: 'Đã hủy', color: 'default', icon: <MinusCircleOutlined /> },
 ];
 
 const getStatusTag = (statusValue?: ApplicationDetailBE['status']) => {
@@ -99,10 +96,10 @@ const AdminManageApplications: React.FC = () => {
   const [applications, setApplications] = useState<ApplicationAdminListItemFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
+    const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
   const [selectedApplicationDetail, setSelectedApplicationDetail] = useState<ApplicationDetailBE | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
+  const [currentViewingApplicationId, setCurrentViewingApplicationId] = useState<string | null>(null);
 
   const [isStatusModalVisible, setIsStatusModalVisible] = useState(false);
   const [processingApplication, setProcessingApplication] = useState<ApplicationAdminListItemFE | null>(null);
@@ -199,46 +196,58 @@ const AdminManageApplications: React.FC = () => {
   };
   const handleFilterSelectChange = (name: string, value: any) => {
     setFilters(prev => ({ ...prev, [name]: value, ...(name === 'universityId' && { majorId: undefined }) }));
-  };
-   const handleDateRangeChange: RangePickerProps['onChange'] = (dates) => {
+  };  const handleDateRangeChange: RangePickerProps['onChange'] = (dates) => {
     setFilters(prev => ({ ...prev, dateRange: dates as [dayjs.Dayjs, dayjs.Dayjs] | null }));
   };
-
-  const onApplyFilters = () => {
-      fetchApplications(1, pagination.pageSize); 
-  };
-  const onResetFilters = () => {
-    setFilters({
-        searchCandidate: '',
-        universityId: undefined,
-        majorId: undefined,
-        status: undefined,
-        year: new Date().getFullYear(),
-        dateRange: null,
-    });
-    // fetchApplications(1, pagination.pageSize); // Sẽ được trigger bởi useEffect của fetchApplications khi filters thay đổi
-  };
-
   const handleViewDetails = async (applicationId: string) => {
+    console.log('🔍 HandleViewDetails called with ID:', applicationId);
+    
     if (!applicationId) {
+      console.error('❌ No application ID provided');
       message.error("ID hồ sơ không hợp lệ.");
       return;
     }
+    console.log('📝 Setting loading state and opening modal...');
+    setCurrentViewingApplicationId(applicationId);
     setLoadingDetail(true);
     setSelectedApplicationDetail(null); 
-    setIsDetailModalVisible(true);
+    setIsDetailModalVisible(true); // Open the modal
+
     try {
-        const response = await applicationAdminService.getById(applicationId);
-        if (response.success && response.data) {
-            setSelectedApplicationDetail(response.data);
-        } else {
+      console.log('🌐 Making API call to getById:', applicationId);
+      const response = await applicationAdminService.getById(applicationId);
+      console.log('📦 API Response received:', response);
+      
+      if (response.success && response.data) {
+          console.log('✅ Setting application detail data:', response.data);
+          setSelectedApplicationDetail(response.data);
+      } else {
+          console.error('❌ API response unsuccessful:', response);
+          setSelectedApplicationDetail(null); // Ensure detail is null to show error state in modal
+          // Check for specific error messages
+          if (response.message?.includes('Token') || response.message?.includes('unauthorized')) {
+            message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+          } else {
             message.error(response.message || "Không thể tải chi tiết hồ sơ.");
-            setIsDetailModalVisible(false); 
-        }
+          }
+          // DO NOT call setIsDetailModalVisible(false) here; keep modal open to show error
+      }
     } catch (err: any) {
-        message.error(err.message || "Lỗi khi tải chi tiết hồ sơ.");
-        setIsDetailModalVisible(false); 
+        console.error('💥 Error in handleViewDetails:', err);
+        setSelectedApplicationDetail(null); // Ensure detail is null to show error state in modal
+        // Check for network or authentication errors
+        if (err.response?.status === 401) {
+          message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+        } else if (err.response?.status === 403) {
+          message.error("Bạn không có quyền xem chi tiết hồ sơ này.");
+        } else if (err.response?.status >= 500) {
+          message.error("Lỗi máy chủ. Vui lòng thử lại sau.");
+        } else {
+          message.error(err.message || "Lỗi khi tải chi tiết hồ sơ.");
+        }
+        // DO NOT call setIsDetailModalVisible(false) here; keep modal open to show error
     } finally {
+        console.log('🏁 Setting loading to false');
         setLoadingDetail(false);
     }
   };
@@ -281,7 +290,17 @@ const AdminManageApplications: React.FC = () => {
     } finally {
         setLoading(false);
     }
-  };  const columns: TableProps<ApplicationAdminListItemFE>['columns'] = [
+  };
+  // Debug logging for modal state
+  console.log('🔍 Modal render state:', {
+    isDetailModalVisible,
+    loadingDetail,
+    hasSelectedDetail: !!selectedApplicationDetail,
+    currentViewingId: currentViewingApplicationId,
+    selectedDetailId: selectedApplicationDetail?._id
+  });
+
+  const columns: TableProps<ApplicationAdminListItemFE>['columns'] = [
     {
       title: 'Thông Tin Hồ Sơ',
       key: 'application_info',
@@ -735,42 +754,118 @@ const AdminManageApplications: React.FC = () => {
               />
               Chi Tiết Hồ Sơ Tuyển Sinh
             </div>
-          }
-          open={isDetailModalVisible}
-          onCancel={() => setIsDetailModalVisible(false)}
-          footer={
-            <Button 
-              type="primary" 
-              onClick={() => setIsDetailModalVisible(false)}
-              style={{
-                background: `linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.primaryDark} 100%)`,
-                border: 'none',
-                height: '42px',
-                borderRadius: '12px',
-                fontWeight: 600,
-                boxShadow: `0 4px 12px ${COLORS.primary}30`
-              }}
-            >
-              Đóng
-            </Button>
+          }          open={isDetailModalVisible}          onCancel={() => {
+            console.log('🚪 Closing detail modal via onCancel');
+            setIsDetailModalVisible(false);
+            setSelectedApplicationDetail(null);
+            setCurrentViewingApplicationId(null);
+          }}footer={
+            !loadingDetail && !selectedApplicationDetail ? (
+              <Space>
+                <Button 
+                  onClick={() => {
+                    console.log('🚪 Closing detail modal via footer close button (error state)');
+                    setIsDetailModalVisible(false);
+                    setSelectedApplicationDetail(null);
+                    setCurrentViewingApplicationId(null);
+                  }}
+                >
+                  Đóng
+                </Button>
+                <Button 
+                  type="primary" 
+                  onClick={() => {
+                    if (currentViewingApplicationId) {
+                      console.log('🔄 Retrying to load application details from footer');
+                      handleViewDetails(currentViewingApplicationId);
+                    }
+                  }}
+                  disabled={!currentViewingApplicationId || loadingDetail} // disable if loading
+                  style={{
+                    background: `linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.primaryDark} 100%)`,
+                    border: 'none',
+                    height: '42px',
+                    borderRadius: '12px',
+                    fontWeight: 600,
+                    boxShadow: `0 4px 12px ${COLORS.primary}30`
+                  }}
+                >
+                  {loadingDetail ? <Spin size="small" /> : 'Thử lại'}
+                </Button>
+              </Space>
+            ) : (
+              <Button 
+                type="primary" 
+                onClick={() => {
+                  console.log('🚪 Closing detail modal via footer close button (success state)');
+                  setIsDetailModalVisible(false);
+                  setSelectedApplicationDetail(null);
+                  setCurrentViewingApplicationId(null);
+                }}
+                style={{
+                  background: `linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.primaryDark} 100%)`,
+                  border: 'none',
+                  height: '42px',
+                  borderRadius: '12px',
+                  fontWeight: 600,
+                  boxShadow: `0 4px 12px ${COLORS.primary}30`
+                }}
+              >
+                Đóng
+              </Button>
+            )
           }
           width={900}
-          destroyOnClose
+          destroyOnHidden // Changed from destroyOnClose
         >
+          {/* Loading State */}
           {loadingDetail && (
             <div style={{ textAlign: 'center', padding: '32px' }}>
               <Spin size="large" />
+              <div style={{ marginTop: '16px', color: COLORS.textLight }}>
+                Đang tải chi tiết hồ sơ...
+              </div>
             </div>
-          )}          {!loadingDetail && selectedApplicationDetail && (
+          )}
+
+          {/* Error State - No Data (only show after loading is complete and modal is visible) */}
+          {!loadingDetail && !selectedApplicationDetail && isDetailModalVisible && ( 
+            <div style={{ textAlign: 'center', padding: '32px' }}>
+              <Alert
+                message="Không thể tải chi tiết hồ sơ"
+                description={
+                  <div>
+                    <p>Vui lòng thử lại hoặc kiểm tra kết nối mạng.</p>
+                    <p>Nếu vấn đề vẫn tiếp tục, hãy liên hệ với quản trị viên.</p>
+                    <details style={{ marginTop: '8px', fontSize: '12px', color: COLORS.textLight }}>
+                      <summary style={{ cursor: 'pointer' }}>Chi tiết debug</summary>
+                      <div style={{ marginTop: '8px', textAlign: 'left', fontFamily: 'monospace' }}>
+                        <div>API Endpoint: GET /admin/applications/[id]</div>
+                        <div>Base URL: {import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}</div>
+                        <div>Token: {localStorage.getItem('authToken') ? 'Có' : 'Không có'}</div>
+                        <div>Hãy mở Console (F12) để xem log chi tiết</div>
+                      </div>
+                    </details>
+                  </div>
+                }
+                type="error"
+                showIcon
+                style={{
+                  borderRadius: '12px',
+                  border: `1px solid ${COLORS.red500}20`,
+                  textAlign: 'left'
+                }}
+              />
+            </div>
+          )}{!loadingDetail && selectedApplicationDetail && (
             <div style={{
               background: `linear-gradient(135deg, ${COLORS.gray50} 0%, ${COLORS.blue50} 100%)`,
               padding: '24px',
               borderRadius: '16px',
               margin: '16px 0'
-            }}>
-              <Descriptions 
+            }}>              <Descriptions 
                 bordered 
-                column={{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }} 
+                column={2} 
                 layout="vertical" 
                 size="small"
                 style={{
@@ -780,42 +875,42 @@ const AdminManageApplications: React.FC = () => {
                 }}
               >
                 <Descriptions.Item label="Mã Hồ Sơ" span={2} contentStyle={{fontWeight: 'bold'}}>{selectedApplicationDetail._id}</Descriptions.Item>
-                <Descriptions.Item label="Trạng Thái">{getStatusTag(selectedApplicationDetail.status)}</Descriptions.Item>
-                <Descriptions.Item label="Ngày Nộp">{new Date(selectedApplicationDetail.submissionDate).toLocaleString('vi-VN')}</Descriptions.Item>
+                <Descriptions.Item label="Trạng Thái" span={1}>{getStatusTag(selectedApplicationDetail.status)}</Descriptions.Item>
+                <Descriptions.Item label="Ngày Nộp" span={1}>{new Date(selectedApplicationDetail.submissionDate).toLocaleString('vi-VN')}</Descriptions.Item>
                 
                 <Descriptions.Item label="Thí Sinh" span={2} contentStyle={{fontWeight: 'bold'}}>
                     <Space><UserOutlined /> {selectedApplicationDetail.candidateProfileSnapshot?.fullName || 'N/A'}</Space>
                 </Descriptions.Item>
-                <Descriptions.Item label="Ngày Sinh">{selectedApplicationDetail.candidateProfileSnapshot?.dob ? new Date(selectedApplicationDetail.candidateProfileSnapshot.dob).toLocaleDateString('vi-VN') : 'N/A'}</Descriptions.Item>
-                <Descriptions.Item label="CCCD/CMND">{selectedApplicationDetail.candidateProfileSnapshot?.idNumber || 'N/A'}</Descriptions.Item>
-                <Descriptions.Item label="Email Liên Hệ">{selectedApplicationDetail.candidateProfileSnapshot?.email || 'N/A'}</Descriptions.Item>
-                <Descriptions.Item label="Số Điện Thoại">{selectedApplicationDetail.candidateProfileSnapshot?.phoneNumber || 'N/A'}</Descriptions.Item>
+                <Descriptions.Item label="Ngày Sinh" span={1}>{selectedApplicationDetail.candidateProfileSnapshot?.dob ? new Date(selectedApplicationDetail.candidateProfileSnapshot.dob).toLocaleDateString('vi-VN') : 'N/A'}</Descriptions.Item>
+                <Descriptions.Item label="CCCD/CMND" span={1}>{selectedApplicationDetail.candidateProfileSnapshot?.idNumber || 'N/A'}</Descriptions.Item>
+                <Descriptions.Item label="Email Liên Hệ" span={1}>{selectedApplicationDetail.candidateProfileSnapshot?.email || 'N/A'}</Descriptions.Item>
+                <Descriptions.Item label="Số Điện Thoại" span={1}>{selectedApplicationDetail.candidateProfileSnapshot?.phoneNumber || 'N/A'}</Descriptions.Item>
                 <Descriptions.Item label="Địa chỉ thường trú" span={2}>{selectedApplicationDetail.candidateProfileSnapshot?.permanentAddress || 'N/A'}</Descriptions.Item>
-                <Descriptions.Item label="Khu vực ưu tiên">{selectedApplicationDetail.candidateProfileSnapshot?.priorityArea || 'Không'}</Descriptions.Item>
-                <Descriptions.Item label="Đối tượng ưu tiên">{(selectedApplicationDetail.candidateProfileSnapshot?.priorityObjects || []).join(', ') || 'Không'}</Descriptions.Item>
+                <Descriptions.Item label="Khu vực ưu tiên" span={1}>{selectedApplicationDetail.candidateProfileSnapshot?.priorityArea || 'Không'}</Descriptions.Item>
+                <Descriptions.Item label="Đối tượng ưu tiên" span={1}>{(selectedApplicationDetail.candidateProfileSnapshot?.priorityObjects || []).join(', ') || 'Không'}</Descriptions.Item>
                 
-                <Descriptions.Item label="Trường THPT">{selectedApplicationDetail.candidateProfileSnapshot?.highSchoolName || 'N/A'}</Descriptions.Item>
-                <Descriptions.Item label="Năm Tốt Nghiệp">{selectedApplicationDetail.candidateProfileSnapshot?.graduationYear || 'N/A'}</Descriptions.Item>
-                <Descriptions.Item label="Điểm TB Lớp 12">{selectedApplicationDetail.candidateProfileSnapshot?.gpa12 ?? 'N/A'}</Descriptions.Item>
+                <Descriptions.Item label="Trường THPT" span={1}>{selectedApplicationDetail.candidateProfileSnapshot?.highSchoolName || 'N/A'}</Descriptions.Item>
+                <Descriptions.Item label="Năm Tốt Nghiệp" span={1}>{selectedApplicationDetail.candidateProfileSnapshot?.graduationYear || 'N/A'}</Descriptions.Item>
+                <Descriptions.Item label="Điểm TB Lớp 12" span={2}>{selectedApplicationDetail.candidateProfileSnapshot?.gpa12 ?? 'N/A'}</Descriptions.Item>
 
                 <Descriptions.Item label="Trường Đăng Ký" span={2}>
                   {selectedApplicationDetail.university && typeof selectedApplicationDetail.university === 'object' 
                     ? `${selectedApplicationDetail.university.name || 'N/A'} (${selectedApplicationDetail.university.code || 'N/A'})` 
                     : 'N/A'}
                 </Descriptions.Item>
-                <Descriptions.Item label="Ngành Đăng Ký">
+                <Descriptions.Item label="Ngành Đăng Ký" span={1}>
                   {selectedApplicationDetail.major && typeof selectedApplicationDetail.major === 'object' 
                     ? `${selectedApplicationDetail.major.name || 'N/A'} (${selectedApplicationDetail.major.code || 'N/A'})` 
                     : 'N/A'}
                 </Descriptions.Item>
-                <Descriptions.Item label="Phương Thức XT">
+                <Descriptions.Item label="Phương Thức XT" span={1}>
                   {selectedApplicationDetail.admissionMethod && typeof selectedApplicationDetail.admissionMethod === 'object' 
                     ? selectedApplicationDetail.admissionMethod.name || 'N/A' 
                     : 'N/A'}
                 </Descriptions.Item>
                 
                 {selectedApplicationDetail.subjectGroup && typeof selectedApplicationDetail.subjectGroup === 'object' && (
-                    <Descriptions.Item label="Tổ Hợp Môn">
+                    <Descriptions.Item label="Tổ Hợp Môn" span={2}>
                       {`${selectedApplicationDetail.subjectGroup.name || 'N/A'} (${selectedApplicationDetail.subjectGroup.code || 'N/A'})`}
                     </Descriptions.Item>
                 )}
@@ -838,10 +933,9 @@ const AdminManageApplications: React.FC = () => {
                             dataSource={selectedApplicationDetail.documents}
                             renderItem={(doc: UploadedFileResponse) => (
                                 <List.Item
-                                    actions={[
-                                        <Button 
+                                    actions={[                                        <Button 
                                             type="link" 
-                                            href={doc.filePath ? `${process.env.REACT_APP_API_BASE_URL?.replace('/api','')}/${doc.filePath}` : '#'}
+                                            href={doc.filePath ? `${import.meta.env.VITE_API_BASE_URL?.replace('/api','') || 'http://localhost:5001'}/${doc.filePath}` : '#'}
                                             target="_blank" 
                                             rel="noopener noreferrer" 
                                             key="download"
@@ -906,7 +1000,7 @@ const AdminManageApplications: React.FC = () => {
           confirmLoading={loading}
           okText="Lưu thay đổi"
           cancelText="Hủy"
-          destroyOnClose
+          destroyOnHidden // Changed from destroyOnClose
           okButtonProps={{
             style: {
               background: `linear-gradient(135deg, ${COLORS.accent} 0%, #059669 100%)`,

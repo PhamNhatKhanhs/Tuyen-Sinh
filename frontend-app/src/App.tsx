@@ -22,6 +22,9 @@ const CandidateSubmitApplicationPage = lazy(() => import('./features/candidate/p
 const CandidateViewApplicationsPage = lazy(() => import('./features/candidate/pages/CandidateViewApplicationsPage'));
 const CandidateProfilePage = lazy(() => import('./features/candidate/pages/CandidateProfilePage'));
 
+// Notification Pages
+const NotificationsPage = lazy(() => import('./features/notification/pages/NotificationsPage'));
+
 // Admin Pages
 const AdminDashboardPage = lazy(() => import('./features/admin/pages/AdminDashboardPage'));
 const AdminManageUniversities = lazy(() => import('./features/admin/pages/AdminManageUniversities'));
@@ -30,6 +33,7 @@ const AdminManageAdmissionMethods = lazy(() => import('./features/admin/pages/Ad
 const AdminManageApplications = lazy(() => import('./features/admin/pages/AdminManageApplications'));
 const AdminManageSubjectGroups = lazy(() => import('./features/admin/pages/AdminManageSubjectGroups'));
 const AdminManageAdmissionLinks = lazy(() => import('./features/admin/pages/AdminManageAdmissionLinks'));
+const AdminManageMajorSubjectGroups = lazy(() => import('./features/admin/pages/AdminManageMajorSubjectGroups'));
 const AdminStatsPage = lazy(() => import('./features/admin/pages/AdminStatsPage'));
 const AdminManageUsers = lazy(() => import('./features/admin/pages/AdminManageUsers'));
 
@@ -112,8 +116,7 @@ function App() {
                 <CandidateViewApplicationsPage />
               </ProtectedRoute>
             } 
-          />
-          <Route 
+          />          <Route 
             path="/candidate/profile" 
             element={
               <ProtectedRoute allowedRoles={['candidate']}>
@@ -121,6 +124,9 @@ function App() {
               </ProtectedRoute>
             } 
           />
+
+          {/* Notifications Route */}
+          <Route path="/notifications" element={<NotificationsPage />} />
         </Route>
         
         {/* Admin Layout */}
@@ -128,10 +134,10 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
           <Route path="/admin/universities" element={<AdminManageUniversities />} />
           <Route path="/admin/majors" element={<AdminManageMajors />} />
-          <Route path="/admin/admission-methods" element={<AdminManageAdmissionMethods />} />
-          <Route path="/admin/applications" element={<AdminManageApplications />} />
+          <Route path="/admin/admission-methods" element={<AdminManageAdmissionMethods />} />          <Route path="/admin/applications" element={<AdminManageApplications />} />
           <Route path="/admin/subject-groups" element={<AdminManageSubjectGroups />} />
           <Route path="/admin/admission-links" element={<AdminManageAdmissionLinks />} />
+          <Route path="/admin/major-subject-groups" element={<AdminManageMajorSubjectGroups />} />
           <Route path="/admin/stats" element={<AdminStatsPage />} />
           <Route path="/admin/users" element={<AdminManageUsers />} />
         </Route>

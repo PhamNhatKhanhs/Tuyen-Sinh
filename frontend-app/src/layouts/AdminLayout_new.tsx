@@ -15,13 +15,13 @@ const { Sider, Content } = Layout;
 const { Text } = Typography;
 
 const menuItems = [
-  { key: 'dashboard', icon: <DashboardOutlined />, label: 'Dashboard', path: '/admin/dashboard' },
-  { key: 'universities', icon: <BankOutlined />, label: 'QL Trường ĐH', path: '/admin/universities' },
-  { key: 'majors', icon: <SolutionOutlined />, label: 'QL Ngành Học', path: '/admin/majors' },
-  { key: 'admission-methods', icon: <UnorderedListOutlined />, label: 'QL Phương Thức XT', path: '/admin/admission-methods' },
-  { key: 'subject-groups', icon: <AppstoreAddOutlined />, label: 'QL Tổ Hợp Môn', path: '/admin/subject-groups' },
-  { key: 'applications', icon: <FileSearchOutlined />, label: 'QL Hồ Sơ', path: '/admin/applications' },
-  { key: 'users', icon: <TeamOutlined />, label: 'QL Người Dùng', path: '/admin/users' },
+  { key: 'dashboard', icon: <DashboardOutlined />, label: 'Bảng Quản Trị', path: '/admin/dashboard' },
+  { key: 'universities', icon: <BankOutlined />, label: 'Quản lý Trường ĐH', path: '/admin/universities' },
+  { key: 'majors', icon: <SolutionOutlined />, label: 'Quản lý Ngành Học', path: '/admin/majors' },
+  { key: 'admission-methods', icon: <UnorderedListOutlined />, label: 'Quản lý Phương Thức XT', path: '/admin/admission-methods' },
+  { key: 'subject-groups', icon: <AppstoreAddOutlined />, label: 'Quản lý Tổ Hợp Môn', path: '/admin/subject-groups' },
+  { key: 'applications', icon: <FileSearchOutlined />, label: 'Quản lý Hồ Sơ', path: '/admin/applications' },
+  { key: 'users', icon: <TeamOutlined />, label: 'Quản lý Người Dùng', path: '/admin/users' },
   { key: 'stats', icon: <BarChartOutlined />, label: 'Thống Kê', path: '/admin/stats' },
 ];
 

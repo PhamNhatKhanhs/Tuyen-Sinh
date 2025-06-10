@@ -129,28 +129,57 @@ const AdminManageAdmissionMethods: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
-  const handleModalOk = async () => {
+  };  const handleModalOk = async () => {
     try {
+      console.log('🔍 [AdmissionMethod Form] Starting form validation...');
       const values = await form.validateFields();
+      console.log('✅ [AdmissionMethod Form] Form validated successfully:', values);
+      
+      // Clean and validate the data
+      const cleanedData = {
+        name: values.name?.trim(),
+        code: values.code?.trim() || undefined,
+        description: values.description?.trim() || undefined,
+        isActive: values.isActive !== undefined ? values.isActive : true
+      };
+      
+      // Remove empty strings and undefined values
+      Object.keys(cleanedData).forEach(key => {
+        if (cleanedData[key] === '' || cleanedData[key] === undefined) {
+          delete cleanedData[key];
+        }
+      });
+      
+      console.log('🧹 [AdmissionMethod Form] Cleaned form data:', cleanedData);
+      
+      if (!cleanedData.name) {
+        message.error('Tên phương thức xét tuyển là bắt buộc!');
+        return;
+      }
+      
       setLoading(true);
       let response;
       
       if (editingMethod) {
-        response = await admissionMethodAdminService.update(editingMethod.id, values);
+        console.log('📝 [AdmissionMethod Form] Updating method:', editingMethod.id);
+        response = await admissionMethodAdminService.update(editingMethod.id, cleanedData);
       } else {
-        response = await admissionMethodAdminService.create(values);
+        console.log('➕ [AdmissionMethod Form] Creating new method');
+        response = await admissionMethodAdminService.create(cleanedData);
       }
+
+      console.log('📋 [AdmissionMethod Form] Service response:', response);
 
       if (response.success) {
         message.success(editingMethod ? 'Cập nhật phương thức thành công!' : 'Thêm phương thức thành công!');
         setIsModalVisible(false);
         await fetchMethods(pagination.current, pagination.pageSize, searchText);
       } else {
+        console.error('❌ [AdmissionMethod Form] Service error:', response.message);
         message.error(response.message || (editingMethod ? 'Cập nhật thất bại.' : 'Thêm mới thất bại.'));
       }
     } catch (info) {
-      console.log('Validate Failed:', info);
+      console.error('❌ [AdmissionMethod Form] Validation failed:', info);
       message.error('Vui lòng kiểm tra lại thông tin đã nhập.');
     } finally {
       setLoading(false);

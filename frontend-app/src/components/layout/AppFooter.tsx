@@ -1,5 +1,5 @@
-import React from 'react';
-import { Layout, Typography, Space, Divider, Row, Col } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Layout, Typography, Space, Divider, Row, Col, Button } from 'antd';
 import { Link } from 'react-router-dom';
 import { 
   FacebookFilled, 
@@ -9,7 +9,12 @@ import {
   PhoneOutlined, 
   MailOutlined,
   InstagramOutlined,
-  LinkedinOutlined
+  LinkedinOutlined,
+  UpOutlined,
+  TrophyOutlined,
+  SafetyOutlined,
+  RocketOutlined,
+  HeartFilled
 } from '@ant-design/icons';
 import './AppFooter.css';
 
@@ -19,15 +24,43 @@ const { Text, Link: AntLink, Title } = Typography;
 const PtitLogoSmall = () => (
   <div className="footer-logo">
     <img 
-      src="https://placehold.co/140x40/D8242C/FFFFFF?text=HỆ+THỐNG+TS&font=Inter" 
+      src="https://placehold.co/140x40/3B82F6/FFFFFF?text=HỆ+THỐNG+TS&font=Inter" 
       alt="Logo Hệ Thống Tuyển Sinh" 
       className="logo-image"
     />
+    <div className="logo-badges">
+      <span className="logo-badge official">
+        <SafetyOutlined /> Chính thức
+      </span>
+      <span className="logo-badge trusted">
+        <TrophyOutlined /> Uy tín
+      </span>
+      <span className="logo-badge modern">
+        <RocketOutlined /> Hiện đại
+      </span>
+    </div>
   </div>
 );
 
 const AppFooter = () => {
   const currentYear = new Date().getFullYear();
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.pageYOffset > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   const quickLinks = [
     { text: 'Trang chủ', href: '#' },
@@ -44,18 +77,49 @@ const AppFooter = () => {
     { text: 'Chính sách bảo mật', href: '#' },
     { text: 'Điều khoản sử dụng', href: '#' }
   ];
-
   const socialLinks = [
-    { icon: <FacebookFilled />, href: '#', label: 'Facebook' },
-    { icon: <YoutubeFilled />, href: '#', label: 'YouTube' },
-    { icon: <TwitterOutlined />, href: '#', label: 'Twitter' },
-    { icon: <InstagramOutlined />, href: '#', label: 'Instagram' },
-    { icon: <LinkedinOutlined />, href: '#', label: 'LinkedIn' }
+    { icon: <FacebookFilled />, href: '#', label: 'Facebook', color: '#1877f2' },
+    { icon: <YoutubeFilled />, href: '#', label: 'YouTube', color: '#ff0000' },
+    { icon: <TwitterOutlined />, href: '#', label: 'Twitter', color: '#1da1f2' },
+    { icon: <InstagramOutlined />, href: '#', label: 'Instagram', color: '#e4405f' },
+    { icon: <LinkedinOutlined />, href: '#', label: 'LinkedIn', color: '#0077b5' }
   ];
 
+  const stats = [
+    { label: 'Sinh viên', value: '50K+', icon: '🎓', color: '#3b82f6' },
+    { label: 'Trường ĐH', value: '100+', icon: '🏫', color: '#10b981' },
+    { label: 'Thành công', value: '98%', icon: '🎯', color: '#06b6d4' },
+    { label: 'Kinh nghiệm', value: '25+', icon: '⭐', color: '#f59e0b' }
+  ];
+
+  const features = [
+    { icon: '🚀', title: 'Nhanh chóng', desc: 'Xử lý hồ sơ trong 24h' },
+    { icon: '🔒', title: 'Bảo mật', desc: 'Thông tin được mã hóa an toàn' },
+    { icon: '💡', title: 'Thông minh', desc: 'AI hỗ trợ tư vấn ngành học' },
+    { icon: '🎯', title: 'Chính xác', desc: 'Dự đoán kết quả 98% chính xác' }
+  ];
   return (
     <Footer className="app-footer">
       <div className="footer-container">
+        {/* Statistics Section */}
+        <div className="footer-stats">
+          <Row gutter={[24, 24]} justify="center">
+            {stats.map((stat, index) => (
+              <Col xs={12} sm={6} key={index}>
+                <div className="stat-card">
+                  <div className="stat-icon" style={{ color: stat.color }}>
+                    {stat.icon}
+                  </div>
+                  <div className="stat-value" style={{ color: stat.color }}>
+                    {stat.value}
+                  </div>
+                  <div className="stat-label">{stat.label}</div>
+                </div>
+              </Col>
+            ))}
+          </Row>
+        </div>
+
         {/* Main Footer Content */}
         <div className="footer-main">
           <Row gutter={[48, 32]} justify="space-between">
@@ -66,8 +130,7 @@ const AppFooter = () => {
                 <Text className="footer-description">
                   Cổng thông tin tuyển sinh chính thức của Học viện Công nghệ 
                   Bưu chính Viễn thông. Nơi cập nhật thông tin nhanh chóng và chính xác nhất.
-                </Text>
-                <div className="social-links">
+                </Text>                <div className="social-links">
                   {socialLinks.map((social, index) => (
                     <AntLink
                       key={index}
@@ -75,6 +138,7 @@ const AppFooter = () => {
                       target="_blank"
                       className="social-link"
                       title={social.label}
+                      style={{ '--brand-color': social.color } as React.CSSProperties}
                     >
                       {social.icon}
                     </AntLink>
@@ -154,7 +218,27 @@ const AppFooter = () => {
                   </div>
                 </div>
               </div>
-            </Col>
+            </Col>          </Row>
+        </div>
+
+        {/* Feature Highlights */}
+        <div className="footer-features">
+          <Title level={4} className="features-title">
+            <HeartFilled style={{ color: '#f59e0b', marginRight: 8 }} />
+            Tại sao chọn chúng tôi?
+          </Title>
+          <Row gutter={[24, 16]}>
+            {features.map((feature, index) => (
+              <Col xs={12} sm={6} key={index}>
+                <div className="feature-item">
+                  <div className="feature-icon">{feature.icon}</div>
+                  <div className="feature-content">
+                    <div className="feature-title">{feature.title}</div>
+                    <div className="feature-desc">{feature.desc}</div>
+                  </div>
+                </div>
+              </Col>
+            ))}
           </Row>
         </div>
 
@@ -171,10 +255,20 @@ const AppFooter = () => {
               <Text className="credits-text">
                 Phát triển bởi <span className="highlight">Nhóm Sinh Viên UDU</span>
               </Text>
-            </Col>
-          </Row>
+            </Col>          </Row>
         </div>
       </div>
+
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <Button
+          className="scroll-to-top"
+          onClick={scrollToTop}
+          shape="circle"
+          icon={<UpOutlined />}
+          size="large"
+        />
+      )}
     </Footer>
   );
 };

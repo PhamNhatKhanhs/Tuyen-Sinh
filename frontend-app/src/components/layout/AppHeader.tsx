@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  Layout, Menu, Button, Avatar, Dropdown, Badge, List, Typography, Spin, Empty, message, Drawer
+  Layout, Menu, Button, Avatar, Dropdown, Badge, Typography, message, Drawer
 } from 'antd';
 import type { MenuProps } from 'antd';
 import {
@@ -9,13 +9,14 @@ import {
   FormOutlined, SolutionOutlined, SettingOutlined, BuildOutlined,
   FileSearchOutlined, ReadOutlined, UnorderedListOutlined, AppstoreAddOutlined,
   LinkOutlined, BarChartOutlined, TeamOutlined, BellOutlined,
-  MailOutlined, MenuOutlined, CloseOutlined, DownOutlined
+  MenuOutlined, CloseOutlined, DownOutlined
 } from '@ant-design/icons';
-import { Briefcase } from 'lucide-react';
+import { Briefcase, Sparkles } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { logout, selectUser, selectIsAuthenticated } from '../../features/auth/store/authSlice';
 import notificationService from '../../features/notification/services/notificationService';
 import { NotificationFE } from '../../features/notification/types';
+import NotificationDropdown from '../../features/notification/components/NotificationDropdown';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/vi';
@@ -25,7 +26,7 @@ dayjs.extend(relativeTime);
 dayjs.locale('vi');
 
 const { Header } = Layout;
-const { Text, Paragraph } = Typography;
+const { Text } = Typography;
 const MAX_NOTIFICATIONS_IN_DROPDOWN = 7;
 
 const AppHeader: React.FC = () => {
@@ -38,18 +39,11 @@ const AppHeader: React.FC = () => {
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
-
-  const [notifications, setNotifications] = useState<NotificationFE[]>([]);
+  }, []);  const [notifications, setNotifications] = useState<NotificationFE[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [loadingNotifications, setLoadingNotifications] = useState(false);
-  const [notificationDropdownVisible, setNotificationDropdownVisible] = useState(false);
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
-
-  const fetchNotifications = useCallback(async (showLoading = true) => {
+  const fetchNotifications = useCallback(async () => {
     if (!isAuthenticated) return;
-    
-    if (showLoading) setLoadingNotifications(true);
     
     try {
       const response = await notificationService.getMyNotifications({ 
@@ -65,8 +59,6 @@ const AppHeader: React.FC = () => {
       }
     } catch (error) {
       console.error('Error fetching notifications:', error);
-    } finally {
-      if (showLoading) setLoadingNotifications(false);
     }
   }, [isAuthenticated]);
 
@@ -76,10 +68,9 @@ const AppHeader: React.FC = () => {
     if (isClient && isAuthenticated) {
       // Initial fetch
       fetchNotifications();
-      
-      // Set up polling interval
+        // Set up polling interval
       intervalId = setInterval(() => {
-        fetchNotifications(false);
+        fetchNotifications();
       }, 60000); // Poll every minute
     } else {
       // Clear notifications when user logs out
@@ -109,15 +100,13 @@ const AppHeader: React.FC = () => {
       navigate(path);
     }
     setMobileMenuVisible(false);
-  };
-
-  const userDropdownItems: MenuProps['items'] = [
+  };  const userDropdownItems: MenuProps['items'] = [
     {
       key: 'profile',
       label: (
         <div className="dropdown-item">
-          <UserOutlined />
-          <span>Trang của tôi</span>
+          <UserOutlined style={{ color: '#6366f1' }} />
+          <span>Hồ sơ cá nhân</span>
         </div>
       ),
       onClick: () => navigate(user?.role === 'admin' ? '/admin/dashboard' : '/candidate/profile')
@@ -126,156 +115,140 @@ const AppHeader: React.FC = () => {
       key: 'settings',
       label: (
         <div className="dropdown-item">
-          <SettingOutlined />
-          <span>Cài đặt</span>
+          <SettingOutlined style={{ color: '#64748b' }} />
+          <span>Cài đặt tài khoản</span>
         </div>
       ),
-      onClick: () => message.info('Chức năng cài đặt chưa có!')
+      onClick: () => message.info('Chức năng cài đặt đang phát triển!')
+    },
+    {
+      key: 'notifications',
+      label: (
+        <div className="dropdown-item">
+          <BellOutlined style={{ color: '#f59e0b' }} />
+          <span>Thông báo</span>
+          {unreadCount > 0 && (
+            <Badge 
+              count={unreadCount} 
+              size="small" 
+              style={{ marginLeft: 'auto' }}
+            />
+          )}
+        </div>
+      ),
+      onClick: () => navigate('/notifications')
     },
     { type: 'divider' },
     {
       key: 'logout',
       label: (
         <div className="dropdown-item danger">
-          <LogoutOutlined />
+          <LogoutOutlined style={{ color: '#ef4444' }} />
           <span>Đăng xuất</span>
         </div>
       ),
       onClick: handleLogout
     },
   ];
-
   const getMenuItems = (isClient: boolean): MenuProps['items'] => {
     const items: MenuProps['items'] = [
-      { key: 'home', icon: <HomeOutlined />, label: 'Trang Chủ', onClick: () => handleNavigation('/') },
-      { key: 'universities', icon: <ReadOutlined />, label: 'Các Trường ĐH', onClick: () => handleNavigation('/universities') },
+      { 
+        key: 'home', 
+        icon: <HomeOutlined />, 
+        label: 'Trang Chủ', 
+        onClick: () => handleNavigation('/') 
+      },
+      { 
+        key: 'universities', 
+        icon: <ReadOutlined />, 
+        label: 'Trường Đại Học', 
+        onClick: () => handleNavigation('/universities') 
+      },
     ];
+    
     if (isClient && isAuthenticated && user) {
       if (user.role === 'admin') {
         items.push(
-          { key: 'admin-dashboard', icon: <DashboardOutlined />, label: 'Bảng Điều Khiển', onClick: () => handleNavigation('/admin/dashboard') },
-          { key: 'admin-management', icon: <SettingOutlined />, label: 'Quản Lý Hệ Thống', children: [
+          { 
+            key: 'admin-dashboard', 
+            icon: <DashboardOutlined />, 
+            label: 'Bảng Điều Khiển', 
+            onClick: () => handleNavigation('/admin/dashboard') 
+          },
+          { 
+            key: 'admin-management', 
+            icon: <SettingOutlined />, 
+            label: 'Quản Lý Hệ Thống', 
+            children: [
               { key: 'admin-universities-mng', icon: <BuildOutlined />, label: 'QL Trường ĐH', onClick: () => handleNavigation('/admin/universities') },
               { key: 'admin-majors-mng', icon: <SolutionOutlined />, label: 'QL Ngành Học', onClick: () => handleNavigation('/admin/majors') },
               { key: 'admin-admission-methods-mng', icon: <UnorderedListOutlined />, label: 'QL Phương Thức XT', onClick: () => handleNavigation('/admin/admission-methods') },
               { key: 'admin-subject-groups-mng', icon: <AppstoreAddOutlined />, label: 'QL Tổ Hợp Môn', onClick: () => handleNavigation('/admin/subject-groups') },
               { key: 'admin-admission-links-mng', icon: <LinkOutlined />, label: 'QL Liên Kết Tuyển Sinh', onClick: () => handleNavigation('/admin/admission-links') },
-          ]},
-          { key: 'admin-applications', icon: <FileSearchOutlined />, label: 'QL Hồ Sơ Tuyển Sinh', onClick: () => handleNavigation('/admin/applications') },
-          { key: 'admin-stats', icon: <BarChartOutlined />, label: 'Thống Kê', onClick: () => handleNavigation('/admin/stats') },
-          { key: 'admin-users-mng', icon: <TeamOutlined />, label: 'QL Người Dùng', onClick: () => handleNavigation('/admin/users') },
-        );
-      } else if (user.role === 'candidate') {
+            ]
+          },
+          { 
+            key: 'admin-applications', 
+            icon: <FileSearchOutlined />, 
+            label: 'QL Hồ Sơ TS', 
+            onClick: () => handleNavigation('/admin/applications') 
+          },
+          { 
+            key: 'admin-stats', 
+            icon: <BarChartOutlined />, 
+            label: 'Thống Kê & Báo Cáo', 
+            onClick: () => handleNavigation('/admin/stats') 
+          },
+          { 
+            key: 'admin-users-mng', 
+            icon: <TeamOutlined />, 
+            label: 'QL Người Dùng', 
+            onClick: () => handleNavigation('/admin/users') 
+          },
+        );      } else if (user.role === 'candidate') {
         items.push(
-          { key: 'candidate-dashboard', icon: <DashboardOutlined />, label: 'Bảng Điều Khiển', onClick: () => handleNavigation('/candidate/dashboard') },
-          { key: 'candidate-submit', icon: <FormOutlined />, label: 'Nộp Hồ Sơ', onClick: () => handleNavigation('/candidate/submit-application') },
-          { key: 'candidate-view', icon: <SolutionOutlined />, label: 'Hồ Sơ Của Tôi', onClick: () => handleNavigation('/candidate/my-applications') },
-        );
+          { 
+            key: 'candidate-dashboard', 
+            icon: <DashboardOutlined />, 
+            label: 'Bảng Điều Khiển', 
+            onClick: () => handleNavigation('/candidate/dashboard') 
+          },
+          { 
+            key: 'candidate-submit', 
+            icon: <FormOutlined />, 
+            label: 'Nộp Hồ Sơ', 
+            onClick: () => handleNavigation('/candidate/submit-application') 
+          },        );
       }
     }
     return items;
   };
 
-  const handleNotificationClick = async (notification: NotificationFE) => {
-    setNotificationDropdownVisible(false);
-    if (notification.link) navigate(notification.link);
-    if (!notification.isRead) {
-      try {
-        const response = await notificationService.markAsRead(notification.id);
-        if (response.success) fetchNotifications(false);
-      } catch (error) {
-        console.error("Đánh dấu đã đọc thất bại:", error);
+  const handleMarkAsRead = async (id: string) => {    try {
+      const response = await notificationService.markAsRead(id);
+      if (response.success) {
+        fetchNotifications();
+        message.success('Đã đánh dấu là đã đọc');
+      } else {
+        message.error(response.message || 'Không thể đánh dấu.');
       }
+    } catch (error) {
+      console.error("Đánh dấu đã đọc thất bại:", error);
+      message.error('Lỗi kết nối.');
     }
   };
 
   const handleMarkAllAsRead = async () => {
     try {
-      const response = await notificationService.markAllAsRead();
-      if (response.success) {
+      const response = await notificationService.markAllAsRead();      if (response.success) {
         message.success('Tất cả đã được đánh dấu là đã đọc.');
-        fetchNotifications(false);
+        fetchNotifications();
       } else {
         message.error(response.message || 'Không thể đánh dấu.');
       }
     } catch {
       message.error('Lỗi kết nối.');
-    }
-  };
-
-  const notificationMenuOverlay = (
-    <div className="notification-dropdown">
-      <div className="notification-header">
-        <Typography.Title level={5} className="notification-title">
-          Thông Báo
-          {unreadCount > 0 && <Badge count={unreadCount} size="small" />}
-        </Typography.Title>
-        {unreadCount > 0 && (
-          <Button type="link" size="small" onClick={handleMarkAllAsRead} className="mark-all-btn">
-            Đánh dấu đã đọc
-          </Button>
-        )}
-      </div>
-      <div className="notification-body">
-        {loadingNotifications && notifications.length === 0 ? (
-          <div className="notification-loading">
-            <Spin size="small" />
-            <Text type="secondary">Đang tải...</Text>
-          </div>
-        ) : notifications.length === 0 ? (
-          <Empty 
-            description="Không có thông báo mới" 
-            image={Empty.PRESENTED_IMAGE_SIMPLE} 
-            className="notification-empty" 
-          />
-        ) : (
-          <List
-            itemLayout="horizontal"
-            dataSource={notifications}
-            renderItem={item => (
-              <List.Item
-                onClick={() => handleNotificationClick(item)}
-                className={`notification-item ${!item.isRead ? 'unread' : 'read'}`}
-              >
-                <List.Item.Meta
-                  avatar={
-                    <div className={`notification-avatar ${!item.isRead ? 'unread' : ''}`}>
-                      <MailOutlined />
-                    </div>
-                  }
-                  title={<Text strong={!item.isRead} className="notification-title">{item.title}</Text>}
-                  description={
-                    <div className="notification-content">
-                      <Paragraph ellipsis={{ rows: 2 }} className="notification-message">
-                        {item.message}
-                      </Paragraph>
-                      <Text type="secondary" className="notification-time">
-                        {dayjs(item.createdAt).fromNow()}
-                      </Text>
-                    </div>
-                  }
-                />
-                {!item.isRead && <div className="unread-indicator" />}
-              </List.Item>
-            )}
-          />
-        )}
-      </div>
-      <div className="notification-footer">
-        <Button 
-          type="link" 
-          size="small" 
-          onClick={() => { 
-            navigate('/notifications'); 
-            setNotificationDropdownVisible(false); 
-          }}
-          className="view-all-btn"
-        >
-          Xem tất cả thông báo
-        </Button>
-      </div>
-    </div>
-  );
+    }  };
 
   const renderMobileMenuItem = (item: any, isChild = false) => (
     <div key={item.key} className={`mobile-menu-item ${isChild ? 'child' : ''}`}>
@@ -302,14 +275,13 @@ const AppHeader: React.FC = () => {
   return (
     <>
       <Header className="app-header">
-        <div className="header-container">
-          <Link to="/" className="header-logo">
+        <div className="header-container">          <Link to="/" className="header-logo">
             <div className="logo-icon-wrapper">
               <Briefcase className="logo-icon" />
             </div>
             <div className="logo-text-wrapper">
               <span className="logo-text-main">Tuyển Sinh ĐH</span>
-              <span className="logo-text-sub">Hệ thống thông tin</span>
+              <span className="logo-text-sub">Hệ thống hiện đại</span>
             </div>
           </Link>
 
@@ -319,41 +291,38 @@ const AppHeader: React.FC = () => {
             items={getMenuItems(isClient)} 
             selectable={false}
             theme="light"
-          />
-
-          <div className="header-actions">
-            {isClient ? (
-              <>
-                {isAuthenticated && user && (
-                  <div className="notification-container">
-                    <Badge count={unreadCount} size="small">
-                      <Button 
-                        type="text" 
-                        shape="circle" 
-                        icon={<BellOutlined />} 
-                        className="notification-button"
-                        onClick={() => setNotificationDropdownVisible(!notificationDropdownVisible)}
-                      />
-                    </Badge>
-                    {notificationDropdownVisible && (
-                      <div className="notification-dropdown-wrapper">
-                        {notificationMenuOverlay}
-                      </div>
-                    )}
-                  </div>
+          />          <div className="header-actions">
+            {isClient ? (                <>
+                {isAuthenticated && user && (                  <NotificationDropdown
+                    notifications={notifications.map(n => ({
+                      id: n.id,
+                      title: n.title,
+                      message: n.message,
+                      type: (n.type as 'success' | 'error' | 'warning' | 'info') || 'info',
+                      isRead: n.isRead,
+                      createdAt: n.createdAt
+                    }))}
+                    onMarkAsRead={handleMarkAsRead}
+                    onMarkAllAsRead={handleMarkAllAsRead}
+                    maxDisplay={5}
+                  />
                 )}
 
-                {isAuthenticated && user ? (
-                  <Dropdown 
+                {isAuthenticated && user ? (<Dropdown 
                     menu={{ items: userDropdownItems }} 
                     placement="bottomRight"
                     overlayClassName="user-dropdown-overlay"
+                    trigger={['click']}
                   >
                     <div className="user-info">
                       <Avatar icon={<UserOutlined />} className="user-avatar" size="default" />
                       <div className="user-details">
-                        <span className="user-name">{user.fullName || user.email}</span>
-                        <span className="user-role">{user.role === 'admin' ? 'Quản trị viên' : 'Thí sinh'}</span>
+                        <span className="user-name" title={user.fullName || user.email}>
+                          {user.fullName || user.email}
+                        </span>
+                        <span className="user-role">
+                          {user.role === 'admin' ? 'Quản trị viên' : 'Thí sinh'}
+                        </span>
                       </div>
                       <DownOutlined className="user-dropdown-arrow" />
                     </div>
@@ -385,11 +354,10 @@ const AppHeader: React.FC = () => {
       </Header>
 
       {/* Mobile Menu Drawer */}
-      <Drawer
-        title={
+      <Drawer        title={
           <div className="mobile-menu-header">
             <div className="mobile-logo">
-              <Briefcase className="mobile-logo-icon" />
+              <Sparkles className="mobile-logo-icon" />
               <span>Tuyển Sinh ĐH</span>
             </div>
           </div>

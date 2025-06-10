@@ -77,13 +77,12 @@ const applicationService = {
   getMyApplications: async (): Promise<{ success: boolean; data?: ApplicationListItemFE[]; message?: string }> => {
     try {
       const response = await axiosInstance.get<GetMyApplicationsResponse>('/candidate/applications');
-      if (response.data.success && response.data.data) {
-        const applicationsFE: ApplicationListItemFE[] = response.data.data.map(app => ({
+      if (response.data.success && response.data.data) {        const applicationsFE: ApplicationListItemFE[] = response.data.data.map(app => ({
           id: app._id,
-          universityName: typeof app.university === 'object' ? app.university.name : 'N/A',
-          universityCode: typeof app.university === 'object' ? app.university.code : undefined,
-          majorName: typeof app.major === 'object' ? app.major.name : 'N/A',
-          majorCode: typeof app.major === 'object' ? app.major.code : undefined,
+          universityName: (typeof app.university === 'object' && app.university) ? app.university.name : 'N/A',
+          universityCode: (typeof app.university === 'object' && app.university) ? app.university.code : undefined,
+          majorName: (typeof app.major === 'object' && app.major) ? app.major.name : 'N/A',
+          majorCode: (typeof app.major === 'object' && app.major) ? app.major.code : undefined,
           submissionDate: new Date(app.submissionDate).toLocaleDateString('vi-VN'),
           status: app.status,
           year: app.year,

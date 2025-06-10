@@ -44,17 +44,44 @@ const admissionMethodAdminService = {
       return { success: false, message: error.response?.data?.message || error.message };
     }
   },
-
   create: async (methodData: Omit<AdmissionMethodFE, 'id'>): Promise<AdminAdmissionMethodResponse> => {
     try {
-      const response = await axiosInstance.post<AdminAdmissionMethodResponse>('/admin/admission-methods', methodData);
+      console.log('🔍 [AdmissionMethod Service] Creating with data:', methodData);
+      
+      // Clean the data before sending
+      const cleanData = {
+        name: methodData.name?.trim(),
+        code: methodData.code?.trim() || undefined,
+        description: methodData.description?.trim() || undefined,
+        isActive: methodData.isActive !== undefined ? methodData.isActive : true
+      };
+      
+      // Remove undefined values
+      Object.keys(cleanData).forEach(key => {
+        if (cleanData[key] === undefined || cleanData[key] === '') {
+          delete cleanData[key];
+        }
+      });
+      
+      console.log('🧹 [AdmissionMethod Service] Cleaned data:', cleanData);
+      
+      const response = await axiosInstance.post<AdminAdmissionMethodResponse>('/admin/admission-methods', cleanData);
+      
+      console.log('✅ [AdmissionMethod Service] Response:', response.data);
+      
       if (response.data.success && response.data.data) {
         const methodBE = response.data.data as AdmissionMethodBE;
         return { ...response.data, data: { ...methodBE, id: methodBE._id } };
       }
       return response.data;
     } catch (error: any) {
-      return { success: false, message: error.response?.data?.message || error.message };
+      console.error('❌ [AdmissionMethod Service] Create error:', error);
+      console.error('❌ [AdmissionMethod Service] Error response:', error.response?.data);
+      console.error('❌ [AdmissionMethod Service] Error status:', error.response?.status);
+      return { 
+        success: false, 
+        message: error.response?.data?.message || error.message || 'Lỗi khi tạo phương thức xét tuyển'
+      };
     }
   },
 
