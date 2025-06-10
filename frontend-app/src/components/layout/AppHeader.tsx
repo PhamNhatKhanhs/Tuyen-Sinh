@@ -9,9 +9,10 @@ import {
   FormOutlined, SolutionOutlined, SettingOutlined, BuildOutlined,
   FileSearchOutlined, ReadOutlined, UnorderedListOutlined, AppstoreAddOutlined,
   LinkOutlined, BarChartOutlined, TeamOutlined, BellOutlined,
-  MailOutlined, MenuOutlined, CloseOutlined, DownOutlined
+  MailOutlined, MenuOutlined, CloseOutlined, DownOutlined, StarOutlined,
+  ThunderboltOutlined, GiftOutlined
 } from '@ant-design/icons';
-import { Briefcase } from 'lucide-react';
+import { Briefcase, Sparkles } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { logout, selectUser, selectIsAuthenticated } from '../../features/auth/store/authSlice';
 import notificationService from '../../features/notification/services/notificationService';
@@ -109,15 +110,13 @@ const AppHeader: React.FC = () => {
       navigate(path);
     }
     setMobileMenuVisible(false);
-  };
-
-  const userDropdownItems: MenuProps['items'] = [
+  };  const userDropdownItems: MenuProps['items'] = [
     {
       key: 'profile',
       label: (
         <div className="dropdown-item">
-          <UserOutlined />
-          <span>Trang của tôi</span>
+          <UserOutlined style={{ color: '#6366f1' }} />
+          <span>Hồ sơ cá nhân</span>
         </div>
       ),
       onClick: () => navigate(user?.role === 'admin' ? '/admin/dashboard' : '/candidate/profile')
@@ -126,50 +125,110 @@ const AppHeader: React.FC = () => {
       key: 'settings',
       label: (
         <div className="dropdown-item">
-          <SettingOutlined />
-          <span>Cài đặt</span>
+          <SettingOutlined style={{ color: '#64748b' }} />
+          <span>Cài đặt tài khoản</span>
         </div>
       ),
-      onClick: () => message.info('Chức năng cài đặt chưa có!')
+      onClick: () => message.info('Chức năng cài đặt đang phát triển!')
+    },
+    {
+      key: 'notifications',
+      label: (
+        <div className="dropdown-item">
+          <BellOutlined style={{ color: '#f59e0b' }} />
+          <span>Thông báo</span>
+          {unreadCount > 0 && (
+            <Badge 
+              count={unreadCount} 
+              size="small" 
+              style={{ marginLeft: 'auto' }}
+            />
+          )}
+        </div>
+      ),
+      onClick: () => navigate('/notifications')
     },
     { type: 'divider' },
     {
       key: 'logout',
       label: (
         <div className="dropdown-item danger">
-          <LogoutOutlined />
+          <LogoutOutlined style={{ color: '#ef4444' }} />
           <span>Đăng xuất</span>
         </div>
       ),
       onClick: handleLogout
     },
   ];
-
   const getMenuItems = (isClient: boolean): MenuProps['items'] => {
     const items: MenuProps['items'] = [
-      { key: 'home', icon: <HomeOutlined />, label: 'Trang Chủ', onClick: () => handleNavigation('/') },
-      { key: 'universities', icon: <ReadOutlined />, label: 'Các Trường ĐH', onClick: () => handleNavigation('/universities') },
+      { 
+        key: 'home', 
+        icon: <HomeOutlined />, 
+        label: 'Trang Chủ', 
+        onClick: () => handleNavigation('/') 
+      },
+      { 
+        key: 'universities', 
+        icon: <ReadOutlined />, 
+        label: 'Trường Đại Học', 
+        onClick: () => handleNavigation('/universities') 
+      },
     ];
+    
     if (isClient && isAuthenticated && user) {
       if (user.role === 'admin') {
         items.push(
-          { key: 'admin-dashboard', icon: <DashboardOutlined />, label: 'Bảng Điều Khiển', onClick: () => handleNavigation('/admin/dashboard') },
-          { key: 'admin-management', icon: <SettingOutlined />, label: 'Quản Lý Hệ Thống', children: [
+          { 
+            key: 'admin-dashboard', 
+            icon: <DashboardOutlined />, 
+            label: 'Bảng Điều Khiển', 
+            onClick: () => handleNavigation('/admin/dashboard') 
+          },
+          { 
+            key: 'admin-management', 
+            icon: <SettingOutlined />, 
+            label: 'Quản Lý Hệ Thống', 
+            children: [
               { key: 'admin-universities-mng', icon: <BuildOutlined />, label: 'QL Trường ĐH', onClick: () => handleNavigation('/admin/universities') },
               { key: 'admin-majors-mng', icon: <SolutionOutlined />, label: 'QL Ngành Học', onClick: () => handleNavigation('/admin/majors') },
               { key: 'admin-admission-methods-mng', icon: <UnorderedListOutlined />, label: 'QL Phương Thức XT', onClick: () => handleNavigation('/admin/admission-methods') },
               { key: 'admin-subject-groups-mng', icon: <AppstoreAddOutlined />, label: 'QL Tổ Hợp Môn', onClick: () => handleNavigation('/admin/subject-groups') },
               { key: 'admin-admission-links-mng', icon: <LinkOutlined />, label: 'QL Liên Kết Tuyển Sinh', onClick: () => handleNavigation('/admin/admission-links') },
-          ]},
-          { key: 'admin-applications', icon: <FileSearchOutlined />, label: 'QL Hồ Sơ Tuyển Sinh', onClick: () => handleNavigation('/admin/applications') },
-          { key: 'admin-stats', icon: <BarChartOutlined />, label: 'Thống Kê', onClick: () => handleNavigation('/admin/stats') },
-          { key: 'admin-users-mng', icon: <TeamOutlined />, label: 'QL Người Dùng', onClick: () => handleNavigation('/admin/users') },
-        );
-      } else if (user.role === 'candidate') {
+            ]
+          },
+          { 
+            key: 'admin-applications', 
+            icon: <FileSearchOutlined />, 
+            label: 'QL Hồ Sơ TS', 
+            onClick: () => handleNavigation('/admin/applications') 
+          },
+          { 
+            key: 'admin-stats', 
+            icon: <BarChartOutlined />, 
+            label: 'Thống Kê & Báo Cáo', 
+            onClick: () => handleNavigation('/admin/stats') 
+          },
+          { 
+            key: 'admin-users-mng', 
+            icon: <TeamOutlined />, 
+            label: 'QL Người Dùng', 
+            onClick: () => handleNavigation('/admin/users') 
+          },
+        );      } else if (user.role === 'candidate') {
         items.push(
-          { key: 'candidate-dashboard', icon: <DashboardOutlined />, label: 'Bảng Điều Khiển', onClick: () => handleNavigation('/candidate/dashboard') },
-          { key: 'candidate-submit', icon: <FormOutlined />, label: 'Nộp Hồ Sơ', onClick: () => handleNavigation('/candidate/submit-application') },
-          { key: 'candidate-view', icon: <SolutionOutlined />, label: 'Hồ Sơ Của Tôi', onClick: () => handleNavigation('/candidate/my-applications') },
+          { 
+            key: 'candidate-dashboard', 
+            icon: <DashboardOutlined />, 
+            label: 'Bảng Điều Khiển', 
+            onClick: () => handleNavigation('/candidate/dashboard') 
+          },
+          { 
+            key: 'candidate-submit', 
+            icon: <FormOutlined />, 
+            label: 'Nộp Hồ Sơ', 
+            onClick: () => handleNavigation('/candidate/submit-application') 
+          },
         );
       }
     }
@@ -302,14 +361,13 @@ const AppHeader: React.FC = () => {
   return (
     <>
       <Header className="app-header">
-        <div className="header-container">
-          <Link to="/" className="header-logo">
+        <div className="header-container">          <Link to="/" className="header-logo">
             <div className="logo-icon-wrapper">
               <Briefcase className="logo-icon" />
             </div>
             <div className="logo-text-wrapper">
               <span className="logo-text-main">Tuyển Sinh ĐH</span>
-              <span className="logo-text-sub">Hệ thống thông tin</span>
+              <span className="logo-text-sub">Hệ thống hiện đại</span>
             </div>
           </Link>
 
@@ -343,17 +401,21 @@ const AppHeader: React.FC = () => {
                   </div>
                 )}
 
-                {isAuthenticated && user ? (
-                  <Dropdown 
+                {isAuthenticated && user ? (                  <Dropdown 
                     menu={{ items: userDropdownItems }} 
                     placement="bottomRight"
                     overlayClassName="user-dropdown-overlay"
+                    trigger={['click']}
                   >
                     <div className="user-info">
                       <Avatar icon={<UserOutlined />} className="user-avatar" size="default" />
                       <div className="user-details">
-                        <span className="user-name">{user.fullName || user.email}</span>
-                        <span className="user-role">{user.role === 'admin' ? 'Quản trị viên' : 'Thí sinh'}</span>
+                        <span className="user-name" title={user.fullName || user.email}>
+                          {user.fullName || user.email}
+                        </span>
+                        <span className="user-role">
+                          {user.role === 'admin' ? 'Quản trị viên' : 'Thí sinh'}
+                        </span>
                       </div>
                       <DownOutlined className="user-dropdown-arrow" />
                     </div>
@@ -385,11 +447,10 @@ const AppHeader: React.FC = () => {
       </Header>
 
       {/* Mobile Menu Drawer */}
-      <Drawer
-        title={
+      <Drawer        title={
           <div className="mobile-menu-header">
             <div className="mobile-logo">
-              <Briefcase className="mobile-logo-icon" />
+              <Sparkles className="mobile-logo-icon" />
               <span>Tuyển Sinh ĐH</span>
             </div>
           </div>

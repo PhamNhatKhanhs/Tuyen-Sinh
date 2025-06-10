@@ -52,12 +52,16 @@ const applicationAdminService = {
     } catch (error: any) {
       return { success: false, message: error.response?.data?.message || error.message || "Lỗi khi tải danh sách hồ sơ (Admin)." };
     }
-  },
-  getById: async (id: string): Promise<GetApplicationByIdAdminResponse> => {
+  },  getById: async (id: string): Promise<GetApplicationByIdAdminResponse> => {
     try {
+      console.log('🌐 ApplicationAdminService.getById - Making API call for ID:', id);
       const response = await axiosInstance.get<GetApplicationByIdAdminResponse>(`/admin/applications/${id}`);
+      console.log('📦 ApplicationAdminService.getById - Raw response:', response);
+      console.log('📋 ApplicationAdminService.getById - Response data:', response.data);
       return response.data;
     } catch (error: any) {
+      console.error('💥 ApplicationAdminService.getById - Error:', error);
+      console.error('📄 ApplicationAdminService.getById - Error response:', error.response?.data);
       return { success: false, message: error.response?.data?.message || error.message };
     }
   },

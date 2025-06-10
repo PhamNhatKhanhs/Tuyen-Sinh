@@ -99,10 +99,10 @@ const AdminManageApplications: React.FC = () => {
   const [applications, setApplications] = useState<ApplicationAdminListItemFE[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
+    const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
   const [selectedApplicationDetail, setSelectedApplicationDetail] = useState<ApplicationDetailBE | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
+  const [currentViewingApplicationId, setCurrentViewingApplicationId] = useState<string | null>(null);
 
   const [isStatusModalVisible, setIsStatusModalVisible] = useState(false);
   const [processingApplication, setProcessingApplication] = useState<ApplicationAdminListItemFE | null>(null);
@@ -199,46 +199,57 @@ const AdminManageApplications: React.FC = () => {
   };
   const handleFilterSelectChange = (name: string, value: any) => {
     setFilters(prev => ({ ...prev, [name]: value, ...(name === 'universityId' && { majorId: undefined }) }));
-  };
-   const handleDateRangeChange: RangePickerProps['onChange'] = (dates) => {
+  };  const handleDateRangeChange: RangePickerProps['onChange'] = (dates) => {
     setFilters(prev => ({ ...prev, dateRange: dates as [dayjs.Dayjs, dayjs.Dayjs] | null }));
   };
-
-  const onApplyFilters = () => {
-      fetchApplications(1, pagination.pageSize); 
-  };
-  const onResetFilters = () => {
-    setFilters({
-        searchCandidate: '',
-        universityId: undefined,
-        majorId: undefined,
-        status: undefined,
-        year: new Date().getFullYear(),
-        dateRange: null,
-    });
-    // fetchApplications(1, pagination.pageSize); // Sẽ được trigger bởi useEffect của fetchApplications khi filters thay đổi
-  };
-
   const handleViewDetails = async (applicationId: string) => {
+    console.log('🔍 HandleViewDetails called with ID:', applicationId);
+    
     if (!applicationId) {
+      console.error('❌ No application ID provided');
       message.error("ID hồ sơ không hợp lệ.");
       return;
     }
+      console.log('📝 Setting loading state and opening modal...');
+    setCurrentViewingApplicationId(applicationId);
     setLoadingDetail(true);
     setSelectedApplicationDetail(null); 
     setIsDetailModalVisible(true);
-    try {
+      try {
+        console.log('🌐 Making API call to getById:', applicationId);
         const response = await applicationAdminService.getById(applicationId);
+        console.log('📦 API Response received:', response);
+        
         if (response.success && response.data) {
+            console.log('✅ Setting application detail data:', response.data);
             setSelectedApplicationDetail(response.data);
         } else {
-            message.error(response.message || "Không thể tải chi tiết hồ sơ.");
+            console.error('❌ API response unsuccessful:', response);
+            
+            // Check for specific error messages
+            if (response.message?.includes('Token') || response.message?.includes('unauthorized')) {
+              message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+            } else {
+              message.error(response.message || "Không thể tải chi tiết hồ sơ.");
+            }
             setIsDetailModalVisible(false); 
         }
     } catch (err: any) {
-        message.error(err.message || "Lỗi khi tải chi tiết hồ sơ.");
+        console.error('💥 Error in handleViewDetails:', err);
+        
+        // Check for network or authentication errors
+        if (err.response?.status === 401) {
+          message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+        } else if (err.response?.status === 403) {
+          message.error("Bạn không có quyền xem chi tiết hồ sơ này.");
+        } else if (err.response?.status >= 500) {
+          message.error("Lỗi máy chủ. Vui lòng thử lại sau.");
+        } else {
+          message.error(err.message || "Lỗi khi tải chi tiết hồ sơ.");
+        }
         setIsDetailModalVisible(false); 
     } finally {
+        console.log('🏁 Setting loading to false');
         setLoadingDetail(false);
     }
   };
@@ -735,33 +746,101 @@ const AdminManageApplications: React.FC = () => {
               />
               Chi Tiết Hồ Sơ Tuyển Sinh
             </div>
-          }
-          open={isDetailModalVisible}
-          onCancel={() => setIsDetailModalVisible(false)}
-          footer={
-            <Button 
-              type="primary" 
-              onClick={() => setIsDetailModalVisible(false)}
-              style={{
-                background: `linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.primaryDark} 100%)`,
-                border: 'none',
-                height: '42px',
-                borderRadius: '12px',
-                fontWeight: 600,
-                boxShadow: `0 4px 12px ${COLORS.primary}30`
-              }}
-            >
-              Đóng
-            </Button>
+          }          open={isDetailModalVisible}          onCancel={() => {
+            setIsDetailModalVisible(false);
+            setSelectedApplicationDetail(null);
+            setCurrentViewingApplicationId(null);
+          }}footer={
+            !loadingDetail && !selectedApplicationDetail ? (
+              <Space>
+                <Button 
+                  onClick={() => {
+                    setIsDetailModalVisible(false);
+                    setSelectedApplicationDetail(null);
+                    setCurrentViewingApplicationId(null);
+                  }}
+                >
+                  Đóng
+                </Button>
+                <Button 
+                  type="primary" 
+                  onClick={() => {
+                    if (currentViewingApplicationId) {
+                      handleViewDetails(currentViewingApplicationId);
+                    }
+                  }}
+                  disabled={!currentViewingApplicationId}
+                  style={{
+                    background: `linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.primaryDark} 100%)`,
+                    border: 'none',
+                    height: '42px',
+                    borderRadius: '12px',
+                    fontWeight: 600,
+                    boxShadow: `0 4px 12px ${COLORS.primary}30`
+                  }}
+                >
+                  Thử lại
+                </Button>
+              </Space>
+            ) : (
+              <Button 
+                type="primary" 
+                onClick={() => {
+                  setIsDetailModalVisible(false);
+                  setSelectedApplicationDetail(null);
+                  setCurrentViewingApplicationId(null);
+                }}
+                style={{
+                  background: `linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.primaryDark} 100%)`,
+                  border: 'none',
+                  height: '42px',
+                  borderRadius: '12px',
+                  fontWeight: 600,
+                  boxShadow: `0 4px 12px ${COLORS.primary}30`
+                }}
+              >
+                Đóng
+              </Button>
+            )
           }
           width={900}
           destroyOnClose
-        >
-          {loadingDetail && (
+        >          {loadingDetail && (
             <div style={{ textAlign: 'center', padding: '32px' }}>
               <Spin size="large" />
+              <div style={{ marginTop: '16px', color: COLORS.textLight }}>
+                Đang tải chi tiết hồ sơ...
+              </div>
             </div>
-          )}          {!loadingDetail && selectedApplicationDetail && (
+          )}          {!loadingDetail && !selectedApplicationDetail && (
+            <div style={{ textAlign: 'center', padding: '32px' }}>
+              <Alert
+                message="Không thể tải chi tiết hồ sơ"
+                description={
+                  <div>
+                    <p>Vui lòng thử lại hoặc kiểm tra kết nối mạng.</p>
+                    <p>Nếu vấn đề vẫn tiếp tục, hãy liên hệ với quản trị viên.</p>
+                    <details style={{ marginTop: '8px', fontSize: '12px', color: COLORS.textLight }}>
+                      <summary style={{ cursor: 'pointer' }}>Chi tiết debug</summary>
+                      <div style={{ marginTop: '8px', textAlign: 'left', fontFamily: 'monospace' }}>
+                        <div>API Endpoint: GET /admin/applications/[id]</div>
+                        <div>Base URL: {import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}</div>
+                        <div>Token: {localStorage.getItem('authToken') ? 'Có' : 'Không có'}</div>
+                        <div>Hãy mở Console (F12) để xem log chi tiết</div>
+                      </div>
+                    </details>
+                  </div>
+                }
+                type="error"
+                showIcon
+                style={{
+                  borderRadius: '12px',
+                  border: `1px solid ${COLORS.red500}20`,
+                  textAlign: 'left'
+                }}
+              />
+            </div>
+          )}{!loadingDetail && selectedApplicationDetail && (
             <div style={{
               background: `linear-gradient(135deg, ${COLORS.gray50} 0%, ${COLORS.blue50} 100%)`,
               padding: '24px',

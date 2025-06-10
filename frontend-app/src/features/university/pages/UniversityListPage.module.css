@@ -1,198 +1,669 @@
-/* UniversityListPage.module.css */
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap');
+/* Modern University List Page Styles */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-  --primary: #3730a3;
-  --secondary: #2563eb;
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --secondary: #3b82f6;
   --accent: #ef4444;
-  --accent2: #ec4899;
-  --bg: #f8fafc;
-  --card-bg: #fff;
-  --border: #f1f5f9;
-  --text-main: #1e293b;
-  --text-sub: #64748b;
-  --shadow: 0 4px 24px 0 rgba(30, 41, 59, 0.10);
-  --shadow-hover: 0 8px 32px 0 rgba(99, 102, 241, 0.18);
+  --accent-light: #f87171;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
-  font-family: 'Inter', 'Be Vietnam Pro', Arial, sans-serif;
-  background: var(--bg);
+  font-family: 'Inter', 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
 }
 
-.container {
-  background: var(--card-bg);
-  padding: 2.5rem 1.5rem 2rem 1.5rem;
-  border-radius: 1.5rem;
-  box-shadow: 0 6px 32px 0 rgba(30, 41, 59, 0.10);
-  min-height: 80vh;
+/* Modern Container */
+.modernContainer {
+  min-height: 100vh;
+  background: var(--bg-primary);
+}
+
+/* Hero Section */
+.heroSection {
+  background: 
+    linear-gradient(135deg, rgba(99, 102, 241, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%),
+    url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1920&h=1080&fit=crop&crop=center');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  padding: 4rem 2rem 6rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.heroSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.05"><circle cx="7" cy="7" r="2"/><circle cx="27" cy="7" r="2"/><circle cx="47" cy="7" r="2"/><circle cx="7" cy="27" r="2"/><circle cx="27" cy="27" r="2"/><circle cx="47" cy="27" r="2"/><circle cx="7" cy="47" r="2"/><circle cx="27" cy="47" r="2"/><circle cx="47" cy="47" r="2"/></g></g></svg>');
+  opacity: 0.4;
+}
+
+.heroContent {
   max-width: 1200px;
   margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 2;
 }
 
-.redHeading {
-  color: #ef4444 !important;
-  text-align: center;
-  margin-bottom: 1.2rem;
+.heroIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
-.centerSubheading {
-  text-align: center;
-  margin-bottom: 2.2rem;
+
+.heroIcon svg {
+  font-size: 32px;
+  color: white;
 }
-.heading {
-  font-family: 'Be Vietnam Pro', 'Inter', Arial, sans-serif;
-  font-size: 2.3rem;
+
+.heroTitle {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 800;
-  line-height: 1.18;
-  margin-bottom: 0.5rem;
-  letter-spacing: -0.5px;
+  color: white;
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
-.subheading {
-  font-size: 1.13rem;
-  color: var(--text-sub);
-  font-weight: 400;
-  margin-bottom: 2.5rem;
-  text-align: center;
+
+.heroSubtitle {
+  font-size: clamp(1.1rem, 2vw, 1.25rem);
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 3rem;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  font-weight: 400;
+  line-height: 1.6;
 }
 
-.grid {
+.highlight {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+}
+
+/* Search Container */
+.searchContainer {
+  max-width: 600px;
+  margin: 0 auto 4rem;
+}
+
+.searchInput {
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-lg) !important;
+  border: none !important;
+  overflow: hidden;
+}
+
+.searchInput .ant-input {
+  border: none !important;
+  box-shadow: none !important;
+  font-size: 16px !important;
+  padding: 16px 20px !important;
+}
+
+.searchButton {
+  background: var(--primary) !important;
+  border: none !important;
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0 !important;
+  padding: 16px 24px !important;
+  height: auto !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+
+.searchButton:hover {
+  background: var(--primary-dark) !important;
+  transform: translateY(-1px);
+}
+
+/* Stats Container */
+.statsContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-  gap: 2.5rem 2.5rem;
-  margin-left: -0.5rem;
-  margin-right: -0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.statCard {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-4px);
+}
+
+.statIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  margin-bottom: 1rem;
+}
+
+.statIcon svg {
+  font-size: 20px;
+  color: white;
+}
+
+.statNumber {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+.statLabel {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Content Section */
+.contentSection {
+  max-width: 1400px;
+  margin: -3rem auto 0;
+  padding: 0 2rem 4rem;
+  position: relative;
+  z-index: 3;
+}
+
+.errorAlert {
+  border-radius: var(--radius-lg) !important;
+  margin-bottom: 2rem !important;
+  box-shadow: var(--shadow) !important;
+}
+
+/* Results Header */
+.resultsHeader {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.resultsInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.searchTag {
+  font-weight: 500 !important;
+  border-radius: 20px !important;
+  padding: 4px 12px !important;
+}
+
+/* University Grid */
+.universityGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+  align-items: stretch; /* Ensure all cards have equal height */
+}
+
+.universityCard {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .card {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: var(--card-bg);
-  border-radius: 1.5rem;
-  box-shadow: var(--shadow);
-  border: 1.5px solid var(--border);
-  transition: box-shadow 0.22s, transform 0.22s;
-  margin: 0 0.5rem;
-  overflow: hidden;
-  padding: 0;
+  height: 100% !important;
+  min-height: 540px !important; /* Increased minimum height for better consistency */
+  border-radius: var(--radius-xl) !important;
+  box-shadow: var(--shadow) !important;
+  border: 1px solid var(--border) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  overflow: hidden !important;
+  background: var(--bg-secondary) !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
+
+.card .ant-card-body {
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 0 !important;
+  flex: 1 !important;
+}
+
 .card:hover {
-  box-shadow: var(--shadow-hover);
-  transform: translateY(-6px) scale(1.035);
+  transform: translateY(-6px) !important;
+  box-shadow: 0 25px 50px -12px rgba(99, 102, 241, 0.25) !important;
+  border-color: var(--primary) !important;
 }
 
 .cardCover {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f1f5f9;
-  border-top-left-radius: 1.5rem;
-  border-top-right-radius: 1.5rem;
-  padding-top: 1.7rem;
-  padding-bottom: 0.9rem;
-  min-height: 110px;
+  position: relative;
+  min-height: 140px;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(168, 85, 247, 0.05) 0%, transparent 50%);
+}
+
+.logoContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoContainer::before {
+  content: '';
+  position: absolute;
+  width: 72px;
+  height: 72px;
+  background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), 
+              linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), 
+              linear-gradient(45deg, transparent 75%, #f0f0f0 75%), 
+              linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+  background-size: 10px 10px;
+  background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
+  border-radius: 8px;
+  opacity: 0.3;
+  z-index: 0;
+}
+
+.universityLogo {
+  position: relative;
+  z-index: 1;
+}
+
+.universityLogo {
+  background: white !important;
+  border: 3px solid var(--border) !important;
+  box-shadow: var(--shadow) !important;
+  transition: transform 0.3s ease !important;
+  object-fit: cover !important;
+  border-radius: 8px !important;
+  position: relative !important;
+}
+
+.universityLogo .ant-avatar-image {
+  border-radius: 8px !important;
+  object-fit: cover !important;
+}
+
+.card:hover .universityLogo {
+  transform: scale(1.1);
+}
+
+.defaultLogo {
+  background: var(--primary) !important;
+  color: white !important;
+  border: 3px solid var(--border) !important;
+  box-shadow: var(--shadow) !important;
+  border-radius: 8px !important;
+  transition: transform 0.3s ease !important;
+}
+
+.card:hover .defaultLogo {
+  transform: scale(1.1);
+}
+
+/* Ensure images load properly */
+.universityLogo img,
+.defaultLogo img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 8px !important;
+}
+
+.popularBadge {
+  position: absolute !important;
+  top: 1rem !important;
+  right: 1rem !important;
 }
 
 .cardContent {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 1.5rem 1.1rem 1rem 1.1rem;
+  padding: 2rem !important;
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  min-height: 380px !important; /* Ensure minimum content height */
 }
 
-.uniCode {
-  font-family: 'Be Vietnam Pro', 'Inter', Arial, sans-serif;
-  font-weight: 600;
-  font-size: 1.02rem;
-  color: var(--secondary);
-  background: #e0e7ff;
-  border-radius: 0.6rem;
-  padding: 0.13rem 0.85rem;
-  margin-right: 0.6rem;
-  letter-spacing: 0.5px;
-}
-.uniName {
-  font-family: 'Be Vietnam Pro', 'Inter', Arial, sans-serif;
-  font-weight: 800;
-  font-size: 1.18rem;
-  color: var(--primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.18;
+.universityHeader {
+  margin-bottom: 1.5rem;
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
-.uniAddress, .uniWebsite {
-  color: var(--text-sub);
-  font-size: 1.01rem;
-  margin-bottom: 0.18rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.6;
+.universityCode {
+  background: var(--primary) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 20px !important;
+  padding: 4px 12px !important;
+  font-weight: 600 !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  margin-bottom: 0.75rem !important;
+  display: inline-block !important;
 }
-.uniDescription {
-  color: #6b7280;
-  font-size: 0.93rem;
-  margin-bottom: 0.5rem;
+
+.universityName {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+  margin-bottom: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3; /* Allow 3 lines for long names */
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  line-height: 1.6;
+  min-height: 3.9rem; /* Fixed height for 3 lines */
 }
 
-.detailBtn {
-  background: linear-gradient(90deg, var(--accent) 0%, var(--accent2) 100%);
-  color: #fff !important;
-  font-family: 'Be Vietnam Pro', 'Inter', Arial, sans-serif;
-  font-weight: 700;
-  font-size: 1.07rem;
-  border: none;
-  border-radius: 0.85rem;
-  box-shadow: 0 2px 12px 0 rgba(239, 68, 68, 0.12);
-  margin-top: 1.1rem;
-  padding: 0.95rem 0;
-  transition: background 0.2s, box-shadow 0.2s, transform 0.18s;
-  letter-spacing: 0.2px;
-}
-.detailBtn:hover, .detailBtn:focus {
-  background: linear-gradient(90deg, #dc2626 0%, #db2777 100%);
-  box-shadow: 0 4px 24px 0 rgba(236, 72, 153, 0.18);
-  color: #fff !important;
-  transform: scale(1.04);
+.universityInfo {
+  flex: 1 !important; /* Take remaining space */
+  margin-bottom: 1rem;
+  min-height: 120px; /* Minimum height for info section */
 }
 
-@media (max-width: 600px) {
-  .container {
-    padding: 1.1rem 0.18rem;
+.infoItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.infoIcon {
+  color: var(--primary);
+  font-size: 16px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.infoText {
+  color: var(--text-secondary) !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+  margin: 0 !important;
+}
+
+.websiteLink {
+  color: var(--primary) !important;
+  text-decoration: none !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  transition: color 0.2s ease !important;
+}
+
+.websiteLink:hover {
+  color: var(--primary-dark) !important;
+  text-decoration: underline !important;
+}
+
+.description {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.descriptionText {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important; /* Reduced from 3 to 2 lines */
+  line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+  max-height: 2.6rem !important; /* Fixed height for 2 lines */
+}
+
+.cardDivider {
+  margin: 1rem 0 !important;
+  border-color: var(--border) !important;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.cardActions {
+  margin-top: auto !important;
+  padding-top: 1rem !important;
+  flex-shrink: 0 !important; /* Prevent shrinking - this is key! */
+}
+
+.detailButton {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%) !important;
+  border: none !important;
+  border-radius: var(--radius) !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  height: 48px !important;
+  width: 100% !important;
+  transition: all 0.3s ease !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+.detailButton:hover {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+/* Loading States */
+.loadingGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.skeletonCard {
+  height: 400px;
+}
+
+/* Empty State */
+.emptyState {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-xl);
+  padding: 4rem 2rem;
+  text-align: center;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.emptyDescription {
+  color: var(--text-secondary);
+}
+
+/* Pagination */
+.paginationContainer {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  text-align: center;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.pagination .ant-pagination-item {
+  border-radius: var(--radius) !important;
+  border-color: var(--border) !important;
+  transition: all 0.2s ease !important;
+}
+
+.pagination .ant-pagination-item-active {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+.pagination .ant-pagination-item:hover {
+  border-color: var(--primary) !important;
+  transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .universityGrid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
   }
+  
+  .card {
+    min-height: 520px !important;
+  }
+  
   .cardContent {
-    padding: 1.1rem 0.5rem 0.7rem 0.5rem;
-  }
-  .grid {
-    gap: 1.25rem 0.5rem;
-  }
-  .heading {
-    font-size: 1.45rem;
-  }
-  .redHeading {
-    margin-bottom: 0.8rem;
-  }
-  .centerSubheading {
-    margin-bottom: 1.2rem;
+    min-height: 360px !important;
   }
 }
 
+@media (max-width: 768px) {
+  .heroSection {
+    padding: 3rem 1rem 4rem;
+  }
+  
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+  
+  .contentSection {
+    padding: 0 1rem 3rem;
+  }
+  
+  .universityGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .card {
+    min-height: 500px !important;
+  }
+  
+  .cardContent {
+    min-height: 340px !important;
+  }
+  
+  .resultsHeader {
+    padding: 1rem;
+  }
+  
+  .statsContainer {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .statCard {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .cardContent {
+    padding: 1.5rem !important;
+    min-height: 320px !important;
+  }
+  
+  .card {
+    min-height: 480px !important;
+  }
+  
+  .universityName {
+    font-size: 1.125rem;
+    min-height: 3.375rem; /* Adjusted for smaller font */
+  }
+  
+  .heroIcon {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .heroIcon svg {
+    font-size: 24px;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
-  background: #f1f5f9;
 }
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
 ::-webkit-scrollbar-thumb {
-  background: #e0e7ff;
-  border-radius: 8px;
-} 
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}

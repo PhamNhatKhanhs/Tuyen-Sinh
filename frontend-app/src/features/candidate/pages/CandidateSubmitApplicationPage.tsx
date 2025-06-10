@@ -723,10 +723,28 @@ const CandidateSubmitApplicationPage: React.FC = () => {
                 examScores: academicInfoToSubmit.examScores || {}, // Extract examScores as separate field for backend
                 documentIds: uploadedDocumentInfos.map(doc => doc.documentId),
             };
+              console.log('SUBMIT_PAGE: Final data for API:', applicationDataToSubmit);
             
-            console.log('SUBMIT_PAGE: Final data for API:', applicationDataToSubmit);            const response = await applicationService.submitApplication(applicationDataToSubmit);
+            const response = await applicationService.submitApplication(applicationDataToSubmit);
+            console.log('SUBMIT_PAGE: Response received from API:', response);
 
             if (response.success && response.data) {
+                console.log('SUBMIT_PAGE: Success! Application data:', response.data);
+                
+                // Safely check response data structure
+                if (response.data && typeof response.data === 'object') {
+                    console.log('SUBMIT_PAGE: Response data is valid object');
+                    console.log('SUBMIT_PAGE: Application ID:', response.data._id || response.data.id);
+                    
+                    // Log populated fields to ensure they exist
+                    if (response.data.university) {
+                        console.log('SUBMIT_PAGE: University:', typeof response.data.university === 'object' ? response.data.university.name : response.data.university);
+                    }
+                    if (response.data.major) {
+                        console.log('SUBMIT_PAGE: Major:', typeof response.data.major === 'object' ? response.data.major.name : response.data.major);
+                    }
+                }
+                
                 message.success('Nộp hồ sơ thành công!');
                 
                 // Reset form and navigate to homepage
@@ -737,6 +755,7 @@ const CandidateSubmitApplicationPage: React.FC = () => {
                 setCurrentStep(0);
                 navigate('/'); // Navigate to homepage instead of applications page
             } else {
+                console.error('SUBMIT_PAGE: API returned unsuccessful response:', response);
                 message.error(response.message || 'Nộp hồ sơ thất bại. Vui lòng thử lại.');
             }
         } catch (error: any) { 
