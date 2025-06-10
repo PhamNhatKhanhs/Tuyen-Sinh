@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap');
+
+:root {
+  --primary: #3730a3;
+  --secondary: #2563eb;
+  --accent: #ef4444;
+  --accent2: #ec4899;
+  --bg: #f8fafc;
+  --card-bg: #fff;
+  --border: #f1f5f9;
+  --text-main: #1e293b;
+  --text-sub: #64748b;
+  --shadow: 0 4px 24px 0 rgba(30, 41, 59, 0.10);
+  --shadow-hover: 0 8px 32px 0 rgba(99, 102, 241, 0.18);
+}
+
+.submitContainer {
+  background: var(--card-bg);
+  padding: 2.5rem 1.5rem 2rem 1.5rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 6px 32px 0 rgba(30, 41, 59, 0.10);
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 70vh;
+  font-family: 'Be Vietnam Pro', 'Inter', Arial, sans-serif;
+}
+
+.sectionTitle {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 1.2rem;
+  text-align: center;
+  letter-spacing: -0.5px;
+}
+
+.formSteps {
+  margin-bottom: 2.5rem;
+  background: #f8fafc;
+  border-radius: 1rem;
+  padding: 1.2rem 1rem 0.5rem 1rem;
+  box-shadow: 0 2px 12px 0 rgba(30, 41, 59, 0.06);
+}
+
+.ant-form {
+  font-family: 'Be Vietnam Pro', 'Inter', Arial, sans-serif;
+  font-size: 1.08rem;
+  color: var(--text-main);
+}
+
+.formCard {
+  background: #f9fafb;
+  border-radius: 1.1rem;
+  box-shadow: 0 2px 12px 0 rgba(99, 102, 241, 0.08);
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  margin-bottom: 2.2rem;
+}
+
+.formLabel {
+  font-weight: 600;
+  color: var(--primary);
+  font-size: 1.05rem;
+}
+
+.formInput, .ant-input, .ant-select-selector, .ant-picker {
+  border-radius: 0.7rem !important;
+  font-size: 1.05rem;
+  padding: 0.7rem 1rem !important;
+}
+
+.formButton {
+  font-family: 'Be Vietnam Pro', 'Inter', Arial, sans-serif;
+  font-size: 1.08rem;
+  font-weight: 700;
+  border-radius: 0.85rem !important;
+  padding: 1.1rem 0 !important;
+  box-shadow: 0 2px 12px 0 rgba(239, 68, 68, 0.10);
+  transition: background 0.18s, box-shadow 0.18s, transform 0.16s;
+}
+.formButtonPrimary {
+  background: linear-gradient(90deg, #ef4444 0%, #ec4899 100%) !important;
+  color: #fff !important;
+  border: none !important;
+}
+.formButtonPrimary:hover, .formButtonPrimary:focus {
+  background: linear-gradient(90deg, #dc2626 0%, #db2777 100%) !important;
+  box-shadow: 0 4px 24px 0 rgba(236, 72, 153, 0.18);
+  color: #fff !important;
+  transform: scale(1.04);
+}
+.formButtonOutline {
+  background: #fff !important;
+  color: var(--primary) !important;
+  border: 2px solid #f1f5f9 !important;
+}
+.formButtonOutline:hover, .formButtonOutline:focus {
+  border-color: #ef4444 !important;
+  color: #ef4444 !important;
+  box-shadow: 0 2px 12px 0 rgba(239, 68, 68, 0.10);
+  transform: scale(1.03);
+}
+
+.uploadArea {
+  background: #f3f4f6;
+  border: 2px dashed #d1d5db;
+  border-radius: 1rem;
+  padding: 2rem 1rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  transition: border-color 0.2s;
+}
+.uploadArea:hover, .uploadArea:focus {
+  border-color: #ef4444;
+}
+
+@media (max-width: 900px) {
+  .submitContainer {
+    padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+  }
+  .sectionTitle {
+    font-size: 1.3rem;
+  }
+  .formCard {
+    padding: 1.1rem 0.5rem 1rem 0.5rem;
+  }
+} 
